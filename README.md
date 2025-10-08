@@ -1,3 +1,28 @@
 # ft_transcendence
 
-* notion : https://www.notion.so/lulebugl/Ft_transcendence-27b497c348318033bccdee1a5453f0de?source=copy_link
+A modern 3D Pong game built with microservices architecture.
+
+* **Notion**: https://www.notion.so/lulebugl/Ft_transcendence-27b497c348318033bccdee1a5453f0de?source=copy_link
+
+## Dev quickstart
+
+Requirements: Node 20+, pnpm 9+, Docker 24+
+
+Install deps and build apps:
+
+```bash
+pnpm install
+pnpm -r build
+```
+
+Run locally with Docker (nginx on localhost:8080):
+
+```bash
+make build
+make up
+```
+
+Endpoints:
+- Frontend: `http://localhost:8080/`
+- Backend health: `http://localhost:8080/api/health`
+
