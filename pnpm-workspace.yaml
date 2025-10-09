@@ -1,3 +1,9 @@
 packages:
-  - 'services/*'
-
+  - services/*
+ignoredBuiltDependencies:
+  - '@vscode/sqlite3'
+  - babylonjs
+  - esbuild
+  - sqlite3
+onlyBuiltDependencies:
+  - better-sqlite3
