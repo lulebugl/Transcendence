@@ -11,7 +11,7 @@ services:
   backend:
     build:
       context: ..
-      dockerfile: infra/dockerfiles/backend.Dockerfile
+      dockerfile: services/backend/Dockerfile
     environment:
       - NODE_ENV=production
       - PORT=3000
@@ -21,7 +21,7 @@ services:
   frontend:
     build:
       context: ..
-      dockerfile: infra/dockerfiles/frontend.Dockerfile
+      dockerfile: services/frontend/Dockerfile
     environment:
       - NODE_ENV=production
     expose:
