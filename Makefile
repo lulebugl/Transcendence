@@ -4,15 +4,15 @@ build:
 
 up:
 	docker compose -f infra/docker-compose.yml up -d $(filter-out $@,$(MAKECMDGOALS)) 
+down:
+	docker compose -f infra/docker-compose.yml down $(filter-out $@,$(MAKECMDGOALS)) 
+stop:
+	docker compose -f infra/docker-compose.yml stop $(filter-out $@,$(MAKECMDGOALS)) 
+logs:
+	docker compose -f infra/docker-compose.yml logs $(filter-out $@,$(MAKECMDGOALS))
 
 clean:
 	docker compose -f infra/docker-compose.yml down -v --remove-orphans --rmi all
-
-down:
-	docker compose -f infra/docker-compose.yml down $(filter-out $@,$(MAKECMDGOALS)) 
-
-logs:
-	docker compose -f infra/docker-compose.yml logs $(filter-out $@,$(MAKECMDGOALS))
 
 re:
 	rm -rf node_modules
