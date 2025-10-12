@@ -12,7 +12,7 @@ COPY services/frontend/src ./services/frontend/src
 RUN pnpm install --filter @app/frontend... --frozen-lockfile=false
 RUN pnpm --filter @app/frontend build
 
-FROM nginx:1.27-alpine
+FROM nginx:1.27-alpine AS prod
 COPY --from=build /app/services/frontend/dist /usr/share/nginx/html
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]

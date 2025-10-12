@@ -3,10 +3,10 @@ services:
     container_name: nginx
     image: nginx:1.27-alpine
     ports:
-      - "8080:80" # For development maybe remove this at the end
+      - "8080:80"
       - "443:443"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/nginx.${DOCKER_ENV:-dev}.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/certs:/etc/nginx/certs:ro
     depends_on:
       - backend
@@ -16,10 +16,10 @@ services:
     build:
       context: ..
       dockerfile: services/backend/Dockerfile
-      target: dev
+      target: ${DOCKER_ENV:-dev}
     working_dir: /app/services/backend
     ports:
-      - "4983:4983" # for db studio
+      - "4983:4983" # for drizzle studio (db)
     environment:
       - NODE_ENV=${NODE_ENV:-development}
       - PORT=3000
@@ -31,7 +31,7 @@ services:
     build:
       context: ..
       dockerfile: services/frontend/Dockerfile
-      target: dev
+      target: ${DOCKER_ENV:-dev}
     environment:
       - NODE_ENV=${NODE_ENV:-development}
     expose:

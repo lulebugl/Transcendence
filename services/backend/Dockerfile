@@ -16,7 +16,7 @@ COPY services/backend/drizzle ./services/backend/drizzle
 
 RUN pnpm --filter @app/backend build
 
-FROM node:20-alpine
+FROM node:20-alpine AS prod
 WORKDIR /app
 ENV NODE_ENV=production
 
