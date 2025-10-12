@@ -1,11 +1,17 @@
+ENV_FILE := $(if $(wildcard infra/.env),infra/.env,$(if $(ENV),$(ENV),infra/.env.example))
+
 build:
 	pnpm install
-	docker compose -f infra/docker-compose.yml build $(filter-out $@,$(MAKECMDGOALS)) 
+# uncomment this to build everything 
+# but frontend is quite slow because of babylonjs
+# pnpm -r build 
+	pnpm --filter @app/backend build
+	docker compose -f infra/docker-compose.yml --env-file $(ENV_FILE) build $(filter-out $@,$(MAKECMDGOALS)) 
 
 up:
-	docker compose -f infra/docker-compose.yml up -d $(filter-out $@,$(MAKECMDGOALS)) 
+	docker compose -f infra/docker-compose.yml --env-file $(ENV_FILE) up -d $(filter-out $@,$(MAKECMDGOALS)) 
 down:
-	docker compose -f infra/docker-compose.yml down $(filter-out $@,$(MAKECMDGOALS)) 
+	docker compose -f infra/docker-compose.yml --env-file $(ENV_FILE) down $(filter-out $@,$(MAKECMDGOALS)) 
 stop:
 	docker compose -f infra/docker-compose.yml stop $(filter-out $@,$(MAKECMDGOALS)) 
 logs:
