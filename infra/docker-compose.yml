@@ -16,21 +16,27 @@ services:
     build:
       context: ..
       dockerfile: services/backend/Dockerfile
+      target: dev
+    working_dir: /app/services/backend
     ports:
-      - "4983:4983"
+      - "4983:4983" # for db studio
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=${NODE_ENV:-development}
       - PORT=3000
-      # - DATA_DIR=/data
-      - DB_FILE_NAME=$DB_FILE_NAME
+      - DB_FILE_NAME=${DB_FILE_NAME:-file:./database/app.db}
     volumes:
-      - ../services/backend/database:/app/database
+      - ../services/backend:/app/services/backend
   frontend:
     container_name: frontend
     build:
       context: ..
       dockerfile: services/frontend/Dockerfile
+      target: dev
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=${NODE_ENV:-development}
     expose:
-      - "80" # For development maybe remove this at the end
+      - "5173" # Vite dev server
+    volumes:
+      - ../services/frontend/src:/app/services/frontend/src
+      - ../services/frontend/index.html:/app/services/frontend/index.html:ro
+      - ../services/frontend/vite.config.ts:/app/services/frontend/vite.config.ts:ro

@@ -25,4 +25,3 @@ make up
 Endpoints:
 - Frontend: `http://localhost:8080/`
 - Backend health: `http://localhost:8080/api/health`
-

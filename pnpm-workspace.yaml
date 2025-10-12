@@ -5,5 +5,3 @@ ignoredBuiltDependencies:
   - babylonjs
   - esbuild
   - sqlite3
-onlyBuiltDependencies:
-  - better-sqlite3

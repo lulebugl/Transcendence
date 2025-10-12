@@ -7,13 +7,11 @@ const fastify = Fastify({ logger: true });
 
 // API Routes
 fastify.register(async (instance) => {
-  // Health check
   instance.get('/health', async () => ({ 
     status: 'ok',
     timestamp: new Date().toISOString() 
   }));
   
-  // Ping test
   instance.get('/ping', async () => ({ 
     pong: 'pong',
     message: '🏓 3D Pong API is running!' 

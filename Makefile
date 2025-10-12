@@ -15,6 +15,7 @@ logs:
 	docker compose -f infra/docker-compose.yml logs $(filter-out $@,$(MAKECMDGOALS))
 
 re:
+	rm -rf node_modules
 	make clean
 	make build
 	make up
@@ -22,7 +23,7 @@ re:
 reload-nginx:
 	@docker compose -f infra/docker-compose.yml exec nginx nginx -s reload
 
-# to use db in the browser, it will be at local.drizzle.studio
+# to view db in the browser, it will be at local.drizzle.studio after starting studio
 studio:
 	@echo "... Starting Drizzle Studio at \033[34mhttps://local.drizzle.studio \033[0m..."
 	@echo "\033[90m" && docker compose -f infra/docker-compose.yml exec backend sh -c "cd /app \
