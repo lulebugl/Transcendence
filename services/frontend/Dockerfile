@@ -6,7 +6,7 @@ COPY pnpm-workspace.yaml package.json pnpm-lock.yaml ./
 
 # Copy frontend service files
 COPY services/frontend/package.json services/frontend/vite.config.ts services/frontend/index.html ./services/frontend/
-COPY services/frontend/src ./services/frontend/src
+COPY services/frontend/srcs ./services/frontend/srcs
 
 # Install with devDependencies for build (vite lives in devDeps)
 RUN pnpm install --filter @app/frontend... --frozen-lockfile=false

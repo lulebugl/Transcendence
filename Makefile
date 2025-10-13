@@ -9,14 +9,17 @@ build:
 	docker compose -f infra/docker-compose.yml --env-file $(ENV_FILE) build $(filter-out $@,$(MAKECMDGOALS)) 
 
 up:
-	docker compose -f infra/docker-compose.yml --env-file $(ENV_FILE) up -d $(filter-out $@,$(MAKECMDGOALS)) 
+	docker compose -f infra/docker-compose.yml --env-file $(ENV_FILE) up -d $(filter-out $@,$(MAKECMDGOALS))
+restart:
+	docker compose -f infra/docker-compose.yml --env-file $(ENV_FILE) restart $(filter-out $@,$(MAKECMDGOALS)) 
 down:
 	docker compose -f infra/docker-compose.yml --env-file $(ENV_FILE) down $(filter-out $@,$(MAKECMDGOALS)) 
 stop:
 	docker compose -f infra/docker-compose.yml stop $(filter-out $@,$(MAKECMDGOALS)) 
 logs:
 	docker compose -f infra/docker-compose.yml logs $(filter-out $@,$(MAKECMDGOALS))
-
+exec:
+	docker compose -f infra/docker-compose.yml exec $(filter-out $@,$(MAKECMDGOALS)) sh
 clean:
 	docker compose -f infra/docker-compose.yml down -v --remove-orphans --rmi all
 

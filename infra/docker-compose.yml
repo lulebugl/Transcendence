@@ -37,6 +37,6 @@ services:
     expose:
       - "5173" # Vite dev server
     volumes:
-      - ../services/frontend/src:/app/services/frontend/src
+      - ../services/frontend/srcs:/app/services/frontend/srcs
       - ../services/frontend/index.html:/app/services/frontend/index.html:ro
       - ../services/frontend/vite.config.ts:/app/services/frontend/vite.config.ts:ro
