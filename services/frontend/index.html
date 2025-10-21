@@ -3,16 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'self'; frame-ancestors 'self'" />
     <title>Transcendence - 3D Pong</title>
-    <!-- <link rel="stylesheet" href="/srcs/styles.css"> -->
   </head>
   <body>
-    <!-- <div id="renderCanvas" style="width:100vw;height:100vh;display:block;"></div> -->
-	<body>
-		<h1 class="text-3xl font-bold underline">
-		  Hello world!
-		</h1>
-	  </body>
+    <div id="app"></div>
     <script type="module" src="/srcs/app.ts"></script>
   </body>
   </html>
