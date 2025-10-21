@@ -5,6 +5,10 @@ import { eq } from 'drizzle-orm';
 
 const fastify = Fastify({ logger: true });
 
+
+
+
+
 // API Routes
 fastify.register(async (instance) => {
   instance.get('/health', async () => ({ 

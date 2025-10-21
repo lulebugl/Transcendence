@@ -4,7 +4,7 @@ services:
     image: nginx:1.27-alpine
     ports:
       - "8080:80"
-      - "443:443"
+      - "8443:443"
     volumes:
       - ./nginx/nginx.${DOCKER_ENV:-dev}.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/certs:/etc/nginx/certs:ro
