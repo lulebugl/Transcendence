@@ -1,11 +1,11 @@
 ENV_FILE := $(if $(wildcard infra/.env),infra/.env,$(if $(ENV),$(ENV),infra/.env.example))
 
 build:
-	pnpm install
+#	pnpm install
 # uncomment this to build everything 
 # but frontend is quite slow because of babylonjs
 # pnpm -r build 
-	pnpm --filter @app/backend build
+#	pnpm --filter @app/backend build
 	docker compose -f infra/docker-compose.yml --env-file $(ENV_FILE) build $(filter-out $@,$(MAKECMDGOALS)) 
 
 up:
