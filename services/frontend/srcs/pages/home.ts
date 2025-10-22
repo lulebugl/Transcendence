@@ -2,6 +2,27 @@ import { Navbar } from "../components/navbar";
 
 export type Page = () => { el: HTMLElement; cleanup?: () => void };
 
+const createStatusIndicator = (label: string, statusId: string) => {
+	const container = document.createElement("div");
+	container.className = "flex items-center gap-2 text-sm";
+  
+	const labelEl = document.createElement("span");
+	labelEl.textContent = label;
+	labelEl.className = "text-gray-600";
+  
+	const statusEl = document.createElement("span");
+	statusEl.id = statusId;
+	statusEl.className =
+	  "px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800";
+	statusEl.textContent = "Checking...";
+  
+	container.appendChild(labelEl);
+	container.appendChild(statusEl);
+  
+	return { container, statusEl };
+  };
+
+  
 export const Home: Page = () => {
   const el = document.createElement("div");
   el.className = "p-6 space-y-4";
@@ -17,6 +38,25 @@ export const Home: Page = () => {
   p.className = "text-gray-600";
   p.textContent = "Your 3D Pong game awaits!";
   el.appendChild(p);
+
+  const { container: healthContainer, statusEl: healthStatus } = createStatusIndicator("Backend Status:", "healthStatus");
+  el.appendChild(healthContainer);
+
+  
+  fetch("https://localhost:8443/api/health")
+    .then((res) =>
+      res.ok ? res.json() : Promise.reject(new Error(`HTTP ${res.status}`))
+    )
+    .then((data) => {
+      healthStatus.textContent = data.status || "OK";
+      healthStatus.className =
+        "px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800";
+    })
+    .catch(() => {
+      healthStatus.textContent = "Offline";
+      healthStatus.className =
+        "px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800";
+    });
 
   return {
     el,
