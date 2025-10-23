@@ -2,6 +2,7 @@ services:
   nginx:
     container_name: nginx
     image: nginx:1.27-alpine
+    restart: always
     ports:
       - "8080:80"
       - "8443:443"
@@ -17,21 +18,26 @@ services:
       context: ..
       dockerfile: services/backend/Dockerfile
       target: ${DOCKER_ENV:-dev}
+    restart: always
     working_dir: /app/services/backend
     ports:
-      - "4983:4983" # for drizzle studio (db)
+      - "4983:4983"
     environment:
       - NODE_ENV=${NODE_ENV:-development}
       - PORT=3000
       - DB_FILE_NAME=${DB_FILE_NAME:-file:./database/app.db}
     volumes:
-      - ../services/backend:/app/services/backend
+       - ../services/backend/srcs:/app/services/backend/srcs
+       - ../services/backend/database:/app/services/backend/database
+       - ../services/backend/drizzle:/app/services/backend/drizzle
+       - /app/services/backend/node_modules  # Anonymous volume to preserve node_modules
   frontend:
     container_name: frontend
     build:
       context: ..
       dockerfile: services/frontend/Dockerfile
       target: ${DOCKER_ENV:-dev}
+    restart: always
     environment:
       - NODE_ENV=${NODE_ENV:-development}
     expose:

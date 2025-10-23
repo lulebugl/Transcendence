@@ -11,7 +11,7 @@ COPY services/backend/package.json services/backend/tsconfig.json services/backe
 # Install with devDependencies for build (typescript lives in devDeps)
 RUN pnpm install --filter @app/backend... --frozen-lockfile=false
 
-COPY services/backend/src ./services/backend/src
+COPY services/backend/srcs ./services/backend/srcs
 COPY services/backend/drizzle ./services/backend/drizzle
 
 RUN pnpm --filter @app/backend build
@@ -25,7 +25,7 @@ COPY --from=build /app/services/backend/package.json ./package.json
 COPY --from=build /app/services/backend/drizzle ./drizzle
 COPY --from=build /app/services/backend/drizzle.config.ts ./drizzle.config.ts
 # Copy db schema
-COPY --from=build /app/services/backend/src/db ./src/db
+COPY --from=build /app/services/backend/srcs/db ./srcs/db
 
 RUN corepack enable && corepack prepare pnpm@10.18.1 --activate && \
 	# USE THIS FOR Production
@@ -43,8 +43,15 @@ COPY pnpm-workspace.yaml package.json pnpm-lock.yaml ./
 COPY services/backend/package.json services/backend/tsconfig.json ./services/backend/
 RUN pnpm install --filter @app/backend... --frozen-lockfile=false
 
-COPY services/backend/src ./services/backend/src
+COPY services/backend/srcs ./services/backend/srcs
+COPY services/backend/database ./services/backend/database
 COPY services/backend/drizzle ./services/backend/drizzle
+COPY services/backend/drizzle.config.ts ./services/backend/drizzle.config.ts
 
 EXPOSE 3000
+
+RUN pnpm --filter @app/backend db:generate
+RUN pnpm --filter @app/backend db:migrate
+RUN pnpm --filter @app/backend db:push
+
 CMD ["pnpm","--filter","@app/backend","dev"]
