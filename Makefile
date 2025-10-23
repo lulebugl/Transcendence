@@ -6,7 +6,7 @@ build:
 # but frontend is quite slow because of babylonjs
 # pnpm -r build 
 #	pnpm --filter @app/backend build
-	docker compose -f infra/docker-compose.yml --env-file $(ENV_FILE) build $(filter-out $@,$(MAKECMDGOALS)) 
+	docker compose -f infra/docker-compose.yml --env-file $(ENV_FILE) build --no-cache $(filter-out $@,$(MAKECMDGOALS)) 
 
 up:
 	docker compose -f infra/docker-compose.yml --env-file $(ENV_FILE) up -d $(filter-out $@,$(MAKECMDGOALS))

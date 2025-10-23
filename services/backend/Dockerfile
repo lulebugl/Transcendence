@@ -42,5 +42,9 @@ RUN corepack enable && corepack prepare pnpm@10.18.1 --activate
 COPY pnpm-workspace.yaml package.json pnpm-lock.yaml ./
 COPY services/backend/package.json services/backend/tsconfig.json ./services/backend/
 RUN pnpm install --filter @app/backend... --frozen-lockfile=false
+
+COPY services/backend/src ./services/backend/src
+COPY services/backend/drizzle ./services/backend/drizzle
+
 EXPOSE 3000
 CMD ["pnpm","--filter","@app/backend","dev"]
