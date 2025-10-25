@@ -1,23 +1,20 @@
 FROM node:20-alpine AS build
-WORKDIR /app
+WORKDIR /app/services/backend
 
 RUN corepack enable && corepack prepare pnpm@10.18.1 --activate
 
-# (context is project root)
-COPY pnpm-workspace.yaml package.json pnpm-lock.yaml ./
-
-COPY services/backend/package.json services/backend/tsconfig.json services/backend/drizzle.config.ts ./services/backend/
+COPY ./package.json ./tsconfig.json ./drizzle.config.ts ./
 
 # Install with devDependencies for build (typescript lives in devDeps)
-RUN pnpm install --filter @app/backend... --frozen-lockfile=false
+RUN pnpm install --frozen-lockfile=false
 
-COPY services/backend/srcs ./services/backend/srcs
-COPY services/backend/drizzle ./services/backend/drizzle
+COPY ./srcs ./srcs
+COPY ./drizzle ./drizzle
 
-RUN pnpm --filter @app/backend build
+RUN pnpm build
 
 FROM node:20-alpine AS prod
-WORKDIR /app
+WORKDIR /app/services/backend
 ENV NODE_ENV=production
 
 COPY --from=build /app/services/backend/dist ./dist
@@ -37,21 +34,20 @@ CMD ["node", "dist/index.js"]
 
 FROM node:20-alpine AS dev
 
-WORKDIR /app
+WORKDIR /app/services/backend
 RUN corepack enable && corepack prepare pnpm@10.18.1 --activate
-COPY pnpm-workspace.yaml package.json pnpm-lock.yaml ./
-COPY services/backend/package.json services/backend/tsconfig.json ./services/backend/
-RUN pnpm install --filter @app/backend... --frozen-lockfile=false
+COPY package.json tsconfig.json ./
+RUN pnpm install --frozen-lockfile=false
 
-COPY services/backend/srcs ./services/backend/srcs
-COPY services/backend/database ./services/backend/database
-COPY services/backend/drizzle ./services/backend/drizzle
-COPY services/backend/drizzle.config.ts ./services/backend/drizzle.config.ts
+COPY srcs ./srcs
+COPY database ./database
+COPY drizzle ./drizzle
+COPY drizzle.config.ts ./drizzle.config.ts
 
 EXPOSE 3000
 
-RUN pnpm --filter @app/backend db:generate
-RUN pnpm --filter @app/backend db:migrate
-RUN pnpm --filter @app/backend db:push
+RUN pnpm db:generate
+RUN pnpm db:migrate
+RUN pnpm db:push
 
-CMD ["pnpm","--filter","@app/backend","dev"]
+CMD ["pnpm", "dev"]

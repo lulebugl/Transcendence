@@ -15,11 +15,10 @@ services:
   backend:
     container_name: backend
     build:
-      context: ..
-      dockerfile: services/backend/Dockerfile
+      context: ../services/backend
+      dockerfile: Dockerfile
       target: ${DOCKER_ENV:-dev}
     restart: always
-    working_dir: /app/services/backend
     ports:
       - "4983:4983"
     environment:
@@ -34,8 +33,8 @@ services:
   frontend:
     container_name: frontend
     build:
-      context: ..
-      dockerfile: services/frontend/Dockerfile
+      context: ../services/frontend
+      dockerfile: Dockerfile
       target: ${DOCKER_ENV:-dev}
     restart: always
     environment:
@@ -46,3 +45,4 @@ services:
       - ../services/frontend/srcs:/app/services/frontend/srcs
       - ../services/frontend/index.html:/app/services/frontend/index.html:ro
       - ../services/frontend/vite.config.ts:/app/services/frontend/vite.config.ts:ro
+      - /app/services/frontend/node_modules  # Anonymous volume to preserve node_modules
