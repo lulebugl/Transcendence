@@ -25,3 +25,7 @@ make up
 Endpoints:
 - Frontend: `http://localhost:8080/`
 - Backend health: `http://localhost:8080/api/health`
+
+## ASSETS
+
+- [https://images.squarespace-cdn.com/content/62d66fa29e72c560f8efc020/1cd27e3d-e6bc-4bfe-99bd-fae5365f4ae2/NozomiCitadel_Zipline_Before%281%29.png?content-type=image%2Fpng]
