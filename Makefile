@@ -16,7 +16,7 @@ down:
 stop:
 	@docker compose -f infra/docker-compose.yml stop $(filter-out $@,$(MAKECMDGOALS)) 
 logs:
-	@docker compose -f infra/docker-compose.yml logs $(filter-out $@,$(MAKECMDGOALS))
+	@docker compose -f infra/docker-compose.yml logs -f $(filter-out $@,$(MAKECMDGOALS))
 exec:
 	@docker compose -f infra/docker-compose.yml exec $(filter-out $@,$(MAKECMDGOALS)) sh
 clean:
@@ -49,6 +49,7 @@ re:
 # to view db in the browser, it will be at local.drizzle.studio after starting studio
 studio:
 	@echo "... Starting Drizzle Studio at \033[34mhttps://local.drizzle.studio \033[0m..."
-	@echo "\033[90m" && docker compose -f infra/docker-compose.yml exec backend sh -c "cd /app \
-		&& npx --yes drizzle-kit@0.31.5 studio --host 0.0.0.0 --port 4983 \
-		| sed '/local.drizzle.studio/d'" && echo "\033[0m"
+	echo "\033[90m" && \
+	    docker compose -f infra/docker-compose.yml exec -d backend sh -c "cd /app/services/backend \
+	    && npx drizzle-kit studio --host 0.0.0.0 --port 4983" \
+		&& echo "\033[0m" 

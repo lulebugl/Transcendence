@@ -3,7 +3,9 @@ import Fastify from 'fastify';
 import { db, users } from './db';
 import { eq } from 'drizzle-orm';
 
-const fastify = Fastify({ logger: true });
+const fastify = Fastify({ 
+  logger: true,
+});
 
 // API Routes
 fastify.register(async (instance) => {
@@ -63,11 +65,18 @@ fastify.register(async (instance) => {
   // });
 }, { prefix: '/api' });
 
-const port = Number(process.env.PORT) || 3000;
-const host = '0.0.0.0';
+async function main() {
+  const port = Number(process.env.PORT) || 3000;
+  const host = '0.0.0.0';
+  
+  await fastify.listen({ port, host }), function (err: Number, address: string) {
+    if (err) {
+      fastify.log.error(err);
+      process.exit(1);
+    }
+    
+    fastify.log.info(`server listening on ${address}`);
+  };
+}
 
-fastify.listen({ port, host }).catch((err) => {
-  fastify.log.error(err);
-  process.exit(1);
-});
-
+main();

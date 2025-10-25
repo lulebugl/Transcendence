@@ -35,10 +35,21 @@ export const Home: Page = () => {
   el.appendChild(h1);
 
   const p = document.createElement("p");
-  p.className = "text-gray-600";
+  p.className = "text-gray-600 mt-2";
   p.textContent = "Your 3D Pong game awaits!";
   el.appendChild(p);
 
+  const dbLink = document.createElement("a");
+  dbLink.className = "text-blue-500";
+  dbLink.textContent = "Drizzle Studio";
+  dbLink.href = "https://local.drizzle.studio/";
+
+  const span = document.createElement("span");
+  span.className = "text-gray-600 block mb-3";
+  span.textContent = "Check database at: ";
+  el.appendChild(span);
+  span.appendChild(dbLink);
+  
   const { container: healthContainer, statusEl: healthStatus } = createStatusIndicator("Backend Status:", "healthStatus");
   el.appendChild(healthContainer);
 
