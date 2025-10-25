@@ -23,14 +23,14 @@ COPY --from=build /app/services/backend/drizzle ./drizzle
 COPY --from=build /app/services/backend/drizzle.config.ts ./drizzle.config.ts
 # Copy db schema
 COPY --from=build /app/services/backend/srcs/db ./srcs/db
+COPY --from=build /app/services/backend/docker-entrypoint.sh ./docker-entrypoint.sh
+RUN chmod +x docker-entrypoint.sh
 
 RUN corepack enable && corepack prepare pnpm@10.18.1 --activate && \
-	# USE THIS FOR Production
-    # pnpm install --prod --frozen-lockfile=false
     pnpm install --frozen-lockfile=false
 
 EXPOSE 3000
-CMD ["node", "dist/index.js"]
+CMD ["./docker-entrypoint.sh", "node", "dist/index.js"]
 
 FROM node:20-alpine AS dev
 
@@ -43,11 +43,10 @@ COPY srcs ./srcs
 COPY database ./database
 COPY drizzle ./drizzle
 COPY drizzle.config.ts ./drizzle.config.ts
+COPY docker-entrypoint.sh ./docker-entrypoint.sh
+
+RUN chmod +x docker-entrypoint.sh
 
 EXPOSE 3000
 
-RUN pnpm db:generate
-RUN pnpm db:migrate
-RUN pnpm db:push
-
-CMD ["pnpm", "dev"]
+CMD ["./docker-entrypoint.sh", "pnpm", "dev"]
