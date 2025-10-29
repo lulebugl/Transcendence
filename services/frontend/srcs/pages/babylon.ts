@@ -1,47 +1,68 @@
-import { Engine, Scene, ArcRotateCamera, HemisphericLight, MeshBuilder, Vector3 } from '@babylonjs/core';
+import { Engine, Scene, ArcRotateCamera, HemisphericLight, Vector3, SceneLoader } from "@babylonjs/core";
+import "@babylonjs/loaders";
+
 export const Game: Page = () => {
-    // 1. Create canvas
+    // 1️⃣ Canvas
     const canvas = document.createElement("canvas");
     canvas.id = "renderCanvas";
-	canvas.style = "width:100vw;height:100vh;display:block;";
-    document.body.appendChild(canvas); // must append before using
+    canvas.style.width = "100vw";
+    canvas.style.height = "100vh";
+    canvas.style.display = "block";
+    document.body.appendChild(canvas);
 
-    // 2. Create engine & scene
+    // 2️⃣ Engine e scena
     const engine = new Engine(canvas, true);
     const scene = new Scene(engine);
 
-    const camera = new ArcRotateCamera('camera', Math.PI / 2, Math.PI / 3, 10, new Vector3(0,0,0), scene);
-    camera.attachControl(canvas, true);
+    // 3️⃣ Camera fissa
+    const camera = new ArcRotateCamera("camera", Math.PI / 2, Math.PI / 3, 10, new Vector3(0, 0, 0), scene);
+    //camera.attachControl(canvas, true);
 
-    const light = new HemisphericLight('light', new Vector3(1,1,0), scene);
+    // 4️⃣ Luce
+    const light = new HemisphericLight("light", new Vector3(1, 1, 0), scene);
 
-    // Simple pong-like scene placeholders
-    const table = MeshBuilder.CreateBox('table', { width: 6, depth: 10, height: 0.2 }, scene);
-    table.position.y = -0.2;
+    // 5️⃣ Variabile globale per i mesh
+    let meshes: any[] = [];
 
-    const paddleLeft = MeshBuilder.CreateBox('paddleLeft', { width: 1, height: 0.3, depth: 0.2 }, scene);
-    paddleLeft.position = new Vector3(-2.5, 0, 0);
+    // 6️⃣ Caricamento GLB
+    (async () => {
+        const result = await SceneLoader.ImportMeshAsync(null, "/srcs/pages/pubblic/AssetGlb/", "pong.glb", scene);
+        meshes = result.meshes;
+        console.log("Mesh caricati:", meshes.map(m => m.name));
+		const offset = new Vector3(0, 3, -8); // sopra e indietroS
+		camera.setPosition(meshes[3].position.add(offset));
+		camera.target = meshes[2].position;
+		//await engine.initAsync()
+    })();
 
-    const paddleRight = MeshBuilder.CreateBox('paddleRight', { width: 1, height: 0.3, depth: 0.2 }, scene);
-    paddleRight.position = new Vector3(2.5, 0, 0);
+    // 7️⃣ Controllo tastiera per muovere il primo mesh
+    window.addEventListener("keydown", (event) => {
+        if (!meshes[0]) return; // assicurati che il mesh sia caricato
+        const speed = 0.1;
+        if (event.key === "a")
+			if (meshes[3].position.x > -3)
+				meshes[3].position.x -= speed;
 
-    const ball = MeshBuilder.CreateSphere('ball', { diameter: 0.3 }, scene);
+        if (event.key === "d")
+			if (meshes[3].position.x < 3)
+			meshes[3].position.x += speed;
+		console.log("Posizione iniziale:",meshes[3].position.x);
+    });
+//	camera.setPosition(meshes[3].position);
+	//camera.target = meshes[3].position;
 
-    // 3. Start render loop
+    // 8️⃣ Render loop
     engine.runRenderLoop(() => {
         scene.render();
     });
 
-    // 4. Handle resize
-    window.addEventListener('resize', () => {
-        engine.resize();
-    });
+    // 9️⃣ Resize
+    window.addEventListener("resize", () => engine.resize());
 
+    // 10️⃣ Cleanup
     return {
         el: canvas,
-        cleanup: () => {
-            engine.dispose();
-        }
-    }
+        cleanup: () => engine.dispose()
+    };
 };
 
