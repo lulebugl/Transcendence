@@ -1,8 +1,27 @@
 import { Engine, Scene, ArcRotateCamera, HemisphericLight, Vector3, SceneLoader } from "@babylonjs/core";
 import "@babylonjs/loaders";
+const	padelRight = 0;
+const	padelLeft = 3;
+const	table = 0;
+const	ball = 2;
 
 export const Game: Page = () => {
-    // 1️⃣ Canvas
+	//mi collego al client 
+	let message;
+//	() => {
+//		const wsUri = "ws://127.0.0.1/";
+//		const websocket = new WebSocket(wsUri);	
+//		// mi collego
+//		websocket.addEventListener("open", () => {
+//			log("CONNECTED");
+//		});
+//		// ascolto  e parser il json
+//		websocket.addEventListener("message", (e) => {
+//			message = JSON.parse(e.data);
+//		});
+//
+//	}();
+	
     const canvas = document.createElement("canvas");
     canvas.id = "renderCanvas";
     canvas.style.width = "100vw";
@@ -10,34 +29,30 @@ export const Game: Page = () => {
     canvas.style.display = "block";
     document.body.appendChild(canvas);
 
-    // 2️⃣ Engine e scena
     const engine = new Engine(canvas, true);
     const scene = new Scene(engine);
+	const light = new HemisphericLight("light", camera.position);
+	//light.diffuse = new Color3(1,233,18);
 
-    // 3️⃣ Camera fissa
     const camera = new ArcRotateCamera("camera", Math.PI / 2, Math.PI / 3, 10, new Vector3(0, 0, 0), scene);
     //camera.attachControl(canvas, true);
 
-    // 4️⃣ Luce
-    const light = new HemisphericLight("light", new Vector3(1, 1, 0), scene);
 
-    // 5️⃣ Variabile globale per i mesh
     let meshes: any[] = [];
 
-    // 6️⃣ Caricamento GLB
     (async () => {
         const result = await SceneLoader.ImportMeshAsync(null, "/srcs/pages/pubblic/AssetGlb/", "pong.glb", scene);
         meshes = result.meshes;
         console.log("Mesh caricati:", meshes.map(m => m.name));
 		const offset = new Vector3(0, 3, -8); // sopra e indietroS
 		camera.setPosition(meshes[3].position.add(offset));
-		camera.target = meshes[2].position;
+		camera.target = meshes[ball].position;
 		//await engine.initAsync()
     })();
 
-    // 7️⃣ Controllo tastiera per muovere il primo mesh
     window.addEventListener("keydown", (event) => {
-        if (!meshes[0]) return; // assicurati che il mesh sia caricato
+        if (!meshes[0])
+			return; // assicurati che il mesh sia caricato
         const speed = 0.1;
         if (event.key === "a")
 			if (meshes[3].position.x > -3)
@@ -51,15 +66,12 @@ export const Game: Page = () => {
 //	camera.setPosition(meshes[3].position);
 	//camera.target = meshes[3].position;
 
-    // 8️⃣ Render loop
     engine.runRenderLoop(() => {
         scene.render();
     });
 
-    // 9️⃣ Resize
     window.addEventListener("resize", () => engine.resize());
 
-    // 10️⃣ Cleanup
     return {
         el: canvas,
         cleanup: () => engine.dispose()
