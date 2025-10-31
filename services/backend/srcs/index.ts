@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import Fastify from 'fastify';
+import { startWebSocketServer } from './miniBackendPong.js';
 import { db, users } from './db';
 import { eq } from 'drizzle-orm';
 
@@ -15,6 +16,9 @@ fastify.register(async (instance) => {
   instance.get('/ping', async () => ({ 
     pong: 'pong',
     message: '🏓 3D Pong API is running!' 
+  }));
+
+  instance.get('/socket', async () => ({ 
   }));
   
   // Simple database test - create, read, update, delete a test user
@@ -63,7 +67,7 @@ fastify.register(async (instance) => {
 
 const port = Number(process.env.PORT) || 3000;
 const host = '0.0.0.0';
-
+startWebSocketServer(9000);
 fastify.listen({ port, host }).catch((err) => {
   fastify.log.error(err);
   process.exit(1);
