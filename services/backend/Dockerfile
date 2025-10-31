@@ -16,8 +16,6 @@ RUN pnpm build
 FROM node:20-alpine AS prod
 WORKDIR /app/services/backend
 ENV NODE_ENV=production
-RUN apk add --no-cache openssl
-RUN echo "apk ... in corso"
 
 COPY --from=build /app/services/backend/dist ./dist
 COPY --from=build /app/services/backend/package.json ./package.json
@@ -26,17 +24,10 @@ COPY --from=build /app/services/backend/drizzle.config.ts ./drizzle.config.ts
 # Copy db schema
 COPY --from=build /app/services/backend/srcs/db ./srcs/db
 COPY --from=build /app/services/backend/docker-entrypoint.sh ./docker-entrypoint.sh
-COPY --from=build /app/services/backend/srcs/miniBackendPong.js  ./miniBackendPong.js
 RUN chmod +x docker-entrypoint.sh
 RUN corepack enable && corepack prepare pnpm@10.18.1 --activate && \
     pnpm install --frozen-lockfile=false
-RUN mkdir -p /etc/cert/
 
-RUN openssl req -x509 -nodes -days 1 \
-    -newkey rsa:2048 \
-    -keyout  /etc/cert/selfsigned.key \
-    -out  /etc/cert/selfsigned.crt \
-    -subj "/C=BE/ST=Belgium/L=Scuola/O=Progetto/OU=Dev/CN=..../UID=..."
 
 EXPOSE 3000
 CMD ["./docker-entrypoint.sh", "node", "dist/index.js"]
@@ -53,18 +44,9 @@ COPY database ./database
 COPY drizzle ./drizzle
 COPY drizzle.config.ts ./drizzle.config.ts
 COPY docker-entrypoint.sh ./docker-entrypoint.sh
-RUN apk add --no-cache openssl
-RUN echo "apk ... in corso"
 
 RUN chmod +x docker-entrypoint.sh
 
-RUN mkdir -p /etc/cert/
-
-RUN openssl req -x509 -nodes -days 1 \
-    -newkey rsa:2048 \
-    -keyout  /etc/cert/selfsigned.key \
-    -out  /etc/cert/selfsigned.crt \
-    -subj "/C=BE/ST=Belgium/L=Scuola/O=Progetto/OU=Dev/CN=..../UID=..."
 
 EXPOSE 3000
 

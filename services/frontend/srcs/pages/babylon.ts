@@ -8,14 +8,14 @@ const	ball = 2;
 export const Game: Page = () => {
 	//mi collego al client 
 	let backendMessage;
-	const wsUri = "https://localhost:8443/ws";
+	const wsUri = "/ws";
 	//const ws = new WebSocket("wss://example.com/ws/");
 	const websocket = new WebSocket(wsUri);
 	(async () => {
 		// mi collego
 		console.log("Provo a collegarmi");
 		websocket.addEventListener("open", () => {
-			log("CONNECTED");
+	//		log("CONNECTED");
 			console.log("ci siamo")
 		});
 		websocket.addEventListener("error", (event) => {
@@ -27,7 +27,8 @@ export const Game: Page = () => {
 		});
 		// ascolto  e parser il json
 		websocket.addEventListener("message", (e) => {
-			message = JSON.parse(e.data);
+			backendMessage = JSON.parse(e.data);
+			console.log(backendMessage);
 		});
 
 	})();

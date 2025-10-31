@@ -1,14 +1,13 @@
 import WebSocket from 'ws';
 import https from 'https';
+import http from 'http';
 import fs from "fs";
 
 export function startWebSocketServer(port = 9000) {
 	console.log(`Inizialliazazione webSocket wss -NON CONNESSO-`)
 	//const path = require("path");
 	//const file = fs.readFileSync(path.resolve(__dirname, "../file.xml"));
-	const server = https.createServer({
-		key: fs.readFileSync("/etc/cert/selfsigned.key"),
-		cert: fs.readFileSync("/etc/cert/selfsigned.crt")
+	const server = http.createServer({
 	});
 	const wss = new WebSocket.Server({ server });
 	server.listen(port, () => {
