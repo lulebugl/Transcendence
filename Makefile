@@ -13,7 +13,7 @@ down:
 stop:
 	@docker compose -f infra/docker-compose.yml stop $(filter-out $@,$(MAKECMDGOALS)) 
 logs:
-	@docker compose -f infra/docker-compose.yml logs  $(filter-out $@,$(MAKECMDGOALS))
+	@docker compose -f infra/docker-compose.yml logs -f $(filter-out $@,$(MAKECMDGOALS))
 exec:
 	@docker compose -f infra/docker-compose.yml exec $(filter-out $@,$(MAKECMDGOALS)) sh
 clean:

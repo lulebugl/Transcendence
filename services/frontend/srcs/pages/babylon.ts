@@ -1,4 +1,5 @@
-import { Engine, Scene, ArcRotateCamera, HemisphericLight, Vector3, SceneLoader } from "@babylonjs/core";
+import { Engine, Scene, ArcRotateCamera, HemisphericLight, Vector3, SceneLoader, Matrix } from "@babylonjs/core";
+import { Vector3, Matrix, Quaternion } from "@babylonjs/core/Maths/math.vector";
 import "@babylonjs/loaders";
 const	padelRight = 0;
 const	padelLeft = 3;
@@ -51,11 +52,10 @@ export const Game: Page = () => {
     //camera.attachControl(canvas, true);
     let meshes: any[] = [];
     (async () => {
-		if (!backendMessage)
-			return;
         const result = await SceneLoader.ImportMeshAsync(null, "/srcs/pages/pubblic/AssetGlb/", "pong.glb", scene);
         meshes = result.meshes;
         console.log("Mesh caricati:", meshes.map(m => m.name));
+		scene.computeWorldMatrix(true);
 		// aggiorno tutte le possizioni dei oggetti
 		//meshes[ball].position = new Vector(backendMessage.ball.position.z, backendMessage.ball.position.y, backendMessage.ball.position.x );
 		const offset = new Vector3(0, 3, -8); // sopra e indietroS offset per la camera
@@ -64,38 +64,31 @@ export const Game: Page = () => {
 		//await engine.initAsync()
     })();
 	window.addEventListener("keydown", (event) =>{
-		if (!meshes[0] || websocket.readyState !== Webwebsocket.OPEN)
+		if (!meshes[0] || websocket.readyState !== websocket.OPEN)
 			return ;
-        if (event.key === "a"){
+        if (event.key === "a" || event.key === "b"){
 			const clientMessage = 
 			{
 				key: event.key,
-				position: meshes[padelPlayer].position,
+				position: meshes[padelPlayer].getAbsolutePosition()
 			}
+			websocket.send(JSON.stringify(clientMessage));
 		}
-		else if (event.key === "b"){
-			const clientMessage = 
-			{
-				key: event.key,
-				position: meshes[padelPlayer].position,
-			}
-		}
-		websocket.send(JSON.stringify(clientMessage));
 	});
     engine.runRenderLoop(() => {
-		if (backendMessage){
+		if (backendMessage && backendMessage.ball){
 		// aggiorno tutte le possizioni dei oggetti
-		meshes[ball].position.x = backendMessage.ball.position.x; 
+		meshes[ball].position.y = backendMessage.ball.position.x;
 		meshes[ball].position.y = backendMessage.ball.position.y;
 		meshes[ball].position.z = backendMessage.ball.position.z;
 
-		meshes[padelRight].position.x = backendMessage.player1.position.x; 
-		meshes[padelRight].position.y = backendMessage.player1.position.y;
-		meshes[padelRight].position.z = backendMessage.player1.position.z;
+	//	meshes[padelRight].position.x = backendMessage.player1.position.x; 
+	//	meshes[padelRight].position.y = backendMessage.player1.position.y;
+	//	meshes[padelRight].position.z = backendMessage.player1.position.z;
 
-		meshes[padelLeft].position.x = backendMessage.player2.position.x; 
-		meshes[padelLeft].position.y = backendMessage.player2.position.y;
-		meshes[padelLeft].position.z = backendMessage.player2.position.z;
+	//	meshes[padelLeft].position.x = backendMessage.player2.position.x; 
+	//	meshes[padelLeft].position.y = backendMessage.player2.position.y;
+	//	meshes[padelLeft].position.z = backendMessage.player2.position.z;
 
 		}
         scene.render();
