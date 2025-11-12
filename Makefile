@@ -1,8 +1,5 @@
 ENV_FILE := $(if $(wildcard infra/.env),infra/.env,$(if $(ENV),$(ENV),infra/.env.example))
 
-run:
-	make build
-	make up
 
 build:
 	@docker compose -f infra/docker-compose.yml --env-file $(ENV_FILE) build --no-cache $(filter-out $@,$(MAKECMDGOALS)) 
@@ -39,6 +36,9 @@ hard-reset:
 	rm -rf services/frontend/node_modules
 	rm -rf services/backend/package-lock.json
 	rm -rf services/frontend/package-lock.json
+run:
+	make build
+	make up
 
 re:
 	rm -rf node_modules

@@ -1,6 +1,8 @@
 services:
   nginx:
     container_name: nginx
+    networks:
+      - trans
     image: nginx:1.27-alpine
     restart: always
     ports:
@@ -14,6 +16,8 @@ services:
       - frontend
   backend:
     container_name: backend
+    networks:
+      - trans
     build:
       context: ../services/backend
       dockerfile: Dockerfile
@@ -21,6 +25,9 @@ services:
     restart: always
     ports:
       - "4983:4983"
+      - "9000:9000"
+    expose:
+      - "9000"
     environment:
       - NODE_ENV=${NODE_ENV:-development}
       - PORT=3000
@@ -32,6 +39,8 @@ services:
        - /app/services/backend/node_modules  # Anonymous volume to preserve node_modules
   frontend:
     container_name: frontend
+    networks:
+      - trans
     build:
       context: ../services/frontend
       dockerfile: Dockerfile
@@ -46,3 +55,8 @@ services:
       - ../services/frontend/index.html:/app/services/frontend/index.html:ro
       - ../services/frontend/vite.config.ts:/app/services/frontend/vite.config.ts:ro
       - /app/services/frontend/node_modules  # Anonymous volume to preserve node_modules
+
+
+networks:
+  trans:
+    driver: bridge

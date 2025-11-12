@@ -1,23 +1,63 @@
 import 'dotenv/config';
-import Fastify from 'fastify';
+import Fastify, { FastifyReply, FastifyRequest } from 'fastify';
 import { db, users } from './db';
 import { eq } from 'drizzle-orm';
+// @ts-ignore: No type definitions for this JS module
+import { startWebSocketServer } from './miniBackendPong.js';
 
 const fastify = Fastify({ 
   logger: true,
 });
 
-// API Routes
-fastify.register(async (instance) => {
-  instance.get('/health', async () => ({ 
-    status: 'ok',
-    timestamp: new Date().toISOString() 
-  }));
-  
-  instance.get('/ping', async () => ({ 
+fastify.get('/api/health', async function() {
+  return { status: 'ok' };
+});
+
+fastify.get('/api/ping', async function(request: FastifyRequest, reply: FastifyReply) {
+  return {
     pong: 'pong',
     message: '🏓 3D Pong API is running!' 
-  }));
+  }
+})
+
+fastify.get('/api/socket', async () => ({ 
+  status: 'ok',
+  message: 'WebSocket server is running!',
+}));
+
+async function main() {
+  const port = Number(process.env.PORT) || 3000;
+  const host = '0.0.0.0';
+  
+  startWebSocketServer(9000);
+  await fastify.listen({ port, host }), function (err: Number, address: string) {
+    if (err) {
+      fastify.log.error(err);
+      process.exit(1);
+    }
+    fastify.log.info(`server listening on ${address}`);
+  };
+}
+
+["SIGINT", "SIGTERM"].forEach((signal) => {
+  process.on(signal, async () => {
+    await fastify.close();
+    process.exit(0);
+  });
+});
+
+main();
+
+// API Routes
+// fastify.register(async (instance) => {
+//   instance.get('/health', async () => ({ 
+//     status: 'ok',
+//     timestamp: new Date().toISOString() 
+//   }));
+  
+//   instance.get('/ping', async () => ({ 
+  
+//   }));
 
   
   
@@ -63,20 +103,4 @@ fastify.register(async (instance) => {
   //     };
   //   }
   // });
-}, { prefix: '/api' });
-
-async function main() {
-  const port = Number(process.env.PORT) || 3000;
-  const host = '0.0.0.0';
-  
-  await fastify.listen({ port, host }), function (err: Number, address: string) {
-    if (err) {
-      fastify.log.error(err);
-      process.exit(1);
-    }
-    
-    fastify.log.info(`server listening on ${address}`);
-  };
-}
-
-main();
+// }, { prefix: '/api' });

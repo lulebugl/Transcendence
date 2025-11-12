@@ -10,6 +10,7 @@
   },
   "devDependencies": {
     "@babylonjs/core": "^8.31.0",
+	"@babylonjs/loaders": "^8.31.0",
     "tailwindcss": "^4.1.14",
     "vite": "^7.1.9"
   },
