@@ -10,6 +10,8 @@ const	startPadelRightZ = 7;
 const	startPadelLeftX = 0;
 const	startPadelLeftY = 0.6;
 const	startPadelLeftZ = -7;
+const	TERRAIN_LIMIT_X = 4;
+const	TERRAIN_LIMIT_Y = -4;
 
  function InfoInGame(
     id = 0,
@@ -59,10 +61,12 @@ export class Game {
 	  console.log(msg);
         const info = msg;
         let paddle = playerIndex === 0 ? this.state.padelLeft : this.state.padelRight;
-        if (info.key === 'a')
+	  if (info.type === "playerMove" && info.key === 'a')
 		  paddle.position.x += 0.5;
-        if (info.key === 'd')
+	  else if (info.type === "playerMove" && info.key === 'd')
 		  paddle.position.x -= 0.5;
+	  else if (info.type === "Not ready")
+		  this.setCamera(this.players)
 	  console.log(this.state, paddle);
   }
 
@@ -77,15 +81,17 @@ export class Game {
 		p.send(msg);
     });
   }
-  setCamera(players){
-	  let id = 0;
-	  this.players.forEach(p => {
-		if (p.readyState === WebSocket.OPEN)
-		  ++id;
-		  const msg = JSON.stringify({ player: id })
-		  p.send(msg);
-	  });
-  }
+	setCamera(players){
+    let id = 0;
+    this.players.forEach(p => {
+        if (p.readyState === WebSocket.OPEN) {
+            ++id;
+            const msg = JSON.stringify({ type: "start", player: id });
+            p.send(msg);
+        }
+    });
+}
+
 
   stop() {
     clearInterval(this.loop);

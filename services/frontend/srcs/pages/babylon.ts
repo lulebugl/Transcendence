@@ -36,6 +36,16 @@ export const Game: Page = () => {
 		});
 
 	})();
+	function sendMessage(message) {
+        if (websocket.readyState === WebSocket.OPEN) {
+            websocket.send(JSON.stringify(message));
+            console.log("Messaggio inviato:", message);
+        }
+		else {
+            console.log("WebSocket non aperto, impossibile inviare messaggio");
+        }
+    }
+
     const canvas = document.createElement("canvas");
     canvas.id = "renderCanvas";
     canvas.style.width = "100vw";
@@ -59,15 +69,18 @@ export const Game: Page = () => {
 		if (!meshes[0] || websocket.readyState !== websocket.OPEN)
 			return ;
         if (event.key === "a" || event.key === "d"){
-			const clientMessage = 
-			{
-				key: event.key,
-				position: meshes[padelPlayer].getAbsolutePosition()
-			}
+			const clientMessage = {
+            type: "playerMove",
+            key: event.key,
+            position: meshes[padelPlayer].getAbsolutePosition()
+			};
 			websocket.send(JSON.stringify(clientMessage));
 		}
 	});
     engine.runRenderLoop(() => {
+		if (!meshes[0]){
+			return ;
+		}
 		if (backendMessage && backendMessage.type === 'update'){
 		// aggiorno tutte le possizioni dei oggetti
 		meshes[ball].position.y = backendMessage.state.ball.position.x;
@@ -94,6 +107,10 @@ export const Game: Page = () => {
 				offset = offsetLeft;
 				console.log("player2")
 			}
+		if (padelPlayer === -1 ){
+			sendMessage({ type: "Not ready", text: "Player non init" });
+			return ;
+		}
 		camera.setPosition(meshes[padelPlayer].position.add(offset));
 		camera.target = meshes[ball].position;
 		console.log(camera.position);
