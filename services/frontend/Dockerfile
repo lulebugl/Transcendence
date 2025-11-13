@@ -17,6 +17,7 @@ CMD ["nginx", "-g", "daemon off;"]
 
 FROM node:20-alpine AS dev
 WORKDIR /app/services/frontend
+RUN apk add --no-cache curl
 RUN corepack enable && corepack prepare pnpm@10.18.1 --activate
 COPY package.json ./
 RUN pnpm install --frozen-lockfile=false
