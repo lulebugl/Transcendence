@@ -25,18 +25,33 @@ export default async function userRoutes(fastify: FastifyInstance) {
 	});
 
 	//POST - Create user
-	fastify.post("/api/users", async (req: FastifyRequest<{ Body: UserBody }>) => {
-		const { username, email, avatarUrl} = req.body;
-		try {
-			await db.insert(users).values({ 
-				username: username,
-				email: email, 
-				avatar_url: avatarUrl,
-			});
-			return { success: true };
-		} catch (err) {
-			fastify.log.error(err);
-			return fastify.status(400).send({ error: "Failed to create user" });
+	fastify.post("/api/users", 
+		{
+			schema: {
+				body: {
+					type: "object",
+					required: ["username", "email"],
+					properties: {
+						username: { type: "string" },
+						email: { type: "string", format: "email" },
+						avatarUrl: { type: "string" },
+					},
+				},
+			},
+		},
+		async (req: FastifyRequest<{ Body: UserBody }>) => {
+			const { username, email, avatarUrl} = req.body;
+			try {
+				await db.insert(users).values({ 
+					username: username,
+					email: email, 
+					avatar_url: avatarUrl,
+				});
+				return { success: true };
+			} catch (err) {
+				fastify.log.error(err);
+				return fastify.status(400).send({ error: "Failed to create user" });
+			}
 		}
-	});
+	);
 }

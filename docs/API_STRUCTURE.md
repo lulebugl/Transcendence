@@ -51,10 +51,12 @@ interface ProductBody {
 Don't forget to type your fastify elements and use your interfaces if needed.
 ```ts
 export default async function productRoutes(fastify: FastifyInstance) {
+  // Get method
   fastify.get("/api/products", async () => {
     return await db.select().from(products);
   });
 
+  // Post method
   fastify.post("/api/products", async (req: FastifyRequest<{ Body: ProductBody }>) => {
     const { name, price } = req.body;
     await db.insert(products).values({ name, price });
@@ -64,9 +66,9 @@ export default async function productRoutes(fastify: FastifyInstance) {
 ```
 6. Register your route in routes/index.ts:
 ```ts
-import productRoutes from "./products";
+import productRoutes from "./products";                             // <== Add this
 
 export default async function routes(fastify: FastifyInstance) {
-  await fastify.register(productRoutes);
+  await fastify.register(productRoutes);                            // <== Add this
 }
 ```
