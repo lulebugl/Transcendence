@@ -7,7 +7,7 @@ COPY package.json vite.config.ts index.html ./
 COPY srcs ./srcs
 
 # Install with devDependencies for build (vite lives in devDeps)
-RUN pnpm install --frozen-lockfile=false
+RUN pnpm install
 RUN pnpm build
 
 FROM nginx:1.27-alpine AS prod
@@ -19,6 +19,6 @@ FROM node:20-alpine AS dev
 WORKDIR /app/services/frontend
 RUN corepack enable && corepack prepare pnpm@10.18.1 --activate
 COPY package.json ./
-RUN pnpm install --frozen-lockfile=false
+RUN pnpm install 
 EXPOSE 5173
 CMD ["pnpm", "dev", "--", "--host", "--port", "5173"]
