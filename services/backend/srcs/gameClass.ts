@@ -36,6 +36,11 @@ const	startPadelLeftZ = -7;
 }
 
 export class Game {
+  private id: any;
+  private players: any;
+  private state: any;
+  private loop: any;
+
   constructor(id, player1, player2) {
     this.id = id;
     this.players = [player1, player2];

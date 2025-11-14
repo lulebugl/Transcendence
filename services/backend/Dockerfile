@@ -5,13 +5,17 @@ RUN corepack enable && corepack prepare pnpm@10.18.1 --activate
 
 COPY ./package.json ./tsconfig.json ./drizzle.config.ts ./
 
-# Install with devDependencies for build (typescript lives in devDeps)
 RUN pnpm install --frozen-lockfile=false
 
 COPY ./srcs ./srcs
 COPY ./drizzle ./drizzle
+COPY ./docker-entrypoint.sh ./docker-entrypoint.sh
 
 RUN pnpm build
+
+# typescript doesn't compile js files so they need to be copied manually
+# but maybe we shouldn't have js aside maybe from exception
+RUN find ./srcs -name "*.js" -type f -exec cp {} ./dist/ \;
 
 FROM node:20-alpine AS prod
 WORKDIR /app/services/backend
@@ -46,7 +50,6 @@ COPY drizzle.config.ts ./drizzle.config.ts
 COPY docker-entrypoint.sh ./docker-entrypoint.sh
 
 RUN chmod +x docker-entrypoint.sh
-
 
 EXPOSE 3000
 
