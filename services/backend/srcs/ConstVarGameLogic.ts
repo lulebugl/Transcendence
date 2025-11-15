@@ -11,6 +11,6 @@ export const startPadelLeftY: number = 1.5;
 export const startPadelLeftZ: number = -7.5;
 
 export const TERRAIN_LIMIT_X: number = 4;
-export const TERRAIN_LIMIT_Z: number = -4;
+export const TERRAIN_LIMIT_Z: number = 7.5;
 export const TERRAIN_LIMIT_Y: number = 4;
 
