@@ -2,12 +2,15 @@ import 'dotenv/config';
 import Fastify from 'fastify';
 import sensible from "@fastify/sensible";
 import jwt from "@fastify/jwt";
+import authPlugin from './utils/auth';
 import routes from "./routes";
+import fp from "fastify-plugin";
 // @ts-ignore: No type definitions for this JS module
 import { startWebSocketServer } from './miniBackendPong.js';
 
 const app = Fastify({ logger: true });
 
+app.register(fp(authPlugin));
 app.register(sensible);
 app.register(jwt, {
   secret: process.env.JWT_SECRET || "dev-secret",

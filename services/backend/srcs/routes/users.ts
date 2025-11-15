@@ -117,13 +117,24 @@ export default async function userRoutes(fastify: FastifyInstance) {
 				return fastify.httpErrors.unauthorized("Invalid credentials");
 			}
 
-			const token = fastify.jwt.sign({
+			const token: string = fastify.jwt.sign({
 				id: user.id,
 				username: user.username,
 				email: user.email,
 			});
 
 			return { token };
+		}
+	);
+
+	// GET - Retrieve current user
+	fastify.get(
+		"/api/users/me",
+		{
+			preHandler: [fastify.auth],
+		},
+		async (req) => {
+			return { user: req.user };
 		}
 	);
 }
