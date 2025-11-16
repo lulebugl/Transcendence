@@ -8,6 +8,12 @@ importers:
 
   .:
     dependencies:
+      '@babylonjs/core':
+        specifier: ^8.31.0
+        version: 8.37.0
+      '@babylonjs/loaders':
+        specifier: ^8.31.0
+        version: 8.37.0(@babylonjs/core@8.37.0)(babylonjs-gltf2interface@8.37.0)
       '@tailwindcss/vite':
         specifier: ^4.1.14
         version: 4.1.17(vite@7.2.2(jiti@2.6.1)(lightningcss@1.30.2))
@@ -21,17 +27,11 @@ importers:
         specifier: ^7.9.6
         version: 7.9.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
     devDependencies:
-      '@babylonjs/core':
-        specifier: ^8.31.0
-        version: 8.37.0
-      '@babylonjs/loaders':
-        specifier: ^8.31.0
-        version: 8.37.0(@babylonjs/core@8.37.0)(babylonjs-gltf2interface@8.37.0)
       '@eslint/js':
         specifier: ^9.0.0
         version: 9.39.1
       '@types/react':
-        specifier: ^19.0.0
+        specifier: ^19.2.4
         version: 19.2.4
       '@types/react-dom':
         specifier: ^19.0.0

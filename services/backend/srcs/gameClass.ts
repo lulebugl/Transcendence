@@ -1,21 +1,24 @@
 
 import WebSocket from 'ws';
-
-const	startBallX = 0.6;
-const	startBallY = 0; 
-const	startBallZ = 0;
-const	startPadelRightX = 0;
-const	startPadelRightY = 0.6;
-const	startPadelRightZ = 7;
-const	startPadelLeftX = 0;
-const	startPadelLeftY = 0.6;
-const	startPadelLeftZ = -7;
+import {
+  startBallX,
+  startBallY,
+  startBallZ,
+  startPaddleRightX,
+  startPaddleRightY,
+  startPaddleRightZ,
+  startPaddleLeftX,
+  startPaddleLeftY,
+  startPaddleLeftZ,
+  TERRAIN_LIMIT_X,
+  TERRAIN_LIMIT_Y
+} from './ConstVarGameLogic';
 
  function InfoInGame(
     id = 0,
     ballx = startBallX, bally = startBallY, ballz = startBallZ,
-    p1x = startPadelRightX, p1y = startPadelRightY, p1z = startPadelRightZ,
-    p2x = startPadelLeftX, p2y = startPadelLeftY, p2z = startPadelLeftZ,
+    p1x = startPaddleRightX, p1y = startPaddleRightY, p1z = startPaddleRightZ,
+    p2x = startPaddleLeftX, p2y = startPaddleLeftY, p2z = startPaddleLeftZ,
     messageType = "Update"
 ) {
     const message = {
@@ -24,10 +27,10 @@ const	startPadelLeftZ = -7;
         ball: {
             position: { x: ballx, y: bally, z: ballz }
         },
-        padelRight: {
+        PaddleRight: {
             position: { x: p1x, y: p1y, z: p1z }
         },
-        padelLeft: {
+        PaddleLeft: {
             position: { x: p2x, y: p2y, z: p2z }
         }
     };
@@ -63,11 +66,13 @@ export class Game {
   updateKey(msg, playerIndex) {
 	  console.log(msg);
         const info = msg;
-        let paddle = playerIndex === 0 ? this.state.padelLeft : this.state.padelRight;
-        if (info.key === 'a')
+        let paddle = playerIndex === 0 ? this.state.PaddleRight : this.state.PaddleLeft;
+	  if (info.type === "playerMove" && info.key === 'a')
 		  paddle.position.x += 0.5;
-        if (info.key === 'd')
+	  else if (info.type === "playerMove" && info.key === 'd')
 		  paddle.position.x -= 0.5;
+	  else if (info.type === "Not ready")
+		  this.setCamera(this.players)
 	  console.log(this.state, paddle);
   }
 
@@ -82,15 +87,17 @@ export class Game {
 		p.send(msg);
     });
   }
-  setCamera(players){
-	  let id = 0;
-	  this.players.forEach(p => {
-		if (p.readyState === WebSocket.OPEN)
-		  ++id;
-		  const msg = JSON.stringify({ player: id })
-		  p.send(msg);
-	  });
-  }
+	setCamera(players){
+    let id = 0;
+    this.players.forEach(p => {
+        if (p.readyState === WebSocket.OPEN) {
+            ++id;
+            const msg = JSON.stringify({ type: "start", player: id });
+            p.send(msg);
+        }
+    });
+}
+
 
   stop() {
     clearInterval(this.loop);

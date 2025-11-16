@@ -3,15 +3,25 @@ import https from 'https';
 import http from 'http';
 import fs from "fs";
 import { Game } from './gameClass.js';
-const	startBallX = 0.6;
-const	startBallY = 0; 
-const	startBallZ = 0;
-const	startPadelRightX = 0;
-const	startPadelRightY = 0.6;
-const	startPadelRightZ = 7;
-const	startPadelLeftX = 0;
-const	startPadelLeftY = 0.6;
-const	startPadelLeftZ = -7;
+import {
+  startBallX,
+  startBallY,
+  startBallZ,
+  startPadelRightX,
+  startPadelRightY,
+  startPadelRightZ,
+  startPadelLeftX,
+  startPadelLeftY,
+  startPadelLeftZ,
+  TERRAIN_LIMIT_X,
+  TERRAIN_LIMIT_Y
+} from './ConstVarGameLogic';
+
+
+
+
+
+
 function InfoInJson(
     id = "player1",
     ballx = startBallX, bally = startBallY, ballz = startBallZ,
