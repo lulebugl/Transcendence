@@ -13,6 +13,7 @@ export const users = sqliteTable('users', {
   updated_at: integer('updated_at', { mode: 'timestamp' })
     .notNull()
     .default(sql`(unixepoch())`),
+  password_hash: text("password_hash").notNull(),
 });
 
 // Game sessions table

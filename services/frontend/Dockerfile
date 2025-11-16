@@ -2,8 +2,6 @@ FROM node:20-alpine AS build
 WORKDIR /app/services/frontend
 RUN corepack enable && corepack prepare pnpm@10.18.1 --activate
 
-# Copy package files first for better caching (dependencies)
-# should be able to be removed
 COPY package.json pnpm-lock.yaml* ./
 
 RUN pnpm install --frozen-lockfile=false
@@ -34,6 +32,7 @@ CMD ["nginx", "-g", "daemon off;"]
 
 FROM node:20-alpine AS dev
 WORKDIR /app/services/frontend
+RUN apk add --no-cache curl
 RUN corepack enable && corepack prepare pnpm@10.18.1 --activate
 
 COPY package.json pnpm-lock.yaml* ./
