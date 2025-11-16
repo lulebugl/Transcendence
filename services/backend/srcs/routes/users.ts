@@ -133,7 +133,7 @@ export default async function userRoutes(fastify: FastifyInstance) {
 		{
 			preHandler: [fastify.auth],
 		},
-		async (req) => {
+		async (req: FastifyRequest) => {
 			return { user: req.user };
 		}
 	);
