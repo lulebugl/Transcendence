@@ -9,7 +9,7 @@ export function updateMeshPosition(mesh: AbstractMesh, pos: { x: number, y: numb
   mesh.position.set(pos.x, pos.y, pos.z);
 }
 
-export function upadateLightPosition(led: Light, pos: Vector3) {
+export function updateLightPosition(led: Light, pos: Vector3) {
   (led as any).position = pos;
 }
 

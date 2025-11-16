@@ -27,10 +27,10 @@ import {
         ball: {
             position: { x: ballx, y: bally, z: ballz }
         },
-        PaddleRight: {
+        paddleRight: {
             position: { x: p1x, y: p1y, z: p1z }
         },
-        PaddleLeft: {
+        paddleLeft: {
             position: { x: p2x, y: p2y, z: p2z }
         }
     };
@@ -58,15 +58,12 @@ export class Game {
       });
     });
 
-	this.players.forEach((ws, i) => {
-		ws.on('message', (msg) => this.updateKey(msg, i));
-	});
     this.loop = setInterval(() => this.update(), 16);
   }
   updateKey(msg, playerIndex) {
 	  console.log(msg);
         const info = msg;
-        let paddle = playerIndex === 0 ? this.state.PaddleRight : this.state.PaddleLeft;
+        let paddle = playerIndex === 0 ? this.state.paddleRight : this.state.paddleLeft;
 	  if (info.type === "playerMove" && info.key === 'a')
 		  paddle.position.x += 0.5;
 	  else if (info.type === "playerMove" && info.key === 'd')

@@ -25,7 +25,7 @@ import {
   setLed,
   setSpotLight,
   table,
-  upadateLightPosition,
+  updateLightPosition,
   updateMeshPosition,
 } from "./pong-helpers";
 import { initWebSocket, sendMessage } from "./initWebSocket";
@@ -70,7 +70,7 @@ export const Pong = () => {
   const websocketRef = useRef<WebSocket | null>(null);
   const backendMessageRef = useRef<BackendMessage | null>(null);
   const sceneReadyRef = useRef<boolean>(false);
-  const padelPlayerRef = useRef<number>(-1);
+  const paddlePlayerRef = useRef<number>(-1);
   const meshesRef = useRef<AbstractMesh[]>([]);
   const pointLightsRef = useRef<PointLight[]>([]);
   const shadowGenRef = useRef<ShadowGenerator | null>(null);
@@ -122,7 +122,7 @@ export const Pong = () => {
     camera.fov = 1.1;
     camera.minZ = 0.1;
     camera.maxZ = 2000;
-	// uncomment to move camera
+	// moving camera
     camera.attachControl(canvas, true);
     cameraRef.current = camera;
 
@@ -145,10 +145,10 @@ export const Pong = () => {
       }
       if (
         (event.key === "a" || event.key === "d") &&
-        padelPlayerRef.current !== -1
+        paddlePlayerRef.current !== -1
       ) {
         const playerMesh =
-          meshesRef.current[padelPlayerRef.current]?.getAbsolutePosition();
+          meshesRef.current[paddlePlayerRef.current]?.getAbsolutePosition();
         const clientMessage = {
           type: "playerMove",
           key: event.key,
@@ -235,9 +235,9 @@ export const Pong = () => {
       return;
     }
     if (player === 1) {
-      padelPlayerRef.current = paddleRight;
+      paddlePlayerRef.current = paddleRight;
     } else if (player === 2) {
-      padelPlayerRef.current = paddleLeft;
+      paddlePlayerRef.current = paddleLeft;
     }
     moveCameraToPlayer(true);
   };
@@ -265,10 +265,10 @@ export const Pong = () => {
       .add(LED_OFFSET);
 
     if (pointLightsRef.current[0] && paddleRightPos) {
-      upadateLightPosition(pointLightsRef.current[0], paddleRightPos);
+      updateLightPosition(pointLightsRef.current[0], paddleRightPos);
     }
     if (pointLightsRef.current[1] && paddleLeftPos) {
-      upadateLightPosition(pointLightsRef.current[1], paddleLeftPos);
+      updateLightPosition(pointLightsRef.current[1], paddleLeftPos);
     }
   };
 
@@ -278,18 +278,18 @@ export const Pong = () => {
 
   const moveCameraToPlayer = (instant: boolean = false) => {
     if (
-      padelPlayerRef.current === -1 ||
+      paddlePlayerRef.current === -1 ||
       !cameraRef.current ||
       meshesRef.current.length === 0
     ) {
       return;
     }
-    const activeMesh = meshesRef.current[padelPlayerRef.current];
+    const activeMesh = meshesRef.current[paddlePlayerRef.current];
     if (!activeMesh) {
       return;
     }
     const offset =
-      padelPlayerRef.current === paddleRight
+      paddlePlayerRef.current === paddleRight
         ? offsetRight.current
         : offsetLeft.current;
     const desiredPosition = activeMesh.position.add(offset);
@@ -325,7 +325,7 @@ export const Pong = () => {
 
   const maybeSendNotReady = () => {
     if (
-      padelPlayerRef.current !== -1 ||
+      paddlePlayerRef.current !== -1 ||
       !websocketRef.current ||
       websocketRef.current.readyState !== WebSocket.OPEN
     ) {
