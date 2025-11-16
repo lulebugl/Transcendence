@@ -1,9 +1,9 @@
 ENV_FILE := $(if $(wildcard infra/.env),infra/.env,$(if $(ENV),$(ENV),infra/.env.example))
 
-
 build:
-	@docker compose -f infra/docker-compose.yml --env-file $(ENV_FILE) build --no-cache $(filter-out $@,$(MAKECMDGOALS)) 
-
+	@docker compose -f infra/docker-compose.yml --env-file $(ENV_FILE) build $(filter-out $@,$(MAKECMDGOALS))
+build-nocache:
+	@docker compose -f infra/docker-compose.yml --env-file $(ENV_FILE) build --no-cache $(filter-out $@,$(MAKECMDGOALS))
 up:
 	@docker compose -f infra/docker-compose.yml --env-file $(ENV_FILE) up -d $(filter-out $@,$(MAKECMDGOALS))
 restart:

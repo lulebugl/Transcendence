@@ -1,15 +1,9 @@
 @import "tailwindcss";
+@import "./reset.css";
+/* @import "tailwindcss/preflight.css" layer(base); */
 
-/* Minimal pleasant background using bundled AVIF */
 html, body, #app {
   height: 100%;
-}
-body {
-  margin: 0;
-  background-image: url('/the-ascent.avif');
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
 }
 
 /* Subtle overlay to improve text contrast */
@@ -17,6 +11,6 @@ body {
   content: "";
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.35);
+  /* background: rgba(0, 0, 0, 0.25); */
   pointer-events: none;
 }

@@ -52,6 +52,7 @@ services:
       - "5173" # Vite dev server
     volumes:
       - ../services/frontend/srcs:/app/services/frontend/srcs
+      - ../services/frontend/public:/app/services/frontend/public
       - ../services/frontend/index.html:/app/services/frontend/index.html:ro
       - ../services/frontend/vite.config.ts:/app/services/frontend/vite.config.ts:ro
       - /app/services/frontend/node_modules  # Anonymous volume to preserve node_modules
