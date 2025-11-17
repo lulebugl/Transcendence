@@ -12,7 +12,7 @@ import (
 
 func GenerateSecret() []byte {
 	secret := make([]byte, 20)
-	_, err := rand.Read(secret)
+	secret, err := rand.Read(secret)
 	if err != nil {
 		panic("Failed to generate random bytes")
 	}
@@ -44,10 +44,11 @@ func main() {
  		 current := time.Now().Unix()/30
  		 next := current + 1;
  		 prev := current - 1;
- 		 fmt.Println(AlgoTOTP(secret, prev))
- 		 fmt.Println(AlgoTOTP(secret, current))
- 		 fmt.Println(AlgoTOTP(secret, next))
-		 time.Sleep(30 * time.Second)
+ 		 ftm.Println(AlgoTOTP(secret, prev))
+ 		 ftm.Println(AlgoTOTP(secret, current))
+ 		 ftm.Println(AlgoTOTP(secret, next))
+		 time.sleep(30)
 	}
+	fmt.Println("TOTP:", code)
 }
 
