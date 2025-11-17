@@ -10,6 +10,7 @@ export const Navbar = () => {
             <Link to="/pong" className="text-white hover:text-gray-300">Pong</Link>
             <Link to="/test" className="text-white hover:text-gray-300">Test</Link>
             <Link to="/sandbox" className="text-white hover:text-gray-300">Sandbox</Link>
+			<Link to="/login" className="text-white hover:text-gray-300">Login</Link>
           </div>
         </div>
       </div>

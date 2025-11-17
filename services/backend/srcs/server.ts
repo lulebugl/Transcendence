@@ -5,6 +5,7 @@ import jwt from "@fastify/jwt";
 import authPlugin from './utils/auth';
 import routes from "./routes";
 import fp from "fastify-plugin";
+import cors from "@fastify/cors";
 // @ts-ignore: No type definitions for this JS module
 import { startWebSocketServer } from './miniBackendPong.js';
 
@@ -15,7 +16,10 @@ app.register(sensible);
 app.register(jwt, {
   secret: process.env.JWT_SECRET || "dev-secret",
 });
-
+app.register(cors, {
+	origin: "http://localhost:5173",
+	credentials: true,
+})
 app.register(routes);
 
 // setup server

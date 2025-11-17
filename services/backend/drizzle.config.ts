@@ -8,5 +8,7 @@ export default defineConfig({
   dbCredentials: {
     url: process.env.DB_FILE_NAME || 'file:./database/app.db',
   },
+  verbose: true,
+  strict: true,
 });
 
