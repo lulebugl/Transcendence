@@ -5,6 +5,9 @@ import jwt from "@fastify/jwt";
 import authPlugin from './utils/auth';
 import routes from "./routes";
 import fp from "fastify-plugin";
+import cors from "@fastify/cors";
+import cookie from "@fastify/cookie";
+import type { FastifyCookieOptions } from '@fastify/cookie';
 import { startWebSocketServer } from './miniBackendPong';
 
 const app = Fastify({ logger: true });
@@ -13,6 +16,19 @@ app.register(fp(authPlugin));
 app.register(sensible);
 app.register(jwt, {
   secret: process.env.JWT_SECRET || "dev-secret",
+});
+app.register(cors, {
+	origin: "https://localhost:5173",
+	credentials: true,
+	allowedHeaders: ["Authorization", "Content-Type"],
+})
+app.register(cookie, {
+	secret: process.env.COOKIE_SIGN,
+	hook: "onRequest",
+} as FastifyCookieOptions)
+app.register(import("@fastify/rate-limit"), {
+	max: 20,
+	timeWindow: "1 minute"
 });
 
 app.register(routes);

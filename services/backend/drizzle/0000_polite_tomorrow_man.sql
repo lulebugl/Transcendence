@@ -34,7 +34,9 @@ CREATE TABLE `users` (
 	`email` text NOT NULL,
 	`avatar_url` text,
 	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
-	`updated_at` integer DEFAULT (unixepoch()) NOT NULL
+	`updated_at` integer DEFAULT (unixepoch()) NOT NULL,
+	`password_hash` text NOT NULL,
+	`refresh_token` text
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `users_username_unique` ON `users` (`username`);--> statement-breakpoint
