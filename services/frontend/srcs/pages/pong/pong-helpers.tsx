@@ -1,9 +1,9 @@
 import { Light, AbstractMesh, Color4, Color3, Vector3 } from "@babylonjs/core";
 
-export const paddleRight: number = 6;
-export const paddleLeft: number = 7;
+export const paddleRight: number = 1;
+export const paddleLeft: number = 4;
 export const table: number = 3;
-export const ball: number = 5;
+export const ball: number = 11;
 
 export function updateMeshPosition(mesh: AbstractMesh, pos: { x: number, y: number, z: number }) {
   mesh.position.set(pos.x, pos.y, pos.z);
@@ -40,14 +40,15 @@ export function setAmbientLight(led: Light, intesitiyLight: number, pos?: Vector
 }
 
 export const envHelperOpts: Partial<Record<string, unknown>> = {
-  skyboxSize: 300,
-  skyboxColor: new Color3(0.9, 0.9, 0.9),
+  //skyboxSize: 300,
+  //skyboxColor: new Color3(0.9, 0.9, 0.9),
   clearColor: new Color4(0.02, 0.02, 0.04, 1),
 
 
   enableGroundMirror: false,
   groundColor: new Color3(0, 0, 0),
   groundSize: 0,
+  createSkybox: false,
 }
 
 

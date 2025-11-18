@@ -32,6 +32,7 @@ services:
       - NODE_ENV=${NODE_ENV:-development}
       - PORT=3000
       - DB_FILE_NAME=${DB_FILE_NAME:-file:./database/app.db}
+      - MASTER_KEY_TOTP=T9CsqZJxo8+cFdD25I1mqikt+YdU4baMU4m8a0WUbEo=
     volumes:
        - ../services/backend/srcs:/app/services/backend/srcs
        - ../services/backend/database:/app/services/backend/database

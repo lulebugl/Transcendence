@@ -30,7 +30,7 @@ import {
 } from "./pong-helpers";
 import { initWebSocket, sendMessage } from "./initWebSocket";
 
-const ASSET_PATH = "/srcs/pages/pong/assets/AssetGlb/export_pongV0.2.glb";
+const ASSET_PATH = "/srcs/pages/pubblic/AssetGlb/export_pongV0.4.glb";
 const NOT_READY_INTERVAL = 1000;
 const CAMERA_LERP = 0.08;
 const LED_OFFSET = new Vector3(0, -3, 0);
@@ -102,7 +102,9 @@ export const Pong = () => {
     sceneRef.current = scene;
     scene.createDefaultEnvironment({
       ...envHelperOpts,
-      skyboxColor: new Color3(0, 0, 0),
+      //skyboxSize: 40,
+
+      //skyboxColor: new Color3(0, 0, 0),
       clearColor: new Color4(0, 0, 0, 1),
     } as any);
     scene.clearColor = new Color4(0, 0, 0, 1);
@@ -122,8 +124,8 @@ export const Pong = () => {
     camera.fov = 1.1;
     camera.minZ = 0.1;
     camera.maxZ = 2000;
-	// moving camera
-    camera.attachControl(canvas, true);
+    // moving camera
+    //camera.attachControl(canvas, true);
     cameraRef.current = camera;
 
     let disposed = false;
@@ -220,6 +222,7 @@ export const Pong = () => {
         scene
       );
       meshesRef.current = result.meshes;
+      console.log("Mesh caricati:", meshesRef.current.map((m: any) => m.name));
       const { mainLights, accentLights } = createLights(scene);
       pointLightsRef.current = accentLights;
       configureLights(mainLights, accentLights, meshesRef.current);
@@ -292,10 +295,10 @@ export const Pong = () => {
       paddlePlayerRef.current === paddleRight
         ? offsetRight.current
         : offsetLeft.current;
-    const desiredPosition = activeMesh.position.add(offset);
+    const desiredPosition = activeMesh.getAbsolutePosition().add(offset);
     const currentCamera = cameraRef.current;
     if (instant) {
-      currentCamera.position.copyFrom(desiredPosition);
+      currentCamera.position = desiredPosition;
     } else {
       Vector3.LerpToRef(
         currentCamera.position,
