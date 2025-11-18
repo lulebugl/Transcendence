@@ -1,5 +1,7 @@
+import { Link } from "react-router";
 import MainLayout from "../components/main-layout";
 import Sandbox from "../components/sandbox";
+import { ButtonLink } from "@/components/button";
 
 const Home = () => {
   return (
@@ -13,6 +15,11 @@ const Home = () => {
         >
           Drizzle Studio
         </a>
+		<div className="flex flex-row gap-4 pt-8">
+			<ButtonLink to="/test-design" variant="default" size="lg">Test Design</ButtonLink>
+			<ButtonLink to="/codex-design" variant="default" size="lg">Codex Design</ButtonLink>
+			<ButtonLink to="/gemini-design" variant="default" size="lg">Gemini Design</ButtonLink>
+		</div>
       </Sandbox>
     </MainLayout>	
   );
