@@ -17,11 +17,6 @@ import {
   TERRAIN_LIMIT_Y
 } from './ConstVarGameLogic';
 
-
-
-
-
-
 function InfoInJson(
     id = "player1",
     ballx = startBallX, bally = startBallY, ballz = startBallZ,
