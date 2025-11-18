@@ -16,6 +16,10 @@ logs:
 	@docker compose -f infra/docker-compose.yml logs -f $(filter-out $@,$(MAKECMDGOALS))
 exec:
 	@docker compose -f infra/docker-compose.yml exec $(filter-out $@,$(MAKECMDGOALS)) sh
+install:
+	npm install services/backend/
+	npm install services/frontend/
+
 clean:
 	rm -rf services/backend/dist
 	rm -rf services/frontend/dist

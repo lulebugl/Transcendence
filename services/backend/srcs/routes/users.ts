@@ -34,7 +34,7 @@ export default async function userRoutes(fastify: FastifyInstance) {
 	});
 
 	//POST - Create user
-	fastify.post("/api/users/register", 
+	fastify.post("/api/users/register",
 		{
 			schema: {
 				body: {

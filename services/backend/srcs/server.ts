@@ -5,8 +5,7 @@ import jwt from "@fastify/jwt";
 import authPlugin from './utils/auth';
 import routes from "./routes";
 import fp from "fastify-plugin";
-// @ts-ignore: No type definitions for this JS module
-import { startWebSocketServer } from './miniBackendPong.js';
+import { startWebSocketServer } from './miniBackendPong';
 
 const app = Fastify({ logger: true });
 
