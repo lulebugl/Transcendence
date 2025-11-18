@@ -1,0 +1,10 @@
+### USER
+
+- remove email handling : db, route/register /login /me , pages register & login
+- JWT enforced security
+- JWT storage security (xms protection)
+- User management routes
+- User management pages
+- Rate limiting login
+
+- Production compatibility

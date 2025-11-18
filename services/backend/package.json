@@ -13,8 +13,10 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
+    "@fastify/cookie": "^11.0.2",
+    "@fastify/cors": "^11.1.0",
     "@fastify/jwt": "^10.0.0",
-	"@fastify/cors": "^11.1.0",
+    "@fastify/rate-limit": "^10.3.0",
     "@fastify/sensible": "^6.0.3",
     "@libsql/client": "^0.15.15",
     "argon2": "^0.44.0",
@@ -22,7 +24,7 @@
     "drizzle-orm": "^0.44.6",
     "fastify": "^5.6.1",
     "sqlite3": "^5.1.7",
-	  "ws": "^8.18.0"
+    "ws": "^8.18.0"
   },
   "devDependencies": {
     "@types/node": "^20.14.10",

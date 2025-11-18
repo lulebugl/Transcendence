@@ -2,7 +2,7 @@ import ReactDOM from "react-dom/client";
 import Home from "./pages/home";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router";
 import TestSandbox from "./pages/sandbox";
-import { Test, NotFound, Pong, Login, Register } from "./pages";
+import { Test, NotFound, Pong, Login, Register, TestApi } from "./pages";
 import "./styles.css";
 
 const root = document.getElementById("root") as HTMLElement;
@@ -19,6 +19,7 @@ ReactDOM.createRoot(root).render(
       <Route path="*" element={<Navigate to="/not-found" />} />
 	  <Route path="/login" element={<Login />} />
 	  <Route path="/register" element={<Register />} />
+	  <Route path="/testApi" element={ <TestApi />} />
     </Routes>
   </Router>,
 );

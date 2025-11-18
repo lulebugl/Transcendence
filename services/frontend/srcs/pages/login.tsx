@@ -1,39 +1,24 @@
 import { useState } from "react";
-
-async function login(email: string, password: string) {
-  const response = await fetch("/api/users/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
-  });
-
-  if (!response.ok) throw new Error("Login failed");
-
-  const data = await response.json();
-  return data.token;
-}
-
+import { login } from "../api/auth";
+import { NavigateFunction, useNavigate } from "react-router";
 
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-  try {
-	setError(null);
-    const token = await login(email, password);
-    localStorage.setItem("token", token);
-	setSuccess(true);
-	console.log("Logged in!", token);
-  } catch (err: any) {
-	setError(err.message);
-    console.error(err);
-  }
+	try {
+		setError(null);
+		await login(email, password);
+		let navigate: NavigateFunction = useNavigate();
+		navigate("/");
+	} catch (err: any) {
+		setError(err.message);
+	}
   };
 
   return (
@@ -45,11 +30,6 @@ export default function LoginPage() {
         <h2 className="text-2xl font-semibold text-center">Login</h2>
 
 		{error && <p className="text-red-600 text-sm">{error}</p>}
-        {success && (
-          <p className="text-green-600 text-sm">
-            Loged in !
-          </p>
-        )}
 
         <input
           type="email"

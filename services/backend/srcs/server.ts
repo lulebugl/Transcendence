@@ -6,6 +6,8 @@ import authPlugin from './utils/auth';
 import routes from "./routes";
 import fp from "fastify-plugin";
 import cors from "@fastify/cors";
+import cookie from "@fastify/cookie";
+import type { FastifyCookieOptions } from '@fastify/cookie';
 // @ts-ignore: No type definitions for this JS module
 import { startWebSocketServer } from './miniBackendPong.js';
 
@@ -17,9 +19,19 @@ app.register(jwt, {
   secret: process.env.JWT_SECRET || "dev-secret",
 });
 app.register(cors, {
-	origin: "http://localhost:5173",
+	origin: "https://localhost:5173",
 	credentials: true,
+	allowedHeaders: ["Authorization", "Content-Type"],
 })
+app.register(cookie, {
+	secret: process.env.COOKIE_SIGN,
+	hook: "onRequest",
+} as FastifyCookieOptions)
+app.register(import("@fastify/rate-limit"), {
+	max: 20,
+	timeWindow: "1 minute"
+});
+
 app.register(routes);
 
 // setup server
