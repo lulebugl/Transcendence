@@ -84,8 +84,8 @@ export const Pong = () => {
   const shadowGenRef = useRef<ShadowGenerator | null>(null);
   const lastNotReadyRef = useRef<number>(0);
 
-  const offsetLeft = useRef(new Vector3(0, 8, -13));
-  const offsetRight = useRef(new Vector3(0, 8, 13));
+  const offsetLeft = useRef(new Vector3(0, 10, -13)); //Bianco
+  const offsetRight = useRef(new Vector3(0, 10, 13)); // Viola
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -226,7 +226,7 @@ export const Pong = () => {
       }
 
       maybeSendNotReady();
-      followActivePlayer();
+      //followActivePlayer();
 
       scene.render();
     };
@@ -299,7 +299,7 @@ export const Pong = () => {
     } else if (player === 2) {
       paddlePlayerRef.current = paddleLeft;
     }
-    moveCameraToPlayer(true);
+    moveCameraToPlayer();
   };
 
   const applyStateUpdate = (message: UpdateMessage) => {
@@ -337,11 +337,7 @@ export const Pong = () => {
   };
 
   const moveCameraToPlayer = (instant: boolean = false) => {
-    if (
-      paddlePlayerRef.current === -1 ||
-      !cameraRef.current ||
-      meshesRef.current.length === 0
-    ) {
+    if (paddlePlayerRef.current === -1 || !cameraRef.current || meshesRef.current.length === 0) {
       return;
     }
     const activeMesh = meshesRef.current[paddlePlayerRef.current];
@@ -354,33 +350,9 @@ export const Pong = () => {
         : offsetLeft.current;
     const desiredPosition = activeMesh.getAbsolutePosition().add(offset);
     const currentCamera = cameraRef.current;
-    if (instant) {
-      currentCamera.position = desiredPosition;
-    } else {
-      Vector3.LerpToRef(
-        currentCamera.position,
-        desiredPosition,
-        CAMERA_LERP,
-        currentCamera.position
-      );
-    }
-
-    const targetMesh = meshesRef.current[table] ?? meshesRef.current[0];
-    if (targetMesh) {
-      const desiredTarget =
-        (targetMesh.getAbsolutePosition && targetMesh.getAbsolutePosition()) ||
-        targetMesh.position;
-      if (instant) {
-        currentCamera.target.copyFrom(desiredTarget);
-      } else {
-        Vector3.LerpToRef(
-          currentCamera.target,
-          desiredTarget,
-          CAMERA_LERP,
-          currentCamera.target
-        );
-      }
-    }
+    const targetMesh = meshesRef.current[0];
+    currentCamera.position = desiredPosition;
+    currentCamera.targetMesh = targetMesh;
   };
 
   const maybeSendNotReady = () => {
