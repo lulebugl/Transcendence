@@ -1,5 +1,10 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
+import * as GUI from '@babylonjs/gui';
 import {
+  StandardMaterial,
+  HDRCubeTexture,
+  CubeTexture,
+  MeshBuilder,
   AbstractMesh,
   ArcRotateCamera,
   Color3,
@@ -29,8 +34,11 @@ import {
   updateMeshPosition,
 } from "./pong-helpers";
 import { initWebSocket, sendMessage } from "./initWebSocket";
+import { createPointBar, createExitGame, addText, updatePoint } from "./pongUI";
+import { padelLeft } from "./helpersBaby";
 
-const ASSET_PATH = "/srcs/pages/pong/assets/AssetGlb/export_pongV0.2.glb";
+const ASSET_PATH = "/srcs/pages/pong/assets/AssetGlb/export_pongV0.5.glb";
+const ASSET_PATH_HDRI = "/srcs/pages/pong/assets/AssetGlb/hdriV0.1.hdr";
 const NOT_READY_INTERVAL = 1000;
 const CAMERA_LERP = 0.08;
 const LED_OFFSET = new Vector3(0, -3, 0);
@@ -100,10 +108,26 @@ export const Pong = () => {
 
     const scene = new Scene(engine);
     sceneRef.current = scene;
+    const hdrReflectionTexture = new HDRCubeTexture(ASSET_PATH_HDRI, scene, 128, false, true, false, true);
+    const skyboxTexture = CubeTexture.CreateFromPrefilteredData(
+      ASSET_PATH_HDRI,
+      scene
+    );
+    const skybox = MeshBuilder.CreateBox("skyBox", { size: 2000 }, scene);
+
+    const skyboxMaterial = new StandardMaterial("skyBoxMat", scene);
+    skyboxMaterial.reflectionTexture = skyboxTexture;
+    skyboxMaterial.backFaceCulling = false;
+    skyboxMaterial.disableLighting = true;
+
+    skybox.material = skyboxMaterial;
+
+
     scene.createDefaultEnvironment({
       ...envHelperOpts,
       skyboxColor: new Color3(0, 0, 0),
       clearColor: new Color4(0, 0, 0, 1),
+      environmentTexture: hdrReflectionTexture,
     } as any);
     scene.clearColor = new Color4(0, 0, 0, 1);
     configureImageProcessing(scene.imageProcessingConfiguration);
@@ -122,8 +146,8 @@ export const Pong = () => {
     camera.fov = 1.1;
     camera.minZ = 0.1;
     camera.maxZ = 2000;
-	// moving camera
-    camera.attachControl(canvas, true);
+    // moving camera
+    //camera.attachControl(canvas, true);
     cameraRef.current = camera;
 
     let disposed = false;
@@ -134,7 +158,15 @@ export const Pong = () => {
         freezeStaticMeshes(meshesRef.current);
       }
     });
-
+    const uiGame = GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+    const barPointRight = createPointBar("100px", "60px", "pink", "black", 75, 0);
+    const barPointLeft = createPointBar("100px", "60px", "white", "black", -75, 0);
+    const pintTextRight = addText(barPointRight, "white", 35);
+    const pintTextLeft = addText(barPointLeft, "white", 35);
+    const exit = createExitGame();
+    uiGame.addControl(barPointRight);
+    uiGame.addControl(barPointLeft);
+    uiGame.addControl(exit);
     const handleKeyDown = (event: KeyboardEvent) => {
       if (
         !sceneReadyRef.current ||
@@ -157,6 +189,21 @@ export const Pong = () => {
         websocketRef.current.send(JSON.stringify(clientMessage));
       }
     };
+    exit.onPointerUpObservable.add(() => {
+      let message: string;
+      if (paddlePlayerRef.current === padelLeft) {
+        message = "paddelLeft";
+      }
+      else {
+        message = "paddelRight";
+      }
+      cleanupGame();
+      sendMessage({ type: "leave", text: message }, websocketRef.current);
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("resize", handleResize);
+      window.location.href = "/";
+    });
+
 
     const handleResize = () => {
       engine.resize();
@@ -171,6 +218,8 @@ export const Pong = () => {
       if (backendMessage) {
         if (isUpdateMessage(backendMessage)) {
           applyStateUpdate(backendMessage);
+          updatePoint(pintTextLeft, backendMessage.state.paddleLeft.point);
+          updatePoint(pintTextRight, backendMessage.state.paddleRight.point);
         } else if (isStartMessage(backendMessage)) {
           configurePlayerCamera(backendMessage.player);
         }
@@ -188,31 +237,41 @@ export const Pong = () => {
 
     return () => {
       disposed = true;
-      engine.stopRenderLoop(renderLoop);
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("resize", handleResize);
-
-      if (shadowGenRef.current) {
-        shadowGenRef.current.dispose();
-        shadowGenRef.current = null;
-      }
-      if (sceneRef.current) {
-        sceneRef.current.dispose();
-        sceneRef.current = null;
-      }
-      if (engineRef.current) {
-        engineRef.current.dispose();
-        engineRef.current = null;
-      }
-      if (
-        websocketRef.current &&
-        websocketRef.current.readyState === WebSocket.OPEN
-      ) {
-        websocketRef.current.close();
-      }
+      cleanupGame();
     };
   }, []);
+  const cleanupGame = () => {
+    if (engineRef.current) {
+      engineRef.current.stopRenderLoop();
+    }
 
+
+    if (shadowGenRef.current) {
+      shadowGenRef.current.dispose();
+      shadowGenRef.current = null;
+    }
+    if (sceneRef.current) {
+      sceneRef.current.dispose();
+      sceneRef.current = null;
+    }
+    if (engineRef.current) {
+      engineRef.current.dispose();
+      engineRef.current = null;
+    }
+    if (
+      websocketRef.current &&
+      websocketRef.current.readyState === WebSocket.OPEN
+    ) {
+      websocketRef.current.close();
+    }
+
+    // rimuovi canvas se creato manualmente
+    if (canvasRef.current) {
+      canvasRef.current.remove();
+    }
+  };
   const loadAssets = async (scene: Scene) => {
     try {
       const result = await ImportMeshAsync(
@@ -220,6 +279,7 @@ export const Pong = () => {
         scene
       );
       meshesRef.current = result.meshes;
+      console.log("Mesh caricati:", result.meshes.map((m: any) => m.name));
       const { mainLights, accentLights } = createLights(scene);
       pointLightsRef.current = accentLights;
       configureLights(mainLights, accentLights, meshesRef.current);
@@ -292,10 +352,10 @@ export const Pong = () => {
       paddlePlayerRef.current === paddleRight
         ? offsetRight.current
         : offsetLeft.current;
-    const desiredPosition = activeMesh.position.add(offset);
+    const desiredPosition = activeMesh.getAbsolutePosition().add(offset);
     const currentCamera = cameraRef.current;
     if (instant) {
-      currentCamera.position.copyFrom(desiredPosition);
+      currentCamera.position = desiredPosition;
     } else {
       Vector3.LerpToRef(
         currentCamera.position,
