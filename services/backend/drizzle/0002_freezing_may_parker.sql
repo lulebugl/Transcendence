@@ -1,1 +1,0 @@
-ALTER TABLE `users` ADD `secret_key` text;
