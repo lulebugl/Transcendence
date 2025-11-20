@@ -9,6 +9,7 @@ import cors from "@fastify/cors";
 import cookie from "@fastify/cookie";
 import type { FastifyCookieOptions } from '@fastify/cookie';
 import { startWebSocketServer } from './miniBackendPong';
+import rateLimit from "@fastify/rate-limit";
 
 const app = Fastify({ logger: true });
 
@@ -18,7 +19,9 @@ app.register(jwt, {
   secret: process.env.JWT_SECRET || "dev-secret",
 });
 app.register(cors, {
-	origin: "https://localhost:5173",
+	// this is the frontend url for dev not prod so maybe check later
+	// also maybe make the url dynamic from the env
+	origin: ["https://localhost:5173", "https://localhost:8443"],
 	credentials: true,
 	allowedHeaders: ["Authorization", "Content-Type"],
 })
@@ -26,10 +29,14 @@ app.register(cookie, {
 	secret: process.env.COOKIE_SIGN,
 	hook: "onRequest",
 } as FastifyCookieOptions)
-app.register(import("@fastify/rate-limit"), {
-	max: 20,
-	timeWindow: "1 minute"
-});
+
+if (process.env.NODE_ENV !== "development") {
+	// maybe 20 is too little, not sure
+	app.register(rateLimit, {
+		max: 20,
+		timeWindow: "1 minute"
+	})
+}
 
 app.register(routes);
 

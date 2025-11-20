@@ -13,7 +13,14 @@ export default defineConfig({
   },
   server: {
     host: true,
-    port: 5173
+    port: 5173,
+	proxy: {
+		'/api': {
+		  target: 'https://localhost:8443',
+		  changeOrigin: true,
+		  secure: false, // Allow self-signed certs if using https locally
+		}
+	  }
   },
   build: {
     outDir: 'dist',

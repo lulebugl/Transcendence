@@ -1,0 +1,6 @@
+- [ ] check how the auth flow work in details:
+	- in the AuthContext if the cookie become stale does it protect it? 
+		(it should on refresh but not sure)
+	- is some sort of cache used and how does it work?
+- [ ] create the dev hub and make it only available in dev env
+- [ ] add skeletons, at least to display some form of page loads

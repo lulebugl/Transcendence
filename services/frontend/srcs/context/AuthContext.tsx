@@ -33,6 +33,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const refreshUser = useCallback(async () => {
     try {
+	  console.log("refreshing user");
       const res = await api("/api/users/me");
       if (res.ok) {
         const data = await res.json();
@@ -47,6 +48,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = useCallback(async(email: string, pass: string) => {
+	console.log("logging in");
 	await apiLogin(email, pass);
 	await refreshUser();
   }, [refreshUser]); 

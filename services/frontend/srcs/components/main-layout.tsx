@@ -1,24 +1,40 @@
 import { Link } from "react-router";
 import { LogIn, LogOut } from "lucide-react";
 import { CURRENT_USER } from "@/lib/mock-data";
+import { useNavigate } from "react-router";
+import { useAuth } from "@/context/AuthContext";
 
 const Navbar = () => {
-  const isLoggedIn = true;
-  const user = CURRENT_USER;
+  let isLoggedIn = false;
+  // mock data for now
+//   const user = null;
+  const { user } = useAuth();
 
+  if (!user) {
+	isLoggedIn = false;
+ } else {
+	isLoggedIn = true;
+ }
+
+  const navigate = useNavigate();
+  
   const toggleAuth = () => {
-    console.log("toggleAuth");
+	navigate("/auth/login");
   };
 
   const navItems = [
     { label: "Overview", path: "/" },
     { label: "Play", path: "/game" },
     { label: "Tournaments", path: "/tournaments" },
-    { label: "Dev-Hub", path: "/devhub" },
   ];
 
+  // @ts-ignore: Vite injects the env at runtime
+  if (import.meta.env.DEV) {
+    navItems.push({ label: "Dev-Hub", path: "/dev-hub" });
+  }
+  
   return (
-    <div className="min-h-screen w-full bg-background text-foreground flex flex-col">
+    <>
       <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-background/80 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           {/* Logo */}
@@ -113,7 +129,7 @@ const Navbar = () => {
           </div>
         </div>
       </header>
-    </div>
+    </>
   );
 };
 

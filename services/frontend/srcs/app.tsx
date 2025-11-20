@@ -1,16 +1,20 @@
 import ReactDOM from "react-dom/client";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router";
 import TestSandbox from "./pages/sandbox";
-import { Home, Test, NotFound, Pong, Login, Register, TestApi } from "./pages";
+import { Home, Test, NotFound, Pong, TestApi } from "./pages";
 import "./styles.css";
 import { AuthProvider } from "./context/AuthContext";
 
-// INSPIRATION PAGES, will be deleted later
+// DESIGN INSPIRATION PAGES, will be deleted later
 import InspirationHome from "./pages/inspiration/inspiration";
 import CodexDesign from "./pages/inspiration/codex-design";
 import GeminiDesign from "./pages/inspiration/gemini-design";
 import TestDesign from "./pages/inspiration/test-design";
-
+import DevHub from "./pages/dev-hub";
+import Signup from "@/pages/auth/SignUp";
+import LoginPage from "@/pages/auth/Login";
+import Login from "@/pages/login";
+import Register from "@/pages/register";
 
 const root = document.getElementById("root") as HTMLElement;
 if (!root) {
@@ -26,14 +30,17 @@ ReactDOM.createRoot(root).render(
         <Route path="/" element={<Home />} />
         <Route path="/sandbox" element={<TestSandbox />} />
         <Route path="/test" element={<Test />} />
-        <Route path="/pong" element={<Pong />} />
+        {/* <Route path="/pong" element={<Pong />} /> */}
 
         {/* AUTH PAGES */}
+        <Route path="/auth/login" element={<LoginPage />} />
+        <Route path="/auth/signup" element={<Signup />} />
+
         <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route path="/signup" element={<Register />} />
         <Route path="/testApi" element={<TestApi />} />
 
-        {/* INSPIRATION PAGES */}
+        {/* DESIGN INSPIRATION PAGES */}
         <Route path="/inspiration">
           <Route index element={<InspirationHome />} />
           <Route path="codex-design" element={<CodexDesign />} />
@@ -41,9 +48,12 @@ ReactDOM.createRoot(root).render(
           <Route path="test-design" element={<TestDesign />} />
         </Route>
 
+        {/* DEV HUB PAGE */}
+        <Route path="/dev-hub" element={<DevHub />} />
+
         {/* NOT FOUND PAGE */}
-        <Route path="/not-found" element={<NotFound />} />
-        <Route path="*" element={<Navigate to="/not-found" />} />
+        {/* <Route path="/not-found" element={<NotFound />} /> */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
   </AuthProvider>

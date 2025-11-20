@@ -1,8 +1,9 @@
-node_modules
+node_modules/
 dist
 .env
 *.log
 *.log.*
 coverage
 .DS_Store
-.cursor
+.cursor/
+.vscode/

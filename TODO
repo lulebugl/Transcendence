@@ -6,5 +6,10 @@
 - User management routes
 - User management pages
 - Rate limiting login
+- Rate limiting is a bit too much for dev? (20 should be good but i encountered it very fast 😄)
 
 - Production compatibility
+
+- [ ] changing db "path" for env and prod
+	- [ ] in dev rm the db in build and look for a way to seed it
+	- [ ] this should prevent a lot of issues
