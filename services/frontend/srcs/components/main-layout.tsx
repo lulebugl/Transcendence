@@ -5,21 +5,13 @@ import { useNavigate } from "react-router";
 import { useAuth } from "@/context/AuthContext";
 
 const Navbar = () => {
-  let isLoggedIn = false;
-  // mock data for now
-//   const user = null;
+  // mock data
+  //   const user = CURRENT_USER;
   const { user } = useAuth();
-
-  if (!user) {
-	isLoggedIn = false;
- } else {
-	isLoggedIn = true;
- }
-
   const navigate = useNavigate();
-  
+
   const toggleAuth = () => {
-	navigate("/auth/login");
+    navigate("/auth/login");
   };
 
   const navItems = [
@@ -32,7 +24,7 @@ const Navbar = () => {
   if (import.meta.env.DEV) {
     navItems.push({ label: "Dev-Hub", path: "/dev-hub" });
   }
-  
+
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-background/80 backdrop-blur-xl">
@@ -55,6 +47,7 @@ const Navbar = () => {
               </span>
             </Link>
           </div>
+
           {/* Center Nav */}
           <nav className="hidden md:flex items-center gap-12">
             {navItems.map((item) => {
@@ -76,26 +69,25 @@ const Navbar = () => {
           </nav>
 
           {/* User Profile */}
-
           <div className="relative flex items-center gap-4">
             <div className="flex flex-col items-end text-right">
               <span
                 className={`text-sm font-medium font-mono ${
-                  isLoggedIn ? "" : "text-muted-foreground"
+                  user ? "" : "text-muted-foreground"
                 }`}
               >
-                {isLoggedIn && user ? user.username : "GUEST_PILOT"}
+                {user ? user.username : "GUEST_PILOT"}
               </span>
               <span
                 className={`text-[10px] uppercase tracking-wider ${
-                  isLoggedIn ? "text-primary" : "text-muted-foreground/80"
+                  user ? "text-primary" : "text-muted-foreground/80"
                 }`}
               >
-                {isLoggedIn && user ? `Lv.${user.level}` : "// UNAUTHORIZED"}
+                {user ? `Lv.42` : "// UNAUTHORIZED"}
               </span>
             </div>
             <div className="flex items-center gap-3">
-              {isLoggedIn && user ? (
+              {user ? (
                 <div className="relative group cursor-pointer">
                   <img
                     src={user.avatar}
@@ -109,11 +101,12 @@ const Navbar = () => {
                   AI
                 </div>
               )}
-              <button
-                onClick={toggleAuth}
+              <Link
+                // to={user ? "/auth/logout" : "/auth/login"}
+                to="#"
                 className="text-[10px] uppercase tracking-widest px-4 py-2 border border-white/10 rounded-full hover:bg-white/10 transition-all duration-300 flex items-center gap-2"
               >
-                {isLoggedIn ? (
+                {user ? (
                   <>
                     <LogOut className="w-3 h-3" />
                     Logout
@@ -124,7 +117,7 @@ const Navbar = () => {
                     Demo Login
                   </>
                 )}
-              </button>
+              </Link>
             </div>
           </div>
         </div>
