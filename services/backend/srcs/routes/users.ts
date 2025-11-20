@@ -37,34 +37,58 @@ export default async function userRoutes(fastify: FastifyInstance) {
   );
 
   //POST - Create user
-  fastify.post(
-    "/api/users/register",
-    {
-      schema: {
-        body: {
-          type: "object",
-          required: ["username", "email"],
-          properties: {
-            username: { type: "string" },
-            email: { type: "string", format: "email" },
-            avatarUrl: { type: "string" },
-            password: { type: "string" },
-          },
-        },
-      },
-    },
-    async (req: FastifyRequest<{ Body: UserBody }>) => {
-      const { username, email, avatarUrl, password } = req.body;
+  fastify.post("/api/users/register", 
+	{
+		schema: {
+			body: {
+				type: "object",
+				required: ["username", "email"],
+				properties: {
+					username: { type: "string" },
+					email: { type: "string", format: "email" },
+					avatarUrl: { type: "string" },
+					password: { type: "string" },
+				},
+			},
+		},
+	},
+	async (req: FastifyRequest<{ Body: UserBody }>) => {
+		const { username, email, avatarUrl, password } = req.body;
+		
+		// Minimal checks
+		if (!username.trim() || !email.trim() || !password.trim()) {
+			return fastify.httpErrors.badRequest("Fields cannot be empty.");
+		}
+		if (password.length < 8) {
+			return fastify.httpErrors.badRequest("Password must be at least 8 characters.");
+		}
+		
+		const normalizedEmail = email.trim().toLowerCase();
+		
+		// Test for uniqueness of email and username
+		const existing = await db.select().from(users).where(
+			or(eq(users.email, normalizedEmail), eq(users.username, username))
+		);
+		
+		if (existing.length > 0) {
+			return fastify.httpErrors.conflict("Email or username already in use.");
+		}
+		
+		const password_hash = await hashPassword(password);
 
-      // Minimal checks
-      if (!username.trim() || !email.trim() || !password.trim()) {
-        return fastify.httpErrors.badRequest("Fields cannot be empty.");
-      }
-      if (password.length < 8) {
-        return fastify.httpErrors.badRequest(
-          "Password must be at least 8 characters."
-        );
-      }
+		try {
+			await db.insert(users).values({ 
+				username: username,
+				email: normalizedEmail, 
+				avatar_url: avatarUrl,
+				password_hash: password_hash,
+			});
+			return { success: true };
+		} catch (err) {
+			fastify.log.error(err);
+			return fastify.httpErrors.badRequest("Failed to create user.");
+		}
+	});
 
 	// POST - Login
 	fastify.post("/api/users/login",
@@ -151,5 +175,4 @@ export default async function userRoutes(fastify: FastifyInstance) {
 			return { user: req.user };
 		}
 	);
-  });
 }
