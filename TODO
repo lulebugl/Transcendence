@@ -13,3 +13,5 @@
 - [ ] changing db "path" for env and prod
 	- [ ] in dev rm the db in build and look for a way to seed it
 	- [ ] this should prevent a lot of issues
+
+- Production compatibility

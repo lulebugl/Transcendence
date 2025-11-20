@@ -66,154 +66,89 @@ export default async function userRoutes(fastify: FastifyInstance) {
         );
       }
 
-      const normalizedEmail = email.trim().toLowerCase();
+	// POST - Login
+	fastify.post("/api/users/login",
+		{
+			config: { rateLimit: { max: 5, timeWindow: "1 minute"} },
+			schema: {
+				body: {
+					type: "object",
+					required: ["email", "password"],
+					properties: {
+						email: { type: "string", format: "email" },
+						password: { type: "string" },
+					},
+				},
+			},
+		},
+		async (req: FastifyRequest<{ Body:loginBody }>, reply: FastifyReply) => {
+			const { email, password } = req.body;
+			const normalizedEmail: string = email.trim().toLowerCase();
 
-      // Test for uniqueness of email and username
-      const existing = await db
-        .select()
-        .from(users)
-        .where(
-          or(eq(users.email, normalizedEmail), eq(users.username, username))
-        );
+			const [user] = await db.select().from(users).where(eq(users.email, normalizedEmail));
+			if (!user) return reply.unauthorized("Invalid credentials");
 
-      if (existing.length > 0) {
-        return fastify.httpErrors.conflict("Email or username already in use.");
-      }
+			const match: boolean = await verifyPassword(password, user.password_hash);
+			if (!match) return reply.unauthorized("Invalid credentials");
 
-      const password_hash = await hashPassword(password);
+			const accessToken: string = fastify.jwt.sign(
+				{ id: user.id, username: user.username, email: user.email }, 
+				{ expiresIn: "15m" }
+			);
 
-      try {
-        await db.insert(users).values({
-          username: username,
-          email: normalizedEmail,
-          avatar_url: avatarUrl,
-          password_hash: password_hash,
-        });
-        return { success: true };
-      } catch (err) {
-        fastify.log.error(err);
-        return fastify.httpErrors.badRequest("Failed to create user.");
-      }
-    }
-  );
+			const refreshToken: string = randomBytes(64).toString("hex");
 
-  // POST - Login
-  fastify.post(
-    "/api/users/login",
-    {
-      config: { rateLimit: { max: 5, timeWindow: "1 minute" } },
-      schema: {
-        body: {
-          type: "object",
-          required: ["email", "password"],
-          properties: {
-            email: { type: "string", format: "email" },
-            password: { type: "string" },
-          },
-        },
-      },
-    },
-    async (req: FastifyRequest<{ Body: loginBody }>, reply: FastifyReply) => {
-      const { email, password } = req.body;
-      const normalizedEmail: string = email.trim().toLowerCase();
+			await db.update(users).set({ refresh_token: refreshToken }).where(eq(users.id, user.id));
 
-      const [user] = await db
-        .select()
-        .from(users)
-        .where(eq(users.email, normalizedEmail));
-      if (!user) return reply.unauthorized("Invalid credentials");
+			reply.setCookie("refreshToken", refreshToken, {
+				httpOnly: true,
+				secure: true,
+				sameSite: "strict",
+				path: "/api/users/refresh",
+				maxAge: 60 * 60 * 24 * 30,
+			});
 
-      const match: boolean = await verifyPassword(password, user.password_hash);
-      if (!match) return reply.unauthorized("Invalid credentials");
+			return { token: accessToken };
+		}
+	);
 
-      const accessToken: string = fastify.jwt.sign(
-        { id: user.id, username: user.username, email: user.email },
-        { expiresIn: "15m" }
-      );
+	// POST - refresh JWT token
+	fastify.post("/api/users/refresh", async (req: FastifyRequest, reply: FastifyReply) => {
+		try {
+			const refreshToken = req.cookies?.refreshToken;
+			if (!refreshToken) return reply.badRequest("Missing refresh token");
+			
+			const [user] = await db.select().from(users).where(eq(users.refresh_token, refreshToken));
+			if (!user) return reply.unauthorized("Invalid refresh token");
+	
+			const newAccesstoken = fastify.jwt.sign(
+				{ id: user.id, username: user.username, email: user.email }, 
+				{ expiresIn: "15m" }
+			);
+	
+			const newRefreshToken = randomBytes(64).toString("hex");
+			await db.update(users).set({ refresh_token: newRefreshToken }).where(eq(users.id, user.id));
+			
+			reply.setCookie("refreshToken", newRefreshToken, {
+				httpOnly: true,
+				secure: true,
+				sameSite: "strict",
+				path: "/api/users/refresh",
+				maxAge: 60 * 60 * 24 * 30,
+			});
+	
+			return { token: newAccesstoken };
+		} catch (err) {
+			return reply.unauthorized("Invalid or expired refresh token");
+		}
+	});
 
-      const refreshToken: string = randomBytes(64).toString("hex");
-
-      await db
-        .update(users)
-        .set({ refresh_token: refreshToken })
-        .where(eq(users.id, user.id));
-
-      reply.setCookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "strict",
-        path: "/api/users/refresh",
-        maxAge: 60 * 60 * 24 * 30,
-      });
-
-      return { token: accessToken };
-    }
-  );
-
-// POST - refresh JWT token
-  fastify.post(
-    "/api/users/refresh",
-    async (req: FastifyRequest, reply: FastifyReply) => {
-      try {
-        const refreshToken = req.cookies?.refreshToken;
-        if (!refreshToken) return reply.badRequest("Missing refresh token");
-
-        const [user] = await db
-          .select()
-          .from(users)
-          .where(eq(users.refresh_token, refreshToken));
-        if (!user) return reply.unauthorized("Invalid refresh token");
-
-        const newAccesstoken = fastify.jwt.sign(
-          { id: user.id, username: user.username, email: user.email },
-          { expiresIn: "15m" }
-        );
-
-        const newRefreshToken = randomBytes(64).toString("hex");
-        await db
-          .update(users)
-          .set({ refresh_token: newRefreshToken })
-          .where(eq(users.id, user.id));
-
-        reply.setCookie("refreshToken", newRefreshToken, {
-          httpOnly: true,
-          secure: true,
-          sameSite: "strict",
-          path: "/api/users/refresh",
-          maxAge: 60 * 60 * 24 * 30,
-        });
-
-        return { token: newAccesstoken };
-      } catch (err) {
-        return reply.unauthorized("Invalid or expired refresh token");
-      }
-    }
-  );
-
-  // POST - Logout
-  fastify.post(
-    "/api/users/logout",
-    async (req: FastifyRequest, reply: FastifyReply) => {
-      const refreshToken = req.cookies?.refreshToken;
-      if (refreshToken) {
-        // Optional: Remove from DB to invalidate immediately
-        await db
-          .update(users)
-          .set({ refresh_token: null })
-          .where(eq(users.refresh_token, refreshToken));
-      }
-
-      reply.clearCookie("refreshToken", { path: "/api/users/refresh" });
-      return { success: true };
-    }
-  );
-
-  // GET - Retrieve current user
-  fastify.get(
-    "/api/users/me",
-    { preHandler: fastify.auth },
-    async (req: FastifyRequest) => {
-      return { user: req.user };
-    }
-  );
+	// GET - Retrieve current user
+	fastify.get(
+		"/api/users/me",
+		{ preHandler: fastify.auth },
+		async (req: FastifyRequest) => {
+			return { user: req.user };
+		}
+	);
 }
