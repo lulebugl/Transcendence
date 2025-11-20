@@ -30,7 +30,7 @@ ReactDOM.createRoot(root).render(
         <Route path="/" element={<Home />} />
         <Route path="/sandbox" element={<TestSandbox />} />
         <Route path="/test" element={<Test />} />
-        {/* <Route path="/pong" element={<Pong />} /> */}
+        <Route path="/pong" element={<Pong />} />
 
         {/* AUTH PAGES */}
         <Route path="/auth/login" element={<LoginPage />} />

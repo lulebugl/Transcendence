@@ -151,4 +151,5 @@ export default async function userRoutes(fastify: FastifyInstance) {
 			return { user: req.user };
 		}
 	);
+  });
 }

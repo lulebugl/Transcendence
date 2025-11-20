@@ -19,7 +19,9 @@ exec:
 install:
 	npm install services/backend/
 	npm install services/frontend/
-
+prune-db:
+	rm -rf services/backend/database/app.db
+	rm -rf services/backend/drizzle/*
 clean:
 	rm -rf services/backend/dist
 	rm -rf services/frontend/dist
@@ -34,6 +36,7 @@ prune:
 hard-reset:
 	make down
 	make prune
+	make prune-db
 	make clean
 	rm -rf node_modules
 	rm -rf services/backend/node_modules
