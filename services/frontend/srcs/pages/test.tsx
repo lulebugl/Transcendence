@@ -1,5 +1,5 @@
 import Sandbox from "../components/sandbox";
-import MainLayout from "../components/main-layout";
+import MainLayout from "../components/old-layout";
 
 export default function Test() {
   return (

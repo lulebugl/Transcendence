@@ -1,31 +1,50 @@
 import ReactDOM from "react-dom/client";
-import Home from "./pages/home";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router";
 import TestSandbox from "./pages/sandbox";
-import { Test, NotFound, Pong, Login, Register, TestApi } from "./pages";
-import CodexDesign from "./pages/codex-design";
-import GeminiDesign from "./pages/gemini-design";
+import { Home, Test, NotFound, Pong, Login, Register, TestApi } from "./pages";
 import "./styles.css";
-import TestDesign from "./pages/test-design";
+import { AuthProvider } from "./context/AuthContext";
+
+// INSPIRATION PAGES, will be deleted later
+import InspirationHome from "./pages/inspiration/inspiration";
+import CodexDesign from "./pages/inspiration/codex-design";
+import GeminiDesign from "./pages/inspiration/gemini-design";
+import TestDesign from "./pages/inspiration/test-design";
+
 
 const root = document.getElementById("root") as HTMLElement;
+if (!root) {
+  throw new Error(
+    "Root element not found. Make sure <main id='root'> exists in index.html"
+  );
+}
 
 ReactDOM.createRoot(root).render(
-  <Router>	
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/sandbox" element={<TestSandbox />} />
-      <Route path="/test" element={<Test />} />
-      <Route path="/pong" element={<Pong />} />
-	  <Route path="/codex-design" element={<CodexDesign />} />
-	  <Route path="/gemini-design" element={<GeminiDesign />} />
-	  <Route path="/test-design" element={<TestDesign />} />	
-      {/* <Route path="/game" element={<Game />} /> */}
-	  <Route path="/not-found" element={<NotFound />} />
-	  <Route path="/login" element={<Login />} />
-	  <Route path="/register" element={<Register />} />
-	  <Route path="/testApi" element={ <TestApi />} />
-      <Route path="*" element={<Navigate to="/not-found" />} />
-    </Routes>
-  </Router>,
+  <AuthProvider>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/sandbox" element={<TestSandbox />} />
+        <Route path="/test" element={<Test />} />
+        <Route path="/pong" element={<Pong />} />
+
+        {/* AUTH PAGES */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/testApi" element={<TestApi />} />
+
+        {/* INSPIRATION PAGES */}
+        <Route path="/inspiration">
+          <Route index element={<InspirationHome />} />
+          <Route path="codex-design" element={<CodexDesign />} />
+          <Route path="gemini-design" element={<GeminiDesign />} />
+          <Route path="test-design" element={<TestDesign />} />
+        </Route>
+
+        {/* NOT FOUND PAGE */}
+        <Route path="/not-found" element={<NotFound />} />
+        <Route path="*" element={<Navigate to="/not-found" />} />
+      </Routes>
+    </Router>
+  </AuthProvider>
 );

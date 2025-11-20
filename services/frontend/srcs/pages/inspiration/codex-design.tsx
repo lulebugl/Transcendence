@@ -1,4 +1,4 @@
-import MainLayout from "@/components/main-layout";
+import MainLayout from "@/components/old-layout";
 import {
   Activity,
   Flame,

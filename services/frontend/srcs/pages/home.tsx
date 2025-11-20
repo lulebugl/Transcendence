@@ -1,12 +1,9 @@
-import { Link } from "react-router";
-import MainLayout from "../components/main-layout";
-import Sandbox from "../components/sandbox";
-import { ButtonLink } from "@/components/button";
+import { MainLayout } from "@/components/main-layout";
 
 const Home = () => {
+//   console.log(import.meta.env.DEV);
   return (
     <MainLayout>
-      <Sandbox>
         <h1 className="text-3xl font-bold">Welcome to Transcendence</h1>
         <p className="text-gray-600 mt-2">Your 3D Pong game awaits!</p>
         <a
@@ -15,12 +12,6 @@ const Home = () => {
         >
           Drizzle Studio
         </a>
-		<div className="flex flex-row gap-4 pt-8">
-			<ButtonLink to="/test-design" variant="default" size="lg">Test Design</ButtonLink>
-			<ButtonLink to="/codex-design" variant="default" size="lg">Codex Design</ButtonLink>
-			<ButtonLink to="/gemini-design" variant="default" size="lg">Gemini Design</ButtonLink>
-		</div>
-      </Sandbox>
     </MainLayout>	
   );
 };
