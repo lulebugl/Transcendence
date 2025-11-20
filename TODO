@@ -6,5 +6,7 @@
 - User management routes
 - User management pages
 - Rate limiting login
+- Use jwt for refresh token
+- default user picture
 
 - Production compatibility

@@ -28,7 +28,7 @@ export async function api(path: string, options: RequestInit = {}): Promise<Resp
 		const retryHeaders: Record<string, string> = {
 			"Content-Type": "application/json",
 			...(options.headers as Record<string, string> || {}),
-			"Authorisation": `Bearer ${token}`,
+			"Authorization": `Bearer ${getAccessToken()}`,
 		};
 
 		response = await fetch(path, { 

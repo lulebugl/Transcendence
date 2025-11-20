@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { login } from "../api/auth";
-import { NavigateFunction, useNavigate } from "react-router";
 
 
 export default function LoginPage() {
@@ -14,8 +13,6 @@ export default function LoginPage() {
 	try {
 		setError(null);
 		await login(email, password);
-		let navigate: NavigateFunction = useNavigate();
-		navigate("/");
 	} catch (err: any) {
 		setError(err.message);
 	}
