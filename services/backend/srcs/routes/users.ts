@@ -141,9 +141,7 @@ export default async function userRoutes(fastify: FastifyInstance) {
       reply.setCookie("refreshToken", refreshToken, {
         httpOnly: true,
         secure: true,
-        // sameSite is strict in production, lax in development
-        // TODO: check if this is enough and if there is a better way to handle this
-        sameSite: process.env.NODE_ENV === "development" ? "none" : "strict",
+        sameSite: "strict",
         path: "/api/users/refresh",
         maxAge: 60 * 60 * 24 * 30,
       });
@@ -152,7 +150,7 @@ export default async function userRoutes(fastify: FastifyInstance) {
     }
   );
 
-  // POST - refresh JWT token
+// POST - refresh JWT token
   fastify.post(
     "/api/users/refresh",
     async (req: FastifyRequest, reply: FastifyReply) => {
@@ -180,9 +178,7 @@ export default async function userRoutes(fastify: FastifyInstance) {
         reply.setCookie("refreshToken", newRefreshToken, {
           httpOnly: true,
           secure: true,
-          // sameSite is strict in production, lax in development
-          // TODO: check if this is enough and if there is a better way to handle this
-          sameSite: process.env.NODE_ENV === "development" ? "none" : "strict",
+          sameSite: "strict",
           path: "/api/users/refresh",
           maxAge: 60 * 60 * 24 * 30,
         });
