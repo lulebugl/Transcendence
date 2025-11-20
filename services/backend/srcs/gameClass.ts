@@ -77,9 +77,10 @@ export class Game {
     }
     else if (info.type === "Not ready")
       this.setCamera(this.players)
+    this.state.ball.position.z += 0.1;
     console.log(this.state, paddle);
   }
-
+  
   update() {
     this.broadcast({ type: 'update', state: this.state });
   }

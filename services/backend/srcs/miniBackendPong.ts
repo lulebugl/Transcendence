@@ -14,41 +14,17 @@ import {
   startPadelLeftY,
   startPadelLeftZ,
   TERRAIN_LIMIT_X,
-  TERRAIN_LIMIT_Y
+  TERRAIN_LIMIT_Z
 } from './ConstVarGameLogic';
 
-function InfoInJson(
-    id = "player1",
-    ballx = startBallX, bally = startBallY, ballz = startBallZ,
-    p1x = startPadelRightX, p1y = startPadelRightY, p1z = startPadelRightZ,
-    p2x = startPadelLeftX, p2y = startPadelLeftY, p2z = startPadelLeftZ,
-    messageType = "tua madre"
-) {
-    const message = {
-        message: messageType,
-        player: id,
-        ball: {
-            position: { x: ballx, y: bally, z: ballz }
-        },
-        player1: {
-            position: { x: p1x, y: p1y, z: p1z }
-        },
-        player2: {
-            position: { x: p2x, y: p2y, z: p2z }
-        }
-    };
 
-    return JSON.stringify(message);
-}
 
 
 
 export function startWebSocketServer(port = 9000) {
 	let gameBreak = false;
 	console.log(`Inizialliazazione webSocket wss -NON CONNESSO-`)
-	function setupGameState(ws){
-		ws.send(InfoInJson());
-	}
+	
 	function setupHeartbeat(ws) {
 		ws.isAlive = true;
 		ws.on('pong', () => {

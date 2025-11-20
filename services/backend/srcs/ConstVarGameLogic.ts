@@ -1,5 +1,5 @@
 export const startBallX: number = 0;
-export const startBallY: number = 3;
+export const startBallY: number = 1.5;
 export const startBallZ: number = 0;
 
 export const startPaddleRightX: number = 0;
