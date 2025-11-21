@@ -1,41 +1,64 @@
-import { getAccessToken, setAccessToken, clearAccessToken } from "./tokenStorage";
+import {
+  getAccessToken,
+  setAccessToken,
+  clearAccessToken,
+} from "./tokenStorage";
 
-export async function api(path: string, options: RequestInit = {}): Promise<Response> {
-	let token = getAccessToken();
+export async function getErrorMessage(response: Response): Promise<string> {
+  try {
+    const data = await response.json();
+    return (
+      data.message || data.error || response.statusText || "Request failed"
+    );
+  } catch {
+    return response.statusText || "Request failed";
+  }
+}
 
-	const headers: Record<string, string> = {
-		"Content-Type": "application/json",
-		...(options.headers as Record<string, string> || {}),
-		...(token ? { "Authorization": `Bearer ${token}` } : {}),
-	};
+export async function api(
+  path: string,
+  options: RequestInit = {}
+): Promise<Response> {
+  let token = getAccessToken();
 
-	let response: Response = await fetch(path, { ...options, headers, credentials: "include" });
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    ...((options.headers as Record<string, string>) || {}),
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
 
-	if (response.status === 401) { // token expired
-		const refreshResponse = await fetch("/api/users/refresh", {
-			method: "POST",
-			credentials: "include",
-		});
+  let response: Response = await fetch(path, {
+    ...options,
+    headers,
+    credentials: "include",
+  });
 
-		if (!refreshResponse.ok) {
-			clearAccessToken();
-			return response;
-		}
+  if (response.status === 401) {
+    // token expired
+    const refreshResponse = await fetch("/api/users/refresh", {
+      method: "POST",
+      credentials: "include",
+    });
 
-		const data = await refreshResponse.json();
-		setAccessToken(data.token);
+    if (!refreshResponse.ok) {
+      clearAccessToken();
+      return response;
+    }
 
-		const retryHeaders: Record<string, string> = {
-			"Content-Type": "application/json",
-			...(options.headers as Record<string, string> || {}),
-			"Authorization": `Bearer ${getAccessToken()}`,
-		};
+    const data = await refreshResponse.json();
+    setAccessToken(data.token);
 
-		response = await fetch(path, { 
-			...options, 
-			headers: retryHeaders,
-			credentials: "include",
-		});
-	}
-	return response;
+    const retryHeaders: Record<string, string> = {
+      "Content-Type": "application/json",
+      ...((options.headers as Record<string, string>) || {}),
+      Authorization: `Bearer ${getAccessToken()}`,
+    };
+
+    response = await fetch(path, {
+      ...options,
+      headers: retryHeaders,
+      credentials: "include",
+    });
+  }
+  return response;
 }

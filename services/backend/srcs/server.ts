@@ -11,7 +11,20 @@ import type { FastifyCookieOptions } from '@fastify/cookie';
 import { startWebSocketServer } from './miniBackendPong';
 import rateLimit from "@fastify/rate-limit";
 
-const app = Fastify({ logger: true });
+const envToLogger = {
+	development: {
+	  transport: {
+		target: 'pino-pretty',
+		options: {
+		  translateTime: 'HH:MM:ss Z',
+		  ignore: 'pid,hostname',
+		},
+	  },
+	},
+	production: true,
+  } as const;
+
+const app = Fastify({ logger: envToLogger[process.env.NODE_ENV as keyof typeof envToLogger] });
 
 app.register(fp(authPlugin));
 app.register(sensible);
@@ -30,7 +43,7 @@ app.register(cookie, {
 	hook: "onRequest",
 } as FastifyCookieOptions)
 
-if (process.env.NODE_ENV !== "dev") {
+if (process.env.NODE_ENV !== "development") {
 	// maybe 20 is too little, not sure
 	app.register(rateLimit, {
 		max: 20,

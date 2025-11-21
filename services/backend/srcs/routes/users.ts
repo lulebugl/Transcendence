@@ -32,7 +32,7 @@ interface UserQuery {
 interface loginBody {
   username: string;
   password: string;
-  totp: number;
+  totp: string;
 }
 
 export default async function userRoutes(fastify: FastifyInstance) {
@@ -62,6 +62,7 @@ export default async function userRoutes(fastify: FastifyInstance) {
     },
     async (req: FastifyRequest<{ Body: UserBody }>) => {
       const { username, avatarUrl, password } = req.body;
+	  const DEFAULT_AVATAR_BASE_URL = "https://api.dicebear.com/7.x/avataaars/svg";
 
       // Minimal checks
       if (!username.trim() || !password.trim()) {
@@ -86,13 +87,12 @@ export default async function userRoutes(fastify: FastifyInstance) {
         username
       )}?secret=${secretBase32}&issuer=MyApp`;
 
-
       try {
         await db.insert(users).values({
           username: username,
-          avatar_url: avatarUrl,
+          avatar_url: avatarUrl ? avatarUrl : `${DEFAULT_AVATAR_BASE_URL}?seed=${username}`,
           password_hash: password_hash,
-          secret_key: secret_hash,
+          totp_secret_key: secret_hash
         });
         return {
           success: true,
@@ -113,7 +113,7 @@ export default async function userRoutes(fastify: FastifyInstance) {
       schema: {
         body: {
           type: "object",
-          required: ["username", "password", "totp"],
+          required: ["username", "password"],
           properties: {
             username: { type: "string" },
             password: { type: "string" },
@@ -125,18 +125,18 @@ export default async function userRoutes(fastify: FastifyInstance) {
     async (req: FastifyRequest<{ Body: loginBody }>, reply: FastifyReply) => {
       const { username, password, totp } = req.body;
       //FLAG FOR DISABLE TOTP auth 
-      const DisableTotp: boolean = true;
       let totpNumber: number = 1;
       const [user] = await db.select().from(users).where(eq(users.username, username));
       if (!user) return reply.unauthorized("Invalid credentials");
-      if (!DisableTotp) {
-        if (!/^\d{6}$/.test(totp.toString().replace(/\s+/g, ""))) {
+
+      if (user.totp_secret_key) {
+        if (!/^\d{6}$/.test(totp.replace(/\s+/g, ""))) {
           return reply.unauthorized("Invalid TOTP format");
         }
-        totpNumber = parseInt(totp.toString().replace(/\s+/g, ""), 10);
+        totpNumber = parseInt(totp.replace(/\s+/g, ""), 10);
       }
       const match: boolean = await verifyPassword(password, user.password_hash);
-      if (!match || (!verifyTOTP(Buffer.from(base32.decode.asBytes(decryptTotpSecret(user.secret_key, masterKey))), totpNumber) && !DisableTotp))
+      if (!match || (!verifyTOTP(Buffer.from(base32.decode.asBytes(decryptTotpSecret(user.totp_secret_key, masterKey))), totpNumber) && user.totp_secret_key))
         return reply.unauthorized("Invalid credentials");
 
       const accessToken: string = fastify.jwt.sign(

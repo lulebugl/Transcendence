@@ -35,7 +35,8 @@ export default defineConfig({
     }
   },
   esbuild: {
-    target: 'ES2020'
+    target: 'ES2020',
+	drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : []
   }
 });
 

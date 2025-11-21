@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import * as GUI from '@babylonjs/gui';
+import * as GUI from "@babylonjs/gui";
 import {
   StandardMaterial,
   HDRCubeTexture,
@@ -36,15 +36,13 @@ import {
 import { initWebSocket, sendMessage } from "./initWebSocket";
 import { createPointBar, createExitGame, addText, updatePoint } from "./pongUI";
 
-const ASSET_PATH = "/srcs/pages/pong/assets/AssetGlb/export_pongV0.5.glb";
-const ASSET_PATH_HDRI = "/srcs/pages/pong/assets/AssetGlb/hdriV0.1.hdr";
+const ASSET_PATH = "/export_pongV0.5.glb";
+const ASSET_PATH_HDRI = "/hdriV0.1.hdr";
 const NOT_READY_INTERVAL = 1000;
 const LED_OFFSET = new Vector3(0, -3, 0);
 const CAMERA_BASE_POSITION = new Vector3(0, 15, -20);
 const CAMERA_TARGET = new Vector3(0, 0, 0);
 const MOVING_MESH_INDICES = new Set([ball, paddleLeft, paddleRight]);
-
-const padelLeft = 11; // why do we need this new strange one ??
 
 type VectorPayload = { x: number; y: number; z: number };
 
@@ -108,7 +106,15 @@ export const Pong = () => {
 
     const scene = new Scene(engine);
     sceneRef.current = scene;
-    const hdrReflectionTexture = new HDRCubeTexture(ASSET_PATH_HDRI, scene, 128, false, true, false, true);
+    const hdrReflectionTexture = new HDRCubeTexture(
+      ASSET_PATH_HDRI,
+      scene,
+      128,
+      false,
+      true,
+      false,
+      true
+    );
     const skyboxTexture = CubeTexture.CreateFromPrefilteredData(
       ASSET_PATH_HDRI,
       scene
@@ -121,7 +127,6 @@ export const Pong = () => {
     skyboxMaterial.disableLighting = true;
 
     skybox.material = skyboxMaterial;
-
 
     scene.createDefaultEnvironment({
       ...envHelperOpts,
@@ -159,8 +164,22 @@ export const Pong = () => {
       }
     });
     const uiGame = GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
-    const barPointRight = createPointBar("100px", "60px", "pink", "black", 75, 0);
-    const barPointLeft = createPointBar("100px", "60px", "white", "black", -75, 0);
+    const barPointRight = createPointBar(
+      "100px",
+      "60px",
+      "pink",
+      "black",
+      75,
+      0
+    );
+    const barPointLeft = createPointBar(
+      "100px",
+      "60px",
+      "white",
+      "black",
+      -75,
+      0
+    );
     const pintTextRight = addText(barPointRight, "white", 35);
     const pintTextLeft = addText(barPointLeft, "white", 35);
     const exit = createExitGame();
@@ -191,10 +210,9 @@ export const Pong = () => {
     };
     exit.onPointerUpObservable.add(() => {
       let message: string;
-      if (paddlePlayerRef.current === padelLeft) {
+      if (paddlePlayerRef.current === paddleLeft) {
         message = "paddelLeft";
-      }
-      else {
+      } else {
         message = "paddelRight";
       }
       cleanupGame();
@@ -203,7 +221,6 @@ export const Pong = () => {
       window.removeEventListener("resize", handleResize);
       window.location.href = "/";
     });
-
 
     const handleResize = () => {
       engine.resize();
@@ -218,12 +235,8 @@ export const Pong = () => {
       if (backendMessage) {
         if (isUpdateMessage(backendMessage)) {
           applyStateUpdate(backendMessage);
-		  // point doesn't exist on vector payload so i commented it out to make it work
-		  // but i don't know if it didn't broke any logic
-          //   updatePoint(pintTextLeft, backendMessage.state.paddleLeft.point);
-          updatePoint(pintTextLeft, backendMessage.state.paddleLeft.position.y);
-          //   updatePoint(pintTextRight, backendMessage.state.paddleRight.position.point);
-          updatePoint(pintTextRight, backendMessage.state.paddleRight.position.y);
+          updatePoint(pintTextLeft, backendMessage.state.paddleLeft.point);
+          updatePoint(pintTextRight, backendMessage.state.paddleRight.point);
         } else if (isStartMessage(backendMessage)) {
           configurePlayerCamera(backendMessage.player);
         }
@@ -251,7 +264,6 @@ export const Pong = () => {
       engineRef.current.stopRenderLoop();
     }
 
-
     if (shadowGenRef.current) {
       shadowGenRef.current.dispose();
       shadowGenRef.current = null;
@@ -278,12 +290,12 @@ export const Pong = () => {
   };
   const loadAssets = async (scene: Scene) => {
     try {
-      const result = await ImportMeshAsync(
-        ASSET_PATH,
-        scene
-      );
+      const result = await ImportMeshAsync(ASSET_PATH, scene);
       meshesRef.current = result.meshes;
-      console.log("Mesh caricati:", result.meshes.map((m: any) => m.name));
+      console.log(
+        "Mesh caricati:",
+        result.meshes.map((m: any) => m.name)
+      );
       const { mainLights, accentLights } = createLights(scene);
       pointLightsRef.current = accentLights;
       configureLights(mainLights, accentLights, meshesRef.current);
@@ -321,12 +333,8 @@ export const Pong = () => {
       updateMeshPosition(rightMesh, message.state.paddleRight.position);
     }
 
-    const paddleRightPos = rightMesh
-      ?.getAbsolutePosition()
-      .add(LED_OFFSET);
-    const paddleLeftPos = leftMesh
-      ?.getAbsolutePosition()
-      .add(LED_OFFSET);
+    const paddleRightPos = rightMesh?.getAbsolutePosition().add(LED_OFFSET);
+    const paddleLeftPos = leftMesh?.getAbsolutePosition().add(LED_OFFSET);
 
     if (pointLightsRef.current[0] && paddleRightPos) {
       updateLightPosition(pointLightsRef.current[0], paddleRightPos);
@@ -341,7 +349,11 @@ export const Pong = () => {
   };
 
   const moveCameraToPlayer = (instant: boolean = false) => {
-    if (paddlePlayerRef.current === -1 || !cameraRef.current || meshesRef.current.length === 0) {
+    if (
+      paddlePlayerRef.current === -1 ||
+      !cameraRef.current ||
+      meshesRef.current.length === 0
+    ) {
       return;
     }
     const activeMesh = meshesRef.current[paddlePlayerRef.current];
@@ -356,11 +368,7 @@ export const Pong = () => {
     const currentCamera = cameraRef.current;
     const targetMesh = meshesRef.current[0];
     currentCamera.position = desiredPosition;
-	// same as above, targetMesh doesn't exist on vector payload so i commented it out to make it work
-	// but i don't know if it didn't broke any logic
-    // currentCamera.targetMesh = targetMesh;
-    currentCamera.target = targetMesh.getAbsolutePosition();
-
+    currentCamera.targetMesh = targetMesh;
   };
 
   const maybeSendNotReady = () => {
@@ -508,7 +516,11 @@ const configureMaterials = (scene: Scene, meshes: AbstractMesh[]) => {
 
 const freezeStaticMeshes = (meshes: AbstractMesh[]) => {
   meshes.forEach((mesh, index) => {
-    if (!MOVING_MESH_INDICES.has(index) && mesh && mesh.isAnInstance === false) {
+    if (
+      !MOVING_MESH_INDICES.has(index) &&
+      mesh &&
+      mesh.isAnInstance === false
+    ) {
       try {
         mesh.freezeWorldMatrix();
       } catch {

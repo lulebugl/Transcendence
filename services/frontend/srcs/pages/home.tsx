@@ -3,6 +3,7 @@ import { MainLayout } from "@/components/main-layout";
 
 const Home = () => {
   //   console.log(import.meta.env.DEV);
+
   return (
     <MainLayout>
       <div className="flex flex-col items-center justify-center min-h-[80vh] px-6">

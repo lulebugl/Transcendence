@@ -9,7 +9,7 @@ services:
       - "8080:80"
       - "8443:443"
     volumes:
-      - ./nginx/nginx.${DOCKER_ENV:-dev}.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/nginx.${DOCKER_ENV:-development}.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/certs:/etc/nginx/certs:ro
     depends_on:
       - backend
@@ -21,7 +21,7 @@ services:
     build:
       context: ../services/backend
       dockerfile: Dockerfile
-      target: ${DOCKER_ENV:-dev}
+      target: ${DOCKER_ENV:-development}
     restart: always
     ports:
       - "4983:4983"
@@ -45,7 +45,7 @@ services:
     build:
       context: ../services/frontend
       dockerfile: Dockerfile
-      target: ${DOCKER_ENV:-dev}
+      target: ${DOCKER_ENV:-development}
     restart: always
     environment:
       - NODE_ENV=${NODE_ENV:-development}

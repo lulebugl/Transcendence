@@ -1,9 +1,23 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router";
+import { Link, redirect } from "react-router";
 import { ArrowRight, Lock, User, ShieldAlert } from "lucide-react";
 import { MainLayout } from "@/components/main-layout";
+import { useAuth } from "@/context/AuthContext";
 
 const Login = () => {
+  const [pseudo, setPseudo] = useState("");
+  const [password, setPassword] = useState("");
+  const { login, user, isLoading } = useAuth();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await login(pseudo, password);
+      redirect("/");
+    } catch (error) {
+      console.error("Login failed", error.message);
+    }
+  };
 
   return (
     <MainLayout>
@@ -33,19 +47,21 @@ const Login = () => {
             </div>
 
             {/* Form */}
-            <div className="p-8 space-y-6">
+            <form onSubmit={handleSubmit} className="p-8 space-y-6">
               <div className="space-y-2">
                 <label className="text-[10px] uppercase tracking-widest text-muted-foreground ml-1">
-                  Pilot ID / Email
+                  Pilot Pseudo
                 </label>
                 <div className="relative group">
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors">
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 pt-1 text-muted-foreground group-focus-within:text-primary transition-colors">
                     <User className="w-4 h-4" />
                   </div>
                   <input
                     type="text"
-                    className="w-full bg-black/20 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-primary/50 focus:bg-primary/5 transition-all"
+                    className="mt-1.5 w-full bg-black/20 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-primary/50 focus:bg-primary/5 transition-all"
                     placeholder="IDENTIFIER"
+                    value={pseudo}
+                    onChange={(e) => setPseudo(e.target.value)}
                   />
                 </div>
               </div>
@@ -73,18 +89,20 @@ const Login = () => {
                     type="password"
                     className="w-full bg-black/20 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-primary/50 focus:bg-primary/5 transition-all"
                     placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                   />
                 </div>
               </div>
 
-              <button className="group relative w-full py-4 bg-primary text-primary-foreground text-sm font-bold tracking-[0.2em] uppercase clip-path-button overflow-hidden transition-all hover:shadow-[0_0_40px_-10px_var(--color-primary)]">
+              <button type="submit" className="group relative w-full py-4 bg-primary text-primary-foreground text-sm font-bold tracking-[0.2em] uppercase clip-path-button overflow-hidden transition-all hover:shadow-[0_0_40px_-10px_var(--color-primary)]">
                 <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
                 <span className="relative flex items-center justify-center gap-3">
                   Initialize{" "}
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </span>
               </button>
-            </div>
+            </form>
 
             {/* Footer */}
             <div className="p-6 bg-black/20 border-t border-white/5 text-center">

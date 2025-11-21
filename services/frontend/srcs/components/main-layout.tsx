@@ -20,8 +20,8 @@ const Navbar = () => {
     { label: "Tournaments", path: "/tournaments" },
   ];
 
-  // @ts-ignore: Vite injects the env at runtime
-  if (import.meta.env.DEV) {
+  // @ts-expect-error: Vite injects the env at runtime
+  if (import.meta.env.development) {
     navItems.push({ label: "Dev-Hub", path: "/dev-hub" });
   }
 
