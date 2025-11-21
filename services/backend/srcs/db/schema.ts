@@ -14,7 +14,8 @@ export const users = sqliteTable('users', {
     .notNull()
     .default(sql`(unixepoch())`),
   password_hash: text("password_hash").notNull(),
-  refresh_token: text("refresh_token")
+  refresh_token: text("refresh_token"),
+  secret_key: text("secret_key"),
 });
 
 // Game sessions table
