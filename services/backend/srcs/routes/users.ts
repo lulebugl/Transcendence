@@ -132,9 +132,10 @@ export default async function userRoutes(fastify: FastifyInstance) {
 
       const [user] = await db.select().from(users).where(eq(users.email, normalizedEmail));
       if (!user) return reply.unauthorized("Invalid credentials");
-
+      //FLAG FOR DISABLE TOTP auth 
+      const DisableTotp: boolean = false;
       const match: boolean = await verifyPassword(password, user.password_hash);
-      if (!match || !verifyTOTP(Buffer.from(base32.decode.asBytes(decryptTotpSecret(user.secret_key, masterKey))), totp))
+      if (!match || (!verifyTOTP(Buffer.from(base32.decode.asBytes(decryptTotpSecret(user.secret_key, masterKey))), totp) && !DisableTotp))
         return reply.unauthorized("Invalid credentials");
 
       const accessToken: string = fastify.jwt.sign(
