@@ -15,6 +15,13 @@
       "when": 1763387276045,
       "tag": "0001_dapper_moonstone",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1763721497755,
+      "tag": "0002_long_plazm",
+      "breakpoints": true
     }
   ]
 }

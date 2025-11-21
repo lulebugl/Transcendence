@@ -11,7 +11,6 @@ import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 // Define request types
 interface UserBody {
 	username: string;
-	email: string;
 	avatarUrl?: string;
 	password: string;
 }
@@ -22,7 +21,7 @@ interface UserQuery {
 }
 
 interface loginBody {
-	email: string;
+	username: string;
 	password: string;
 }
 
@@ -40,10 +39,9 @@ export default async function userRoutes(fastify: FastifyInstance) {
 			schema: {
 				body: {
 					type: "object",
-					required: ["username", "email"],
+					required: ["username"],
 					properties: {
 						username: { type: "string" },
-						email: { type: "string", format: "email" },
 						avatarUrl: { type: "string" },
 						password: { type: "string" },
 					},
@@ -51,25 +49,21 @@ export default async function userRoutes(fastify: FastifyInstance) {
 			},
 		},
 		async (req: FastifyRequest<{ Body: UserBody }>) => {
-			const { username, email, avatarUrl, password } = req.body;
+			const { username, avatarUrl, password } = req.body;
 			
 			// Minimal checks
-			if (!username.trim() || !email.trim() || !password.trim()) {
+			if (!username.trim() || !password.trim()) {
 				return fastify.httpErrors.badRequest("Fields cannot be empty.");
 			}
 			if (password.length < 8) {
 				return fastify.httpErrors.badRequest("Password must be at least 8 characters.");
 			}
 			
-			const normalizedEmail = email.trim().toLowerCase();
-			
-			// Test for uniqueness of email and username
-			const existing = await db.select().from(users).where(
-				or(eq(users.email, normalizedEmail), eq(users.username, username))
-			);
+			// Test for uniqueness of username
+			const existing = await db.select().from(users).where(eq(users.username, username));
 			
 			if (existing.length > 0) {
-				return fastify.httpErrors.conflict("Email or username already in use.");
+				return fastify.httpErrors.conflict("Username already in use.");
 			}
 			
 			const password_hash = await hashPassword(password);
@@ -77,7 +71,6 @@ export default async function userRoutes(fastify: FastifyInstance) {
 			try {
 				await db.insert(users).values({ 
 					username: username,
-					email: normalizedEmail, 
 					avatar_url: avatarUrl,
 					password_hash: password_hash,
 				});
@@ -92,30 +85,29 @@ export default async function userRoutes(fastify: FastifyInstance) {
 	// POST - Login
 	fastify.post("/api/users/login",
 		{
-			config: { rateLimit: { max: 5, timeWindow: "1 minute"} },
+			config: { rateLimit: { max: 20, timeWindow: "1 minute"} },
 			schema: {
 				body: {
 					type: "object",
-					required: ["email", "password"],
+					required: ["username", "password"],
 					properties: {
-						email: { type: "string", format: "email" },
+						username: { type: "string" },
 						password: { type: "string" },
 					},
 				},
 			},
 		},
 		async (req: FastifyRequest<{ Body:loginBody }>, reply: FastifyReply) => {
-			const { email, password } = req.body;
-			const normalizedEmail: string = email.trim().toLowerCase();
+			const { username, password } = req.body;
 
-			const [user] = await db.select().from(users).where(eq(users.email, normalizedEmail));
+			const [user] = await db.select().from(users).where(eq(users.username, username));
 			if (!user) return reply.unauthorized("Invalid credentials");
 
 			const match: boolean = await verifyPassword(password, user.password_hash);
 			if (!match) return reply.unauthorized("Invalid credentials");
 
 			const accessToken: string = fastify.jwt.sign(
-				{ id: user.id, username: user.username, email: user.email }, 
+				{ id: user.id, username: user.username }, 
 				{ expiresIn: "15m" }
 			);
 
@@ -145,7 +137,7 @@ export default async function userRoutes(fastify: FastifyInstance) {
 			if (!user) return reply.unauthorized("Invalid refresh token");
 	
 			const newAccesstoken = fastify.jwt.sign(
-				{ id: user.id, username: user.username, email: user.email }, 
+				{ id: user.id, username: user.username }, 
 				{ expiresIn: "15m" }
 			);
 	

@@ -18,12 +18,10 @@ declare module "@fastify/jwt" {
     payload: {
       id: number;
       username: string;
-      email: string;
     };
     user: {
       id: number;
       username: string;
-      email: string;
       iat: number;
       exp: number;
     };
