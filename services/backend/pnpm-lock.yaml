@@ -38,6 +38,12 @@ importers:
       fastify:
         specifier: ^5.6.1
         version: 5.6.2
+      fastify-plugin:
+        specifier: ^5.1.0
+        version: 5.1.0
+      hi-base32:
+        specifier: ^0.5.1
+        version: 0.5.1
       sqlite3:
         specifier: ^5.1.7
         version: 5.1.7
@@ -878,6 +884,9 @@ packages:
 
   has-unicode@2.0.1:
     resolution: {integrity: sha512-8Rf9Y83NBReMnx0gFzA8JImQACstCYWUplepDa9xprwwtmgEZUF0h/i5xSA625zB/I37EtrswSST6OXxwaaIJQ==}
+
+  hi-base32@0.5.1:
+    resolution: {integrity: sha512-EmBBpvdYh/4XxsnUybsPag6VikPYnN30td+vQk+GI3qpahVEG9+gTkG0aXVxTjBqQ5T6ijbWIu77O+C5WFWsnA==}
 
   http-cache-semantics@4.2.0:
     resolution: {integrity: sha512-dTxcvPXqPvXBQpq5dUr6mEMJX4oIEFv6bwom3FDwKRDsuIjjJGANqhBuoAn9c1RQJIdAKav33ED65E2ys+87QQ==}
@@ -2094,6 +2103,8 @@ snapshots:
 
   has-unicode@2.0.1:
     optional: true
+
+  hi-base32@0.5.1: {}
 
   http-cache-semantics@4.2.0:
     optional: true

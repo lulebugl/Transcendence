@@ -2,7 +2,7 @@
   "name": "@app/backend",
   "version": "0.1.0",
   "type": "commonjs",
-  "main": "dist/index.js",
+  "main": "dist/server.js",
   "scripts": {
     "dev": "tsx watch srcs/server.ts",
     "build": "tsc -p tsconfig.json",
@@ -23,9 +23,10 @@
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.44.6",
     "fastify": "^5.6.1",
+    "fastify-plugin": "^5.1.0",
+    "hi-base32": "^0.5.1",
     "sqlite3": "^5.1.7",
-    "ws": "^8.18.0",
-    "hi-base32": "^0.5.1"
+    "ws": "^8.18.0"
   },
   "devDependencies": {
     "@types/node": "^20.14.10",

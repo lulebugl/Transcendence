@@ -7,12 +7,12 @@ import {
   startBallX,
   startBallY,
   startBallZ,
-  startPadelRightX,
-  startPadelRightY,
-  startPadelRightZ,
-  startPadelLeftX,
-  startPadelLeftY,
-  startPadelLeftZ,
+  startPaddleRightX,
+  startPaddleRightY,
+  startPaddleRightZ,
+  startPaddleLeftX,
+  startPaddleLeftY,
+  startPaddleLeftZ,
   TERRAIN_LIMIT_X,
   TERRAIN_LIMIT_Y
 } from './ConstVarGameLogic';
@@ -20,8 +20,8 @@ import {
 function InfoInJson(
     id = "player1",
     ballx = startBallX, bally = startBallY, ballz = startBallZ,
-    p1x = startPadelRightX, p1y = startPadelRightY, p1z = startPadelRightZ,
-    p2x = startPadelLeftX, p2y = startPadelLeftY, p2z = startPadelLeftZ,
+    p1x = startPaddleRightX, p1y = startPaddleRightY, p1z = startPaddleRightZ,
+    p2x = startPaddleLeftX, p2y = startPaddleLeftY, p2z = startPaddleLeftZ,
     messageType = "tua madre"
 ) {
     const message = {

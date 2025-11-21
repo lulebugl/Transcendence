@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef } from "react";
 import * as GUI from '@babylonjs/gui';
 import {
   StandardMaterial,
@@ -35,16 +35,16 @@ import {
 } from "./pong-helpers";
 import { initWebSocket, sendMessage } from "./initWebSocket";
 import { createPointBar, createExitGame, addText, updatePoint } from "./pongUI";
-import { padelLeft } from "./helpersBaby";
 
 const ASSET_PATH = "/srcs/pages/pong/assets/AssetGlb/export_pongV0.5.glb";
 const ASSET_PATH_HDRI = "/srcs/pages/pong/assets/AssetGlb/hdriV0.1.hdr";
 const NOT_READY_INTERVAL = 1000;
-const CAMERA_LERP = 0.08;
 const LED_OFFSET = new Vector3(0, -3, 0);
 const CAMERA_BASE_POSITION = new Vector3(0, 15, -20);
 const CAMERA_TARGET = new Vector3(0, 0, 0);
 const MOVING_MESH_INDICES = new Set([ball, paddleLeft, paddleRight]);
+
+const padelLeft = 11; // why do we need this new strange one ??
 
 type VectorPayload = { x: number; y: number; z: number };
 
@@ -218,8 +218,12 @@ export const Pong = () => {
       if (backendMessage) {
         if (isUpdateMessage(backendMessage)) {
           applyStateUpdate(backendMessage);
-          updatePoint(pintTextLeft, backendMessage.state.paddleLeft.point);
-          updatePoint(pintTextRight, backendMessage.state.paddleRight.point);
+		  // point doesn't exist on vector payload so i commented it out to make it work
+		  // but i don't know if it didn't broke any logic
+          //   updatePoint(pintTextLeft, backendMessage.state.paddleLeft.point);
+          updatePoint(pintTextLeft, backendMessage.state.paddleLeft.position.y);
+          //   updatePoint(pintTextRight, backendMessage.state.paddleRight.position.point);
+          updatePoint(pintTextRight, backendMessage.state.paddleRight.position.y);
         } else if (isStartMessage(backendMessage)) {
           configurePlayerCamera(backendMessage.player);
         }
@@ -352,7 +356,11 @@ export const Pong = () => {
     const currentCamera = cameraRef.current;
     const targetMesh = meshesRef.current[0];
     currentCamera.position = desiredPosition;
-    currentCamera.targetMesh = targetMesh;
+	// same as above, targetMesh doesn't exist on vector payload so i commented it out to make it work
+	// but i don't know if it didn't broke any logic
+    // currentCamera.targetMesh = targetMesh;
+    currentCamera.target = targetMesh.getAbsolutePosition();
+
   };
 
   const maybeSendNotReady = () => {

@@ -34,7 +34,7 @@ RUN corepack enable && corepack prepare pnpm@10.18.1 --activate && \
 
 
 EXPOSE 3000
-CMD ["./docker-entrypoint.sh", "node", "dist/index.js"]
+CMD ["./docker-entrypoint.sh", "node", "dist/server.js"]
 
 FROM node:20-alpine AS dev
 
@@ -45,7 +45,8 @@ RUN pnpm install --frozen-lockfile=false
 
 COPY srcs ./srcs
 COPY database ./database
-COPY drizzle ./drizzle
+# COPY drizzle ./drizzle
+RUN mkdir -p ./drizzle
 COPY drizzle.config.ts ./drizzle.config.ts
 COPY docker-entrypoint.sh ./docker-entrypoint.sh
 

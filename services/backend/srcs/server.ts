@@ -30,7 +30,7 @@ app.register(cookie, {
 	hook: "onRequest",
 } as FastifyCookieOptions)
 
-if (process.env.NODE_ENV !== "development") {
+if (process.env.NODE_ENV !== "dev") {
 	// maybe 20 is too little, not sure
 	app.register(rateLimit, {
 		max: 20,

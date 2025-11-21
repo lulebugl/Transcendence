@@ -14,7 +14,7 @@ export function createPointBar(width: string, height: string, color: string, bac
   infoBox.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
   infoBox.top = 30;
   infoBox.left = left;
-  infoBox.right = right;
+//   infoBox.right = right;
   infoBox.cornerRadius = 25;
   return infoBox;
 }
@@ -36,8 +36,8 @@ export function createExitGame(): any {
   const playButton = GUI.Button.CreateSimpleButton("HomeButton", "HOME");
   playButton.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
   playButton.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
-  playButton.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-  playButton.textVerticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+//   playButton.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+//   playButton.textVerticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_CENTER;
   playButton.width = "50px";
   playButton.height = "50px";
   playButton.color = "black";
