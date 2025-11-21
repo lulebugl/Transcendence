@@ -126,14 +126,15 @@ export default async function userRoutes(fastify: FastifyInstance) {
       const { username, password, totp } = req.body;
       //FLAG FOR DISABLE TOTP auth 
       const DisableTotp: boolean = true;
+      let totpNumber: number = 1;
       const [user] = await db.select().from(users).where(eq(users.username, username));
       if (!user) return reply.unauthorized("Invalid credentials");
       if (!DisableTotp) {
         if (!/^\d{6}$/.test(totp.replace(/\s+/g, ""))) {
           return reply.unauthorized("Invalid TOTP format");
         }
+        totpNumber = parseInt(totp.replace(/\s+/g, ""), 10);
       }
-      const totpNumber = parseInt(totp.replace(/\s+/g, ""), 10);
       const match: boolean = await verifyPassword(password, user.password_hash);
       if (!match || (!verifyTOTP(Buffer.from(base32.decode.asBytes(decryptTotpSecret(user.secret_key, masterKey))), totpNumber) && !DisableTotp))
         return reply.unauthorized("Invalid credentials");
