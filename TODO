@@ -1,8 +1,11 @@
 ### USER
 
-- remove email handling : db, route/register /login /me , pages register & login
-- JWT enforced security
-- JWT storage security (xms protection)
+- [OK] JWT storage security (xms protection)
+- [OK] Rate limiting login
+- [OK] remove email handling : db, route/register /login /me , pages register & login
+- JWT enforced security => Use function to generate secret
+- Default user picture
+- Log Out api route
 - User management routes
 - User management pages
 - Rate limiting login
