@@ -10,21 +10,12 @@ import cookie from "@fastify/cookie";
 import type { FastifyCookieOptions } from '@fastify/cookie';
 import { startWebSocketServer } from './miniBackendPong';
 import rateLimit from "@fastify/rate-limit";
-
-const envToLogger = {
-	development: {
-	  transport: {
-		target: 'pino-pretty',
-		options: {
-		  translateTime: 'HH:MM:ss Z',
-		  ignore: 'pid,hostname',
-		},
-	  },
-	},
-	production: true,
-  } as const;
+import { envToLogger, prettifyLogger } from './utils/logger-config';
 
 const app = Fastify({ logger: envToLogger[process.env.NODE_ENV as keyof typeof envToLogger] });
+
+// Log 4xx and 5xx responses as WARN and ERROR respectively
+prettifyLogger(app);
 
 app.register(fp(authPlugin));
 app.register(sensible);
