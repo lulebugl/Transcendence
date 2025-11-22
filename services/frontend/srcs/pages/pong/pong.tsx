@@ -1,5 +1,5 @@
-import { useEffect, useRef } from "react";
-import * as GUI from "@babylonjs/gui";
+import { useEffect, useRef, useCallback } from "react";
+import * as GUI from '@babylonjs/gui';
 import {
   StandardMaterial,
   HDRCubeTexture,
@@ -39,8 +39,9 @@ import { createPointBar, createExitGame, addText, updatePoint } from "./pongUI";
 const ASSET_PATH = "/export_pongV0.5.glb";
 const ASSET_PATH_HDRI = "/hdriV0.1.hdr";
 const NOT_READY_INTERVAL = 1000;
+const CAMERA_LERP = 0.08;
 const LED_OFFSET = new Vector3(0, -3, 0);
-const CAMERA_BASE_POSITION = new Vector3(0, 15, -20);
+const CAMERA_BASE_POSITION = new Vector3(0, 0, 0);
 const CAMERA_TARGET = new Vector3(0, 0, 0);
 const MOVING_MESH_INDICES = new Set([ball, paddleLeft, paddleRight]);
 
@@ -50,8 +51,8 @@ type UpdateMessage = {
   type: "update";
   state: {
     ball: { position: VectorPayload };
-    paddleLeft: { position: VectorPayload };
-    paddleRight: { position: VectorPayload };
+    paddleLeft: { position: VectorPayload, point: number };
+    paddleRight: { position: VectorPayload, point: number };
   };
 };
 
@@ -91,14 +92,8 @@ export const Pong = () => {
       return;
     }
 
-    websocketRef.current = initWebSocket("/ws", (data) => {
-      backendMessageRef.current = data as BackendMessage;
-    });
 
-    const engine = new Engine(canvas, true, {
-      preserveDrawingBuffer: true,
-      stencil: true,
-    });
+    const engine = new Engine(canvas, true);
     engine.setHardwareScalingLevel(
       Math.max(1, (window.devicePixelRatio || 1) * 0.75)
     );
@@ -106,15 +101,7 @@ export const Pong = () => {
 
     const scene = new Scene(engine);
     sceneRef.current = scene;
-    const hdrReflectionTexture = new HDRCubeTexture(
-      ASSET_PATH_HDRI,
-      scene,
-      128,
-      false,
-      true,
-      false,
-      true
-    );
+    const hdrReflectionTexture = new HDRCubeTexture(ASSET_PATH_HDRI, scene, 128, false, true, false, true);
     const skyboxTexture = CubeTexture.CreateFromPrefilteredData(
       ASSET_PATH_HDRI,
       scene
@@ -127,6 +114,7 @@ export const Pong = () => {
     skyboxMaterial.disableLighting = true;
 
     skybox.material = skyboxMaterial;
+
 
     scene.createDefaultEnvironment({
       ...envHelperOpts,
@@ -164,22 +152,8 @@ export const Pong = () => {
       }
     });
     const uiGame = GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
-    const barPointRight = createPointBar(
-      "100px",
-      "60px",
-      "pink",
-      "black",
-      75,
-      0
-    );
-    const barPointLeft = createPointBar(
-      "100px",
-      "60px",
-      "white",
-      "black",
-      -75,
-      0
-    );
+    const barPointRight = createPointBar("100px", "60px", "pink", "black", 75, 0);
+    const barPointLeft = createPointBar("100px", "60px", "white", "black", -75, 0);
     const pintTextRight = addText(barPointRight, "white", 35);
     const pintTextLeft = addText(barPointLeft, "white", 35);
     const exit = createExitGame();
@@ -212,7 +186,8 @@ export const Pong = () => {
       let message: string;
       if (paddlePlayerRef.current === paddleLeft) {
         message = "paddelLeft";
-      } else {
+      }
+      else {
         message = "paddelRight";
       }
       cleanupGame();
@@ -222,12 +197,31 @@ export const Pong = () => {
       window.location.href = "/";
     });
 
+    let CameraFlag: boolean = false;
+    websocketRef.current = initWebSocket("/ws", (data) => {
+      const msg = data as BackendMessage;
+      if (isStartMessage((msg))) {
+        paddlePlayerRef.current = msg.player === 1 ? paddleRight : paddleLeft;
+        if (sceneReadyRef.current === true) {
+          moveCameraToPlayer();
+          CameraFlag = true;
+        }
+        else {
+          CameraFlag = false;
+        }
+      }
+      backendMessageRef.current = msg;
+    });
+
+
     const handleResize = () => {
       engine.resize();
     };
 
     const renderLoop = () => {
-      if (!sceneReadyRef.current || !scene || !engine) {
+      if (!sceneReadyRef.current || !scene || !engine || paddlePlayerRef.current === -1) {
+        if (paddlePlayerRef.current === -1)
+          maybeSendNotReady();
         return;
       }
 
@@ -237,14 +231,12 @@ export const Pong = () => {
           applyStateUpdate(backendMessage);
           updatePoint(pintTextLeft, backendMessage.state.paddleLeft.point);
           updatePoint(pintTextRight, backendMessage.state.paddleRight.point);
-        } else if (isStartMessage(backendMessage)) {
-          configurePlayerCamera(backendMessage.player);
         }
       }
-
-      maybeSendNotReady();
-      //followActivePlayer();
-
+      if (!CameraFlag && meshesRef.current.length > 0) {
+        moveCameraToPlayer();
+        CameraFlag = true;
+      }
       scene.render();
     };
 
@@ -263,6 +255,7 @@ export const Pong = () => {
     if (engineRef.current) {
       engineRef.current.stopRenderLoop();
     }
+
 
     if (shadowGenRef.current) {
       shadowGenRef.current.dispose();
@@ -290,12 +283,12 @@ export const Pong = () => {
   };
   const loadAssets = async (scene: Scene) => {
     try {
-      const result = await ImportMeshAsync(ASSET_PATH, scene);
-      meshesRef.current = result.meshes;
-      console.log(
-        "Mesh caricati:",
-        result.meshes.map((m: any) => m.name)
+      const result = await ImportMeshAsync(
+        ASSET_PATH,
+        scene
       );
+      meshesRef.current = result.meshes;
+      console.log("Mesh caricati:", result.meshes.map((m: any) => m.name));
       const { mainLights, accentLights } = createLights(scene);
       pointLightsRef.current = accentLights;
       configureLights(mainLights, accentLights, meshesRef.current);
@@ -304,18 +297,6 @@ export const Pong = () => {
     } catch (error) {
       console.error("Error loading assets:", error);
     }
-  };
-
-  const configurePlayerCamera = (player: 1 | 2) => {
-    if (!cameraRef.current) {
-      return;
-    }
-    if (player === 1) {
-      paddlePlayerRef.current = paddleRight;
-    } else if (player === 2) {
-      paddlePlayerRef.current = paddleLeft;
-    }
-    moveCameraToPlayer();
   };
 
   const applyStateUpdate = (message: UpdateMessage) => {
@@ -333,8 +314,12 @@ export const Pong = () => {
       updateMeshPosition(rightMesh, message.state.paddleRight.position);
     }
 
-    const paddleRightPos = rightMesh?.getAbsolutePosition().add(LED_OFFSET);
-    const paddleLeftPos = leftMesh?.getAbsolutePosition().add(LED_OFFSET);
+    const paddleRightPos = rightMesh
+      ?.getAbsolutePosition()
+      .add(LED_OFFSET);
+    const paddleLeftPos = leftMesh
+      ?.getAbsolutePosition()
+      .add(LED_OFFSET);
 
     if (pointLightsRef.current[0] && paddleRightPos) {
       updateLightPosition(pointLightsRef.current[0], paddleRightPos);
@@ -344,16 +329,8 @@ export const Pong = () => {
     }
   };
 
-  const followActivePlayer = () => {
-    moveCameraToPlayer();
-  };
-
   const moveCameraToPlayer = (instant: boolean = false) => {
-    if (
-      paddlePlayerRef.current === -1 ||
-      !cameraRef.current ||
-      meshesRef.current.length === 0
-    ) {
+    if (paddlePlayerRef.current === -1 || !cameraRef.current || meshesRef.current.length === 0) {
       return;
     }
     const activeMesh = meshesRef.current[paddlePlayerRef.current];
@@ -365,10 +342,10 @@ export const Pong = () => {
         ? offsetRight.current
         : offsetLeft.current;
     const desiredPosition = activeMesh.getAbsolutePosition().add(offset);
-    const currentCamera = cameraRef.current;
+    //const currentCamera = cameraRef.current;
     const targetMesh = meshesRef.current[0];
-    currentCamera.position = desiredPosition;
-    currentCamera.targetMesh = targetMesh;
+    cameraRef.current.position = desiredPosition;
+    cameraRef.current.target = targetMesh.getAbsolutePosition();
   };
 
   const maybeSendNotReady = () => {
@@ -516,11 +493,7 @@ const configureMaterials = (scene: Scene, meshes: AbstractMesh[]) => {
 
 const freezeStaticMeshes = (meshes: AbstractMesh[]) => {
   meshes.forEach((mesh, index) => {
-    if (
-      !MOVING_MESH_INDICES.has(index) &&
-      mesh &&
-      mesh.isAnInstance === false
-    ) {
+    if (!MOVING_MESH_INDICES.has(index) && mesh && mesh.isAnInstance === false) {
       try {
         mesh.freezeWorldMatrix();
       } catch {
