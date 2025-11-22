@@ -1,6 +1,6 @@
 import Sandbox from "@/components/sandbox";
 import MainLayout from "@/components/old-layout";
-import { ButtonLink, Button } from "@/components/button";
+import { ButtonLink, Button } from "@/components/ui/button";
 import { useState } from "react";
 
 const TestSandbox = () => {

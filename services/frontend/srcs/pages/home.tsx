@@ -1,11 +1,11 @@
-import { ButtonLink } from "@/components/button";
-import { MainLayout } from "@/components/main-layout";
+import { ButtonLink } from "@/components/ui/button";
+import { Layout } from "@/components/layout";
 
 const Home = () => {
   //   console.log(import.meta.env.DEV);
 
   return (
-    <MainLayout>
+    <Layout>
       <div className="flex flex-col items-center justify-center min-h-[80vh] px-6">
         <h1 className="text-3xl font-bold">Welcome to Transcendence</h1>
         <p className="text-gray-600 mt-2">Your 3D Pong game awaits!</p>
@@ -18,7 +18,7 @@ const Home = () => {
           </ButtonLink>
         </div>
       </div>
-    </MainLayout>
+    </Layout>
   );
 };
 

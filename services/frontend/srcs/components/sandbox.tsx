@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { ButtonLink, Button } from "./button";
+import { ButtonLink, Button } from "./ui/button";
 
 const Sandbox = (props: {
   children?: React.ReactNode;

@@ -12,8 +12,7 @@ import GeminiDesign from "./pages/inspiration/gemini-design";
 import TestDesign from "./pages/inspiration/test-design";
 import DevHub from "./pages/dev-hub";
 import Signup from "@/pages/auth/SignUp";
-import LoginPage from "@/pages/auth/Login";
-import Login from "@/pages/login";
+import Login from "@/pages/auth/Login";
 import Register from "@/pages/register";
 
 const root = document.getElementById("root") as HTMLElement;
@@ -33,10 +32,9 @@ ReactDOM.createRoot(root).render(
         <Route path="/pong" element={<Pong />} />
 
         {/* AUTH PAGES */}
-        <Route path="/auth/login" element={<LoginPage />} />
+        <Route path="/auth/login" element={<Login />} />
         <Route path="/auth/signup" element={<Signup />} />
 
-        <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Register />} />
         <Route path="/testApi" element={<TestApi />} />
 

@@ -126,7 +126,7 @@ const Navbar = () => {
   );
 };
 
-export const MainLayout = ({ children }: { children: React.ReactNode }) => {
+export const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="min-h-screen w-full bg-background text-foreground flex flex-col">
       <Navbar />

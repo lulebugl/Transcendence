@@ -7,7 +7,8 @@ build-nocache:
 up:
 	@docker compose -f infra/docker-compose.yml --env-file $(ENV_FILE) up -d $(filter-out $@,$(MAKECMDGOALS))
 restart:
-	@docker compose -f infra/docker-compose.yml --env-file $(ENV_FILE) restart $(filter-out $@,$(MAKECMDGOALS)) 
+	@docker compose -f infra/docker-compose.yml --env-file $(ENV_FILE) build $(filter-out $@,$(MAKECMDGOALS)) 
+	@docker compose -f infra/docker-compose.yml --env-file $(ENV_FILE) up -d $(filter-out $@,$(MAKECMDGOALS)) 
 down:
 	@docker compose -f infra/docker-compose.yml --env-file $(ENV_FILE) down $(filter-out $@,$(MAKECMDGOALS)) 
 stop:

@@ -1,27 +1,37 @@
-import { Link } from 'react-router';
-import Background from '../components/background';
+import { Link } from "react-router";
+import { AlertTriangle } from "lucide-react";
+import { Layout } from "@/components/layout";
 
 const NotFound = () => {
   return (
-	<Background>	
-    <div className="p-6 space-y-4">
-      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-6">
-        <h1 className="text-6xl font-bold text-gray-200">404</h1>
-        <h2 className="text-2xl font-semibold text-gray-300">Page Not Found</h2>
-        <p className="text-gray-400 text-center max-w-md">
-          The page you're looking for doesn't exist or has been moved.
+    <Layout>
+      <div className="flex flex-col items-center justify-center h-[80vh] space-y-6">
+        <div className="relative mb-4">
+          <div className="absolute inset-0 bg-destructive/10 blur-3xl rounded-full" />
+          <AlertTriangle className="w-32 h-32 text-destructive/80 relative z-10" />
+        </div>
+
+        <h1 className="text-6xl font-bold text-foreground tracking-tighter">
+          404
+        </h1>
+        <h2 className="text-2xl font-semibold text-muted-foreground">
+          System Error: Sector Not Found
+        </h2>
+
+        <p className="text-muted-foreground max-w-xs text-center">
+          The coordinates you requested are outside the known grid. <br />
+          Return to base immediately.
         </p>
-        <Link 
-          to="/" 
-          className="px-6 py-3 bg-black/50 hover:bg-black/70 text-white rounded-lg transition-colors"
+
+        <Link
+          to="/"
+          className="mt-4 px-8 py-3 bg-primary text-primary-foreground font-bold rounded-xl hover:bg-primary/90 transition-all shadow-[0_0_20px_-5px_var(--color-primary)]"
         >
-          Go Home
+          Return to Homepage
         </Link>
       </div>
-    </div>
-	</Background>
+    </Layout>
   );
 };
 
 export default NotFound;
-

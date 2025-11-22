@@ -1,10 +1,11 @@
 import { Link } from "react-router";
 import { ArrowRight, Lock, User, Mail, Sparkles } from "lucide-react";
-import { MainLayout } from "@/components/main-layout";
+import { Layout } from "@/components/layout";
+import { Input } from "@/components/ui/Input";
 
 const Signup = () => {
   return (
-	<MainLayout>
+	<Layout>
     <div className="flex flex-col items-center justify-center min-h-[80vh] px-6">
       
       {/* Ambient Background Effects */}
@@ -28,9 +29,9 @@ const Signup = () => {
                   <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-white transition-colors">
                     <User className="w-4 h-4" />
                   </div>
-                  <input 
+                  <Input 
                     type="text" 
-                    className="w-full bg-black/20 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-primary/50 focus:bg-primary/5 transition-all"
+                    className="pl-12"
                     placeholder="PILOT_01"
                   />
                 </div>
@@ -83,7 +84,7 @@ const Signup = () => {
         </div>
       </div>
     </div>
-	</MainLayout>
+	</Layout>
   );
 };
 

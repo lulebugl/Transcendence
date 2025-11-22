@@ -1,7 +1,7 @@
 import { Link } from "react-router";
 import MainLayout from "../../components/old-layout";
 import Sandbox from "../../components/sandbox";
-import { ButtonLink } from "@/components/button";
+import { ButtonLink } from "@/components/ui/button";
 
 const InspirationHome = () => {
   return (
