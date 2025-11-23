@@ -1,6 +1,6 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
-import { Label } from "@/components/ui/Label"
+import { Label } from "@/lib/ui/Label"
 
 interface FieldProps extends React.ComponentProps<"div"> {
   orientation?: "vertical" | "horizontal"
@@ -75,7 +75,7 @@ function FieldDescription({
     <p
       data-slot="field-description"
       className={cn(
-        "text-muted-foreground text-sm leading-normal font-normal",
+        "ml-1 text-muted-foreground text-xs leading-normal font-normal",
         "group-has-data-[orientation=horizontal]/field:text-balance",
         "[&>a:hover]:text-primary [&>a]:underline [&>a]:underline-offset-4",
         className

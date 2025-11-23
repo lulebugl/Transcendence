@@ -1,23 +1,35 @@
-import { useState } from "react";
-import { Link, redirect } from "react-router";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router";
 import { ArrowRight, Lock, User, ShieldAlert } from "lucide-react";
-import { useAuth } from "@/context/AuthContext";
-import { Field, FieldContent, FieldLabel } from "@/components/ui/Field";
-import { Input } from "@/components/ui/Input";
+import { useAuth } from "@/context/auth-context";
+import { FormInput } from "@/components/FormInput";
 
 // TODO: add otp if activated
 const Login = () => {
   const [pseudo, setPseudo] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const { login } = useAuth();
+  const { login, user } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await login(pseudo, password);
-      redirect("/");
-    } catch (error) {
+      const username = pseudo.trim();
+      if (!username || !password.trim()) {
+        setError("Username and password are required");
+        return;
+      }
+      await login(username, password);
+      navigate("/");
+    } catch (err) {
+      const error = err as Error;
       console.error("Login failed", error.message);
       setPassword("");
       setError(error.message || "Login Failed");
@@ -44,52 +56,40 @@ const Login = () => {
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="p-8 space-y-6">
-        <Field>
-          <FieldLabel htmlFor="pseudo">Pilot Pseudo</FieldLabel>
-          <FieldContent>
-            <Input
-              id="pseudo"
-              type="text"
-              icon={User}
-              placeholder="IDENTIFIER"
-              value={pseudo}
-              onChange={(e) => {
+        <FormInput
+            label="Pilot Pseudo"
+            id="pseudo"
+            value={pseudo}
+            onChange={(e) => {
                 setPseudo(e.target.value);
                 if (error) setError(null);
-              }}
-              required
-            />
-          </FieldContent>
-        </Field>
+            }}
+            icon={User}
+            placeholder="IDENTIFIER"
+            required
+        />
 
-        <Field>
-          <div className="flex justify-between items-center">
-            <FieldLabel htmlFor="password">Passcode</FieldLabel>
-            {/* TODO: this maybe can be a way to connect with otp that would allow to change password or something like that*/}
-            {/* TODO: this maybe can be a way to connect with otp that would allow to change password or something like that*/}
-            {/* TODO: this maybe can be a way to connect with otp that would allow to change password or something like that*/}
-            <Link
-              to="/forgot-password"
-              className="text-[10px] text-primary hover:text-white transition-colors uppercase tracking-wider"
-            >
-              Lost Key?
-            </Link>
-          </div>
-          <FieldContent>
-            <Input
-              id="password"
-              type="password"
-              icon={Lock}
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => {
+        <FormInput
+            label="Passcode"
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e) => {
                 setPassword(e.target.value);
                 if (error) setError(null);
-              }}
-              required
-            />
-          </FieldContent>
-        </Field>
+            }}
+            icon={Lock}
+            placeholder="••••••••"
+            labelRight={
+                <Link
+                to="/forgot-password"
+                className="text-[10px] text-primary hover:text-white transition-colors uppercase tracking-wider"
+              >
+                Lost Key?
+              </Link>
+            }
+            required
+        />
 
         <button
           type="submit"
@@ -108,7 +108,6 @@ const Login = () => {
             <span className="font-medium">{error}</span>
           </div>
         )}
-		
       </form>
 
       {/* Footer */}
@@ -116,7 +115,7 @@ const Login = () => {
         <p className="text-xs text-muted-foreground">
           No identification found? <br />
           <Link
-            to="/auth/signup"
+            to="/auth/signup"	
             className="text-primary hover:text-white transition-colors font-medium uppercase tracking-wider mt-2 inline-block border-b border-primary/20 hover:border-primary"
           >
             Create Pilot Profile

@@ -2,12 +2,12 @@ import { Link } from "react-router";
 import { LogIn, LogOut } from "lucide-react";
 import { CURRENT_USER } from "@/lib/mock-data";
 import { useNavigate } from "react-router";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/auth-context";
 
 const Navbar = () => {
   // mock data
   //   const user = CURRENT_USER;
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const toggleAuth = () => {
@@ -21,7 +21,7 @@ const Navbar = () => {
   ];
 
   // @ts-expect-error: Vite injects the env at runtime
-  if (import.meta.env.development) {
+  if (import.meta.env.DEV) {
     navItems.push({ label: "Dev-Hub", path: "/dev-hub" });
   }
 
@@ -90,7 +90,7 @@ const Navbar = () => {
               {user ? (
                 <div className="relative group cursor-pointer">
                   <img
-                    src={user.avatar}
+                    src={user.avatar_url}
                     alt="User"
                     className="w-10 h-10 rounded-full grayscale group-hover:grayscale-0 transition-all duration-500 object-cover"
                   />
@@ -101,23 +101,23 @@ const Navbar = () => {
                   AI
                 </div>
               )}
-              <Link
-                // to={user ? "/auth/logout" : "/auth/login"}
-                to="#"
-                className="text-[10px] uppercase tracking-widest px-4 py-2 border border-white/10 rounded-full hover:bg-white/10 transition-all duration-300 flex items-center gap-2"
-              >
-                {user ? (
-                  <>
-                    <LogOut className="w-3 h-3" />
-                    Logout
-                  </>
-                ) : (
-                  <>
-                    <LogIn className="w-3 h-3" />
-                    Demo Login
-                  </>
-                )}
-              </Link>
+              {user ? (
+                <button
+                  onClick={() => logout()}
+                  className="text-[10px] cursor-pointer uppercase tracking-widest px-4 py-2 border border-white/10 rounded-full hover:bg-white/10 transition-all duration-300 flex items-center gap-2"
+                >
+                  <LogOut className="w-3 h-3" />
+                  Logout
+                </button>
+              ) : (
+                <Link
+                  to="/auth/login"
+                  className="text-[10px] uppercase tracking-widest px-4 py-2 border border-white/10 rounded-full hover:bg-white/10 transition-all duration-300 flex items-center gap-2"
+                >
+                  <LogIn className="w-3 h-3" />
+                  Login
+                </Link>
+              )}
             </div>
           </div>
         </div>

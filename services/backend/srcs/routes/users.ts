@@ -22,6 +22,7 @@ interface UserBody {
   username: string;
   avatarUrl?: string;
   password: string;
+  totp_enabled?: boolean;
 }
 
 interface UserQuery {
@@ -61,7 +62,7 @@ export default async function userRoutes(fastify: FastifyInstance) {
       },
     },
     async (req: FastifyRequest<{ Body: UserBody }>) => {
-      const { username, avatarUrl, password } = req.body;
+      const { username, avatarUrl, password, totp_enabled } = req.body;
 	  const DEFAULT_AVATAR_BASE_URL = "https://api.dicebear.com/7.x/avataaars/svg";
 
       // Minimal checks
@@ -82,7 +83,7 @@ export default async function userRoutes(fastify: FastifyInstance) {
       const password_hash = await hashPassword(password);
       const secretBuffer: Buffer = generateSecret();
       const secretBase32: string = bufferToBase32(secretBuffer);
-      const secret_hash = encryptTotpSecret(secretBase32, masterKey);
+      const secret_hash = totp_enabled ? encryptTotpSecret(secretBase32, masterKey) : null;
       const otpauth = `otpauth://totp/${encodeURIComponent(
         username
       )}?secret=${secretBase32}&issuer=MyApp`;
@@ -90,7 +91,7 @@ export default async function userRoutes(fastify: FastifyInstance) {
       try {
         await db.insert(users).values({
           username: username,
-          avatar_url: avatarUrl ? avatarUrl : `${DEFAULT_AVATAR_BASE_URL}?seed=${username}`,
+          avatar_url: avatarUrl ? avatarUrl : `${DEFAULT_AVATAR_BASE_URL}?seed=NeoPaddle`,
           password_hash: password_hash,
           totp_secret_key: secret_hash
         });
@@ -124,19 +125,19 @@ export default async function userRoutes(fastify: FastifyInstance) {
     },
     async (req: FastifyRequest<{ Body: loginBody }>, reply: FastifyReply) => {
       const { username, password, totp } = req.body;
-      //FLAG FOR DISABLE TOTP auth 
-      let totpNumber: number = 1;
+
+	  let totpNumber: number = 1;
       const [user] = await db.select().from(users).where(eq(users.username, username));
       if (!user) return reply.unauthorized("Invalid credentials");
 
       if (user.totp_secret_key) {
-        if (!/^\d{6}$/.test(totp.replace(/\s+/g, ""))) {
+        if (!totp || !/^\d{6}$/.test(totp.replace(/\s+/g, ""))) {
           return reply.unauthorized("Invalid TOTP format");
         }
         totpNumber = parseInt(totp.replace(/\s+/g, ""), 10);
       }
       const match: boolean = await verifyPassword(password, user.password_hash);
-      if (!match || (!verifyTOTP(Buffer.from(base32.decode.asBytes(decryptTotpSecret(user.totp_secret_key, masterKey))), totpNumber) && user.totp_secret_key))
+      if (!match || (user.totp_secret_key && !verifyTOTP(Buffer.from(base32.decode.asBytes(decryptTotpSecret(user.totp_secret_key, masterKey))), totpNumber)))
         return reply.unauthorized("Invalid credentials");
 
       const accessToken: string = fastify.jwt.sign(
@@ -191,12 +192,41 @@ export default async function userRoutes(fastify: FastifyInstance) {
     }
   });
 
+  // demo Logout 
+  // fundamentally broken right now
+  fastify.post("/api/users/logout", async (req: FastifyRequest, reply: FastifyReply) => {
+    try {
+      const refreshToken = req.cookies?.refreshToken;
+      
+      if (refreshToken) {
+        await db.update(users).set({ refresh_token: null }).where(eq(users.refresh_token, refreshToken));
+      }
+      
+      reply.clearCookie("refreshToken", { path: "/api/users/refresh" });
+      
+      return reply.status(200).send({ message: "Logged out successfully" });
+    } catch (err) {
+      reply.clearCookie("refreshToken", { path: "/api/users/refresh" });
+      return reply.status(200).send({ message: "Logged out successfully" });
+    }
+  });
+
   // GET - Retrieve current user
   fastify.get(
     "/api/users/me",
     { preHandler: fastify.auth },
     async (req: FastifyRequest) => {
-      return { user: req.user };
+      const [user] = await db
+        .select({
+          id: users.id,
+          username: users.username,
+          avatar_url: users.avatar_url
+        })
+        .from(users)
+        .where(eq(users.id, req.user.id));
+
+      if (!user) return fastify.httpErrors.notFound("User not found");
+      return user;
     }
   );
 }

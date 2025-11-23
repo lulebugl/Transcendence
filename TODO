@@ -18,6 +18,7 @@
 	- [ ] this should prevent a lot of issues
 
 - Production compatibility
+- [ ] please someone make the logging better i'm tired of it (i tried making something but it's barely usable)
 
 ## SECURITY
 - make certs not on git of course

@@ -1,9 +1,7 @@
-import { ButtonLink } from "@/components/ui/button";
+import { ButtonLink } from "@/lib/ui/button";
 import { Layout } from "@/components/layout";
 
 const Home = () => {
-  //   console.log(import.meta.env.DEV);
-
   return (
     <Layout>
       <div className="flex flex-col items-center justify-center min-h-[80vh] px-6">

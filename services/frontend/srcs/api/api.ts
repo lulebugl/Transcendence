@@ -19,13 +19,18 @@ export async function api(
   path: string,
   options: RequestInit = {}
 ): Promise<Response> {
-  let token = getAccessToken();
+  const token = getAccessToken();
 
   const headers: Record<string, string> = {
-    "Content-Type": "application/json",
     ...((options.headers as Record<string, string>) || {}),
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
   };
+
+  // Only add Content-Type: application/json if there is a body, or if specifically requested
+  // Otherwise, empty POSTs like logout fail because Fastify expects a JSON body
+  if (options.body || !options.method || options.method === "GET") {
+     headers["Content-Type"] = "application/json";
+  }
 
   let response: Response = await fetch(path, {
     ...options,

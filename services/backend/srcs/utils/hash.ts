@@ -29,8 +29,10 @@ export function encryptTotpSecret(text: string, keyBuffer: Buffer) {
 }
 
 export function decryptTotpSecret(payload: string, keyBuffer: Buffer) {
+  if (!payload) return null;
+
   const parts = payload.split(":");
-  if (parts.length !== 3) throw new Error("Payload formato non valido");
+  if (parts.length !== 3) throw new Error("Invalid payload format");
 
   const iv = Buffer.from(parts[0], "base64");
   const encrypted = Buffer.from(parts[1], "base64");
