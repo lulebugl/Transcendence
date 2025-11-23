@@ -1,7 +1,7 @@
 import ReactDOM from "react-dom/client";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router";
+import { BrowserRouter as Router, Routes, Route } from "react-router";
 import TestSandbox from "./pages/sandbox";
-import { Home, Test, NotFound, Pong, TestApi } from "./pages";
+import { Home, NotFound, Pong } from "./pages";
 import "./styles.css";
 import { AuthProvider } from "./context/AuthProvider";
 
