@@ -21,10 +21,19 @@ const SignUpForm = () => {
     e.preventDefault();
     setErrors({});
 
-    if (password !== confirmPassword) {
-        setErrors({ confirmPassword: "Passwords do not match" });
-        return;
-    }
+	const newErrors: Record<string, string> = {};
+
+	if (password.length < 8) {
+		newErrors.password = "Password must be at least 8 characters long";
+	}
+	if (password !== confirmPassword) {
+		newErrors.confirmPassword = "Passwords do not match";
+	}
+
+	if (Object.keys(newErrors).length > 0) {
+		setErrors(newErrors);
+		return;
+	}
 
     try {
       await signup(username, password);

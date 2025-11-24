@@ -13,6 +13,8 @@ import TestDesign from "./pages/inspiration/test-design";
 import DevHub from "./pages/dev-hub";
 import Signup from "@/pages/auth/SignUp";
 import Login from "@/pages/auth/Login";
+import Loading from "@/components/Loading";
+import Settings from "./pages/settings";
 
 const root = document.getElementById("root") as HTMLElement;
 if (!root) {
@@ -22,12 +24,16 @@ if (!root) {
 }
 
 ReactDOM.createRoot(root).render(
-  <AuthProvider>
-    <Router>
+  <Router>
+    <AuthProvider>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/sandbox" element={<TestSandbox />} />
         <Route path="/pong" element={<Pong />} />
+
+        {/* Just to demonstrate the loading state */}
+        <Route path="/loading" element={<Loading />} />
+        <Route path="/settings" element={<Settings />} />
 
         {/* AUTH PAGES */}
         <Route path="/auth/login" element={<Login />} />
@@ -48,6 +54,6 @@ ReactDOM.createRoot(root).render(
         {/* <Route path="/not-found" element={<NotFound />} /> */}
         <Route path="*" element={<NotFound />} />
       </Routes>
-    </Router>
-  </AuthProvider>
+    </AuthProvider>
+  </Router>
 );

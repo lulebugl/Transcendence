@@ -12,12 +12,23 @@ import {
   logout as apiLogout,
   signup as apiSignup,
 } from "@/api";
-import { AuthContext, AuthContextType } from "./auth-context";
+import { AuthContext } from "./auth-context";
+import { useNavigate } from "react-router";
+
+export interface AuthContextType {
+	user: User | null;
+	isLoading: boolean;
+	login: (username: string, password: string) => Promise<void>;
+	signup: (username: string, password: string) => Promise<void>;
+	logout: () => Promise<void>;
+	refreshUser: () => Promise<void>;
+  }
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-
+  const navigate = useNavigate();
+  
   const refreshUser = useCallback(async () => {
     try {
       const res = await api("/api/users/me");
@@ -53,6 +64,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       await apiLogout();
       setUser(null);
+	  navigate("/");
     } catch (error) {
       console.error("Failed to logout:", error);
       setUser(null);

@@ -1,22 +1,13 @@
 import { Link } from "react-router";
-import { LogIn, LogOut } from "lucide-react";
-import { CURRENT_USER } from "@/lib/mock-data";
-import { useNavigate } from "react-router";
+import { LogIn, LogOut, Settings } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
 
-const Navbar = () => {
-  // mock data
-  //   const user = CURRENT_USER;
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
-
-  const toggleAuth = () => {
-    navigate("/auth/login");
-  };
+export const Navbar = () => {
+  const { user, logout, isLoading } = useAuth();
 
   const navItems = [
     { label: "Overview", path: "/" },
-    { label: "Play", path: "/game" },
+    { label: "Play", path: "/pong" },
     { label: "Tournaments", path: "/tournaments" },
   ];
 
@@ -101,6 +92,16 @@ const Navbar = () => {
                   AI
                 </div>
               )}
+			  {/* Settings */}
+              {user ? (
+                <Link
+                  to="/settings"
+                  className="p-2 border border-white/10 rounded-full hover:bg-white/10 transition-all duration-300 flex items-center justify-center group"
+                >
+                  <Settings className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                </Link>
+              ) : null}
+			  {/* Login/Logout Button */}
               {user ? (
                 <button
                   onClick={() => logout()}
@@ -130,7 +131,7 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="min-h-screen w-full bg-background text-foreground flex flex-col">
       <Navbar />
-      <main className="flex-1 relative pt-20">{children}</main>
+      <main className="flex-1 relative pt-20 px-12">{children}</main>
     </div>
   );
 };

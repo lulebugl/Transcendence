@@ -1,20 +1,22 @@
 import { ComponentProps, ReactNode } from "react";
-import { Check, LucideIcon } from "lucide-react";
+import { LucideIcon } from "lucide-react";
 import {
   Field,
   FieldContent,
   FieldDescription,
   FieldLabel,
   FieldError,
+  FieldSuccess,
 } from "@/lib/ui/Field";
 import { Input } from "@/lib/ui/Input";
 import { cn } from "@/lib/utils";
+import { Check } from "lucide-react";
 
 interface FormInputProps extends ComponentProps<typeof Input> {
   label: string;
   labelRight?: ReactNode;
   error?: string;
-  isSuccess?: boolean;
+  successField?: string;
   description?: string;
   icon?: LucideIcon;
 }
@@ -23,17 +25,22 @@ export function FormInput({
   label,
   labelRight,
   error,
-  isSuccess,
   description,
   icon,
   id,
+  successField,
   className,
   ...props
 }: FormInputProps) {
   const inputId = id ?? (label ? label.toLowerCase().replace(/\s+/g, "-") : "");
 
+  const details = error ? <FieldError>{error}</FieldError>
+  : successField ? <FieldSuccess>{successField}</FieldSuccess>
+  : description ? <FieldDescription>{description}</FieldDescription>
+  : null;
+
   return (
-    <Field invalid={!!error} className="relative group">
+    <Field invalid={!!error}>
       <div className="flex justify-between items-center">
         <FieldLabel htmlFor={inputId}>{label}</FieldLabel>
         {labelRight}
@@ -44,33 +51,31 @@ export function FormInput({
             id={inputId}
             icon={icon}
             className={cn(
-              error
-                ? "border-red-500/50 focus:border-red-500"
-                : isSuccess
-                ? "border-green-500/50 focus-visible:border-green-500"
-                : className
+              "transition-all duration-300",
+              error && "border-destructive focus-visible:ring-destructive/20",
+              !error &&
+                successField &&
+                "border-green-500 focus-visible:border-green-500 focus-visible:ring-green-500/20 pr-10",
+              className
             )}
             {...props}
           />
+
           <div
             className={cn(
               "absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none transition-all duration-300",
-              isSuccess ? "opacity-100 translate-x-0" : "opacity-0 translate-x-2"
+              successField
+                ? "opacity-100 scale-100 rotate-0"
+                : "opacity-0 scale-50 -rotate-90"
             )}
           >
-            <div className="flex items-center gap-1.5 px-2 py-1 bg-green-500/10 backdrop-blur-md border border-green-500/20 rounded-full">
-              <Check className="w-3 h-3 text-emerald-500" />
-              <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-wider">
-                Saved
-              </span>
+            <div className="bg-green-500 rounded-full p-0.5 shadow-sm">
+              <Check className="w-3 h-3 text-white stroke-3" />
             </div>
           </div>
         </div>
       </FieldContent>
-      {description && !error && (
-        <FieldDescription>{description}</FieldDescription>
-      )}
-      <FieldError>{error}</FieldError>
+      <div className="min-h-[20px] mt-1">{details}</div>
     </Field>
   );
 }

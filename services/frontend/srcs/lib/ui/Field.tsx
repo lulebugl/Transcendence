@@ -1,19 +1,19 @@
-import * as React from "react"
-import { cn } from "@/lib/utils"
-import { Label } from "@/lib/ui/Label"
+import * as React from "react";
+import { cn } from "@/lib/utils";
+import { Label } from "@/lib/ui/Label";
 
 interface FieldProps extends React.ComponentProps<"div"> {
-  orientation?: "vertical" | "horizontal"
-  invalid?: boolean
-  disabled?: boolean
+  orientation?: "vertical" | "horizontal";
+  invalid?: boolean;
+  disabled?: boolean;
 }
 
-function Field({ 
+export function Field({
   className,
   orientation = "vertical",
   invalid = false,
   disabled = false,
-  ...props 
+  ...props
 }: FieldProps) {
   return (
     <div
@@ -23,19 +23,22 @@ function Field({
       data-invalid={invalid}
       data-disabled={disabled}
       className={cn(
-        "group/field flex w-full gap-3",
-        orientation === "vertical" 
-          ? "flex-col *:w-full" 
+        "group/field flex w-full gap-2",
+        orientation === "vertical"
+          ? "flex-col *:w-full"
           : "flex-row items-center *:data-[slot=field-label]:flex-auto has-[>[data-slot=field-content]]:items-start",
         invalid && "text-destructive",
         className
       )}
       {...props}
     />
-  )
+  );
 }
 
-function FieldContent({ className, ...props }: React.ComponentProps<"div">) {
+export function FieldContent({
+  className,
+  ...props
+}: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="field-content"
@@ -45,10 +48,10 @@ function FieldContent({ className, ...props }: React.ComponentProps<"div">) {
       )}
       {...props}
     />
-  )
+  );
 }
 
-function FieldLabel({
+export function FieldLabel({
   className,
   ...props
 }: React.ComponentProps<typeof Label>) {
@@ -64,12 +67,12 @@ function FieldLabel({
       )}
       {...props}
     />
-  )
+  );
 }
 
-function FieldDescription({ 
-  className, 
-  ...props 
+export function FieldDescription({
+  className,
+  ...props
 }: React.ComponentProps<"p">) {
   return (
     <p
@@ -82,26 +85,41 @@ function FieldDescription({
       )}
       {...props}
     />
-  )
+  );
 }
 
-function FieldError({ 
-  className, 
+export function FieldError({
+  className,
   children,
-  ...props 
+  ...props
 }: React.ComponentProps<"div">) {
-  if (!children) return null
-  
+  if (!children) return null;
+
   return (
     <div
       role="alert"
       data-slot="field-error"
-      className={cn("text-destructive text-sm font-normal", className)}
+      className={cn("text-destructive text-sm font-normal ml-1", className)}
       {...props}
     >
       {children}
     </div>
-  )
+  );
 }
 
-export { Field, FieldContent, FieldLabel, FieldDescription, FieldError }
+export function FieldSuccess({
+  className,
+  children,
+  ...props
+}: React.ComponentProps<"div">) {
+  if (!children) return null;
+
+  return (
+    <div 
+	className={cn("text-emerald-600 ml-1", className)}
+	data-slot="field-success"
+	{...props}>
+      {children}
+    </div>
+  );
+}

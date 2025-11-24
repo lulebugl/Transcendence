@@ -58,6 +58,7 @@ body,
   --animate-fade-in-up: fade-in-up 0.8s ease-out forwards;
   --animate-pulse-slow: pulse-slow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   --animate-fade-in: fade-in 1s ease-in forwards;
+  --animate-loading-bar: loading-bar 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 
   @keyframes fade-in {
     0% {
@@ -86,6 +87,18 @@ body,
     }
     50% {
       opacity: 0.2;
+    }
+  }
+
+  @keyframes loading-bar {
+    0% {
+      transform: translateX(-150%);
+    }
+    50% {
+      transform: translateX(0%);
+    }
+    100% {
+      transform: translateX(150%);
     }
   }
 }

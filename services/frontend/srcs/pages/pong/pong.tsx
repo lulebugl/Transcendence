@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 import * as GUI from '@babylonjs/gui';
 import {
   StandardMaterial,
@@ -35,6 +35,7 @@ import {
 } from "./pong-helpers";
 import { initWebSocket, sendMessage } from "./initWebSocket";
 import { createPointBar, createExitGame, addText, updatePoint } from "./pongUI";
+import Loading from "@/components/Loading";
 
 const ASSET_PATH = "/export_pongV0.5.glb";
 const ASSET_PATH_HDRI = "/hdriV0.1.hdr";
@@ -70,6 +71,7 @@ const isStartMessage = (message: BackendMessage): message is StartMessage =>
   message?.type === "start";
 
 export const Pong = () => {
+  const [isLoading, setIsLoading] = useState(true);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const engineRef = useRef<Engine | null>(null);
   const sceneRef = useRef<Scene | null>(null);
@@ -149,6 +151,9 @@ export const Pong = () => {
       if (!disposed) {
         sceneReadyRef.current = true;
         freezeStaticMeshes(meshesRef.current);
+        if (paddlePlayerRef.current !== -1) {
+          setIsLoading(false);
+        }
       }
     });
     const uiGame = GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
@@ -205,6 +210,7 @@ export const Pong = () => {
         if (sceneReadyRef.current === true) {
           moveCameraToPlayer();
           CameraFlag = true;
+          setIsLoading(false);
         }
         else {
           CameraFlag = false;
@@ -367,14 +373,21 @@ export const Pong = () => {
   };
 
   return (
-    <canvas
-      ref={canvasRef}
-      id="renderCanvas"
-      className="block h-screen w-screen"
-      role="img"
-      aria-label="Transcendence pong arena"
-      tabIndex={0}
-    />
+    <div className="relative w-screen h-screen overflow-hidden">
+      {isLoading && (
+        <div className="absolute inset-0 z-50">
+          <Loading />
+        </div>
+      )}
+      <canvas
+        ref={canvasRef}
+        id="renderCanvas"
+        className="block h-screen w-screen outline-none"
+        role="img"
+        aria-label="Transcendence pong arena"
+        tabIndex={0}
+      />
+    </div>
   );
 };
 
