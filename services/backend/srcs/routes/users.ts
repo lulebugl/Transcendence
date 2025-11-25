@@ -4,19 +4,20 @@ import { eq, or } from "drizzle-orm";
 import { hashPassword } from "../utils/hash";
 import { verifyPassword } from "../utils/hash";
 import { randomBytes } from "crypto";
-import { decryptTotpSecret } from "../utils/hash"
-import { generateSecret, bufferToBase32 } from "../2AF/genrate/totp_gen"
-import { encryptTotpSecret } from "../utils/hash"
-import { verifyTOTP } from "../2AF/verify/totp_verify"
+import { decryptTotpSecret } from "../utils/hash";
+import { generateSecret, bufferToBase32 } from "../2AF/genrate/totp_gen";
+import { encryptTotpSecret } from "../utils/hash";
+import { verifyTOTP } from "../2AF/verify/totp_verify";
 import base32 from "hi-base32";
-import 'dotenv/config';
+import "dotenv/config";
 import dotenv from "dotenv";
-import { Buffer } from 'buffer';
+import { Buffer } from "buffer";
 
 //types
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 dotenv.config();
 const masterKey = Buffer.from(process.env.MASTER_KEY_TOTP!, "base64");
+
 // Define request types
 interface UserBody {
   username: string;
@@ -47,7 +48,8 @@ export default async function userRoutes(fastify: FastifyInstance) {
   );
 
   //POST - Create user
-  fastify.post("/api/users/register",
+  fastify.post(
+    "/api/users/register",
     {
       schema: {
         body: {
@@ -63,18 +65,24 @@ export default async function userRoutes(fastify: FastifyInstance) {
     },
     async (req: FastifyRequest<{ Body: UserBody }>) => {
       const { username, avatarUrl, password, totp_enabled } = req.body;
-	  const DEFAULT_AVATAR_BASE_URL = "https://api.dicebear.com/7.x/avataaars/svg";
+      const DEFAULT_AVATAR_BASE_URL =
+        "https://api.dicebear.com/7.x/avataaars/svg";
 
       // Minimal checks
       if (!username.trim() || !password.trim()) {
         return fastify.httpErrors.badRequest("Fields cannot be empty.");
       }
       if (password.length < 8) {
-        return fastify.httpErrors.badRequest("Password must be at least 8 characters.");
+        return fastify.httpErrors.badRequest(
+          "Password must be at least 8 characters."
+        );
       }
 
       // Test for uniqueness of username
-      const existing = await db.select().from(users).where(eq(users.username, username));
+      const existing = await db
+        .select()
+        .from(users)
+        .where(eq(users.username, username));
 
       if (existing.length > 0) {
         return fastify.httpErrors.conflict("Username already in use.");
@@ -83,7 +91,9 @@ export default async function userRoutes(fastify: FastifyInstance) {
       const password_hash = await hashPassword(password);
       const secretBuffer: Buffer = generateSecret();
       const secretBase32: string = bufferToBase32(secretBuffer);
-      const secret_hash = totp_enabled ? encryptTotpSecret(secretBase32, masterKey) : null;
+      const secret_hash = totp_enabled
+        ? encryptTotpSecret(secretBase32, masterKey)
+        : null;
       const otpauth = `otpauth://totp/${encodeURIComponent(
         username
       )}?secret=${secretBase32}&issuer=MyApp`;
@@ -91,9 +101,11 @@ export default async function userRoutes(fastify: FastifyInstance) {
       try {
         await db.insert(users).values({
           username: username,
-          avatar_url: avatarUrl ? avatarUrl : `${DEFAULT_AVATAR_BASE_URL}?seed=NeoPaddle`,
+          avatar_url: avatarUrl
+            ? avatarUrl
+            : `${DEFAULT_AVATAR_BASE_URL}?seed=NeoPaddle`,
           password_hash: password_hash,
-          totp_secret_key: secret_hash
+          totp_secret_key: secret_hash,
         });
         return {
           success: true,
@@ -108,7 +120,8 @@ export default async function userRoutes(fastify: FastifyInstance) {
   );
 
   // POST - Login
-  fastify.post("/api/users/login",
+  fastify.post(
+    "/api/users/login",
     {
       config: { rateLimit: { max: 20, timeWindow: "1 minute" } },
       schema: {
@@ -126,19 +139,39 @@ export default async function userRoutes(fastify: FastifyInstance) {
     async (req: FastifyRequest<{ Body: loginBody }>, reply: FastifyReply) => {
       const { username, password, totp } = req.body;
 
-	  let totpNumber: number = 1;
-      const [user] = await db.select().from(users).where(eq(users.username, username));
+      let totpNumber: number = 1;
+      const [user] = await db
+        .select()
+        .from(users)
+        .where(eq(users.username, username));
+
       if (!user) return reply.unauthorized("Invalid credentials");
 
+      const match: boolean = await verifyPassword(password, user.password_hash);
+      if (!match) {
+        return reply.unauthorized("Invalid credentials");
+      }
+
       if (user.totp_secret_key) {
-        if (!totp || !/^\d{6}$/.test(totp.replace(/\s+/g, ""))) {
+        if (!totp) {
+          return reply.send({ require2fa: true });
+        }
+
+        fastify.log.info(`TOTP submitted for user '${username}': ${totp}`);
+		
+        const parsedTotp = totp.replace(/\s+/g, "");
+        if (!/^\d{6}$/.test(parsedTotp)) {
           return reply.unauthorized("Invalid TOTP format");
         }
-        totpNumber = parseInt(totp.replace(/\s+/g, ""), 10);
+        totpNumber = parseInt(parsedTotp, 10);
+
+        const decrypted = decryptTotpSecret(user.totp_secret_key, masterKey);
+        const secret = Buffer.from(base32.decode.asBytes(decrypted));
+
+        if (!verifyTOTP(secret, totpNumber)) {
+          return reply.unauthorized("Invalid code");
+        }
       }
-      const match: boolean = await verifyPassword(password, user.password_hash);
-      if (!match || (user.totp_secret_key && !verifyTOTP(Buffer.from(base32.decode.asBytes(decryptTotpSecret(user.totp_secret_key, masterKey))), totpNumber)))
-        return reply.unauthorized("Invalid credentials");
 
       const accessToken: string = fastify.jwt.sign(
         { id: user.id, username: user.username },
@@ -147,7 +180,10 @@ export default async function userRoutes(fastify: FastifyInstance) {
 
       const refreshToken: string = randomBytes(64).toString("hex");
 
-      await db.update(users).set({ refresh_token: refreshToken }).where(eq(users.id, user.id));
+      await db
+        .update(users)
+        .set({ refresh_token: refreshToken })
+        .where(eq(users.id, user.id));
 
       reply.setCookie("refreshToken", refreshToken, {
         httpOnly: true,
@@ -162,54 +198,69 @@ export default async function userRoutes(fastify: FastifyInstance) {
   );
 
   // POST - refresh JWT token
-  fastify.post("/api/users/refresh", async (req: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const refreshToken = req.cookies?.refreshToken;
-      if (!refreshToken) return reply.badRequest("Missing refresh token");
+  fastify.post(
+    "/api/users/refresh",
+    async (req: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const refreshToken = req.cookies?.refreshToken;
+        if (!refreshToken) return reply.badRequest("Missing refresh token");
 
-      const [user] = await db.select().from(users).where(eq(users.refresh_token, refreshToken));
-      if (!user) return reply.unauthorized("Invalid refresh token");
+        const [user] = await db
+          .select()
+          .from(users)
+          .where(eq(users.refresh_token, refreshToken));
+        if (!user) return reply.unauthorized("Invalid refresh token");
 
-      const newAccesstoken = fastify.jwt.sign(
-        { id: user.id, username: user.username },
-        { expiresIn: "15m" }
-      );
+        const newAccesstoken = fastify.jwt.sign(
+          { id: user.id, username: user.username },
+          { expiresIn: "15m" }
+        );
 
-      const newRefreshToken = randomBytes(64).toString("hex");
-      await db.update(users).set({ refresh_token: newRefreshToken }).where(eq(users.id, user.id));
+        const newRefreshToken = randomBytes(64).toString("hex");
+        await db
+          .update(users)
+          .set({ refresh_token: newRefreshToken })
+          .where(eq(users.id, user.id));
 
-      reply.setCookie("refreshToken", newRefreshToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "strict",
-        path: "/api/users/refresh",
-        maxAge: 60 * 60 * 24 * 30,
-      });
+        reply.setCookie("refreshToken", newRefreshToken, {
+          httpOnly: true,
+          secure: true,
+          sameSite: "strict",
+          path: "/api/users/refresh",
+          maxAge: 60 * 60 * 24 * 30,
+        });
 
-      return { token: newAccesstoken };
-    } catch (err) {
-      return reply.unauthorized("Invalid or expired refresh token");
-    }
-  });
-
-  // demo Logout 
-  // fundamentally broken right now
-  fastify.post("/api/users/logout", async (req: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const refreshToken = req.cookies?.refreshToken;
-      
-      if (refreshToken) {
-        await db.update(users).set({ refresh_token: null }).where(eq(users.refresh_token, refreshToken));
+        return { token: newAccesstoken };
+      } catch (err) {
+        return reply.unauthorized("Invalid or expired refresh token");
       }
-      
-      reply.clearCookie("refreshToken", { path: "/api/users/refresh" });
-      
-      return reply.status(200).send({ message: "Logged out successfully" });
-    } catch (err) {
-      reply.clearCookie("refreshToken", { path: "/api/users/refresh" });
-      return reply.status(200).send({ message: "Logged out successfully" });
     }
-  });
+  );
+
+  // was broken but seems to work so
+  // double check to make sure
+  fastify.post(
+    "/api/users/logout",
+    async (req: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const refreshToken = req.cookies?.refreshToken;
+
+        if (refreshToken) {
+          await db
+            .update(users)
+            .set({ refresh_token: null })
+            .where(eq(users.refresh_token, refreshToken));
+        }
+
+        reply.clearCookie("refreshToken", { path: "/api/users/refresh" });
+
+        return reply.status(200).send({ message: "Logged out successfully" });
+      } catch (err) {
+        reply.clearCookie("refreshToken", { path: "/api/users/refresh" });
+        return reply.status(200).send({ message: "Logged out successfully" });
+      }
+    }
+  );
 
   // GET - Retrieve current user
   fastify.get(
@@ -220,13 +271,17 @@ export default async function userRoutes(fastify: FastifyInstance) {
         .select({
           id: users.id,
           username: users.username,
-          avatar_url: users.avatar_url
+          avatar_url: users.avatar_url,
+          totp_secret_key: users.totp_secret_key,
         })
         .from(users)
         .where(eq(users.id, req.user.id));
 
       if (!user) return fastify.httpErrors.notFound("User not found");
-      return user;
+
+      const { totp_secret_key, ...userProfile } = user;
+
+      return { ...userProfile, totp_enabled: !!totp_secret_key };
     }
   );
 }

@@ -52,10 +52,18 @@ export function FormInput({
             )}
             {...props}
           />
+		  {/* 
+		  ** Success notif in the input
+		  ** the elements exist even if not visible to allow the animation to work
+		  ** but it impact every Form input so maybe update it later
+		  ** if needed
+		  */}
           <div
             className={cn(
               "absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none transition-all duration-300",
-              isSuccess ? "opacity-100 translate-x-0" : "opacity-0 translate-x-2"
+              isSuccess
+                ? "opacity-100 translate-x-0"
+                : "opacity-0 translate-x-2"
             )}
           >
             <div className="flex items-center gap-1.5 px-2 py-1 bg-green-500/10 backdrop-blur-md border border-green-500/20 rounded-full">

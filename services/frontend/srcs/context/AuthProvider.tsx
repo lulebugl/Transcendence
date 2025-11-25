@@ -18,7 +18,7 @@ import { useNavigate } from "react-router";
 export interface AuthContextType {
 	user: User | null;
 	isLoading: boolean;
-	login: (username: string, password: string) => Promise<void>;
+	login: (username: string, password: string, otp?: string) => Promise<{ require2fa: boolean } | void>;
 	signup: (username: string, password: string) => Promise<void>;
 	logout: () => Promise<void>;
 	refreshUser: () => Promise<void>;
@@ -53,9 +53,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   );
 
   const login = useCallback(
-    async (username: string, pass: string) => {
-      await apiLogin(username, pass);
+    async (username: string, pass: string, otp? : string) => {
+      const data = await apiLogin(username, pass, otp);
+	  console.log("login response: ", data);
       await refreshUser();
+	  return data
     },
     [refreshUser]
   );

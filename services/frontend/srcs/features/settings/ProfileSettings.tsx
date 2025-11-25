@@ -36,7 +36,8 @@ const ProfileSettings = ({ user }: { user: UserType }) => {
     try {
       await updateUser({ [field]: value });
       setSuccessField(field);
-      setTimeout(() => setSuccessField(null), 5000);
+	  // maybe make a constant for the success timeout
+      setTimeout(() => setSuccessField(null), 3000);
     } catch (err) {
       const error = err as Error;
       setErrors((prev) => ({ ...prev, [field]: error.message }));

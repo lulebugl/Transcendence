@@ -1,5 +1,4 @@
 - [ ] create the dev hub and make it only available in dev env
 - [ ] add skeletons, at least to display some form of page loads
-- [ ] "zombie state problem": 
-	- maybe implement a global logout to trigger when api.ts catches a 401/403 error, to prevent 'zombie' sessions
-	  where a deleted/invalid user remains visually logged in.
+- [ ] create button components with the different styles
+- [ ] add loading state for button in login, signup and otp

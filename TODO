@@ -4,12 +4,20 @@
 - [OK] Rate limiting login
 - [OK] remove email handling : db, route/register /login /me , pages register & login
 - JWT enforced security => Use function to generate secret
-- Default user picture
-- Log Out api route
+- [OK] Default user picture
+	- comment on gere les uploads?
+- user update api
 - User management routes
-- User management pages
+- [IN-PROGRESS] User management pages
 - Rate limiting login
 - Rate limiting is a bit too much for dev? (20 should be good but i encountered it very fast 😄)
+	
+- [ ] please someone make the logging better i'm tired of it 
+	(i tried making something but it's barely usable)
+
+- [ ] harmoniser les erreurs sur le backend:
+	- le backend doit garder les bonnes erreurs mais renvoyer un bon message pour les user
+	i.e ("Internal server error" a la place de la vrai erreur du backend etc...)
 
 - Production compatibility
 
@@ -18,7 +26,9 @@
 	- [ ] this should prevent a lot of issues
 
 - Production compatibility
-- [ ] please someone make the logging better i'm tired of it (i tried making something but it's barely usable)
+
+##REVIEW 
+- [] Log Out api route
 
 ## SECURITY
 - make certs not on git of course

@@ -21,7 +21,7 @@ function Input({ className, type, icon: Icon, iconClassName, ...props }: InputPr
           type={type}
           data-slot="input"
           className={cn(
-            "w-full bg-black/20 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-primary/50 focus:bg-primary/5 transition-all disabled:cursor-not-allowed disabled:opacity-50",
+            "w-full bg-black/20 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-primary/50 focus:bg-primary/5 transition-all disabled:cursor-not-allowed disabled:opacity-50",
             className
           )}
           {...props}
@@ -35,7 +35,7 @@ function Input({ className, type, icon: Icon, iconClassName, ...props }: InputPr
       type={type}
       data-slot="input"
       className={cn(
-        "w-full bg-black/20 border border-white/10 rounded-xl py-3 px-4 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-primary/50 focus:bg-primary/5 transition-all disabled:cursor-not-allowed disabled:opacity-50",
+        "w-full bg-black/20 border border-white/10 rounded-xl py-3 px-4 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-primary/50 focus:bg-primary/5 transition-all disabled:cursor-not-allowed disabled:opacity-50",
         className
       )}
       {...props}

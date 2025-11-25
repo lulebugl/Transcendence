@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router";
 import { ArrowRight, Lock, User, ShieldAlert } from "lucide-react";
 import { FormInput } from "@/components/FormInput";
 import { useAuth } from "@/context/auth-context";
+import { FormError } from "@/components/FormError";
 
 const SignUpForm = () => {
   const [username, setUsername] = useState("");
@@ -123,12 +124,7 @@ const SignUpForm = () => {
           </span>
         </button>
 
-        {errors.root && (
-          <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg flex items-center gap-3 text-red-400 text-xs uppercase tracking-wider animate-in fade-in slide-in-from-bottom-2">
-            <ShieldAlert className="w-4 h-4 shrink-0" />
-            <span className="font-medium">{errors.root}</span>
-          </div>
-        )}
+        {errors.root && <FormError message={errors.root} />}
       </form>
 
       <div className="p-6 bg-black/20 border-t border-white/5 text-center">

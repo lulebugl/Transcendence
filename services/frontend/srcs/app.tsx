@@ -15,6 +15,7 @@ import Signup from "@/pages/auth/SignUp";
 import Login from "@/pages/auth/Login";
 import Loading from "@/components/Loading";
 import Settings from "./pages/settings";
+import { Otp } from "./features/auth/Otp";
 
 const root = document.getElementById("root") as HTMLElement;
 if (!root) {
@@ -47,12 +48,15 @@ ReactDOM.createRoot(root).render(
           <Route path="test-design" element={<TestDesign />} />
         </Route>
 
-        {/* DEV HUB PAGE */}
+        <Route path="*" element={<NotFound />} />
+
+		{/* Test Page and dev below */}
+		{/* Test Page and dev below */}
+		{/* Test Page and dev below */}
+		<Route path="/auth/otp" element={<Otp />} />
         <Route path="/dev-hub" element={<DevHub />} />
 
         {/* NOT FOUND PAGE */}
-        {/* <Route path="/not-found" element={<NotFound />} /> */}
-        <Route path="*" element={<NotFound />} />
       </Routes>
     </AuthProvider>
   </Router>

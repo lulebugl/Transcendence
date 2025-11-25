@@ -1,15 +1,21 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router";
-import { ArrowRight, Lock, User, ShieldAlert } from "lucide-react";
+import { ArrowRight, Lock, User } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
 import { FormInput } from "@/components/FormInput";
+import { Otp } from "./Otp";
+import { FormError } from "@/components/FormError";
 
-// TODO: add otp if activated
 const Login = () => {
   const [pseudo, setPseudo] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [require2fa, setRequire2fa] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false); // loading state
+
   const { login, user } = useAuth();
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,22 +26,78 @@ const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
+
     try {
       const username = pseudo.trim();
       if (!username || !password.trim()) {
         setError("Username and password are required");
         return;
       }
-      await login(username, password);
+
+      const data = await login(username, password);
+      if (data && data.require2fa) {
+        setRequire2fa(true);
+        setIsSubmitting(false);
+        return;
+      }
+
       navigate("/");
     } catch (err) {
       const error = err as Error;
       console.error("Login failed", error.message);
       setPassword("");
       setError(error.message || "Login Failed");
+      setIsSubmitting(false);
     }
   };
 
+  const handleOtpSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const trimmedOtp = otp.trim().replace(/\s+/g, "");
+    if (trimmedOtp.length !== 6) {
+      setError("must be 6 digits");
+      setIsSubmitting(false);
+      setOtp("");
+      return;
+    }
+
+    setError(null);
+    setIsSubmitting(true);
+    try {
+      await login(pseudo, password, otp);
+      navigate("/");
+    } catch (err) {
+      const error = err as Error;
+      setError(error.message || "Verification Failed");
+      setOtp("");
+      setIsSubmitting(false);
+    }
+  };
+
+  if (require2fa) {
+    return (
+      <Otp
+        otp={otp}
+        setOtp={(val) => {
+          setOtp(val);
+          if (error) setError(null);
+        }}
+        onSubmit={handleOtpSubmit}
+        onBack={() => {
+          setRequire2fa(false);
+          setOtp("");
+          setError(null);
+        }}
+        isLoading={isSubmitting}
+        error={error}
+      />
+    );
+  }
+
+  // ADD loading state on the button
+  // but maybe i will add it to the real button component once created
   return (
     <div className="relative z-10 border border-white/5 bg-card/30 backdrop-blur-xl rounded-2xl overflow-hidden">
       {/* Card Header */}
@@ -54,41 +116,40 @@ const Login = () => {
         </p>
       </div>
 
-      {/* Form */}
       <form onSubmit={handleSubmit} className="p-8 space-y-6">
         <FormInput
-            label="Pilot Pseudo"
-            id="pseudo"
-            value={pseudo}
-            onChange={(e) => {
-                setPseudo(e.target.value);
-                if (error) setError(null);
-            }}
-            icon={User}
-            placeholder="IDENTIFIER"
-            required
+          label="Pilot Pseudo"
+          id="pseudo"
+          value={pseudo}
+          onChange={(e) => {
+            setPseudo(e.target.value);
+            if (error) setError(null);
+          }}
+          icon={User}
+          placeholder="IDENTIFIER"
+          required
         />
 
         <FormInput
-            label="Passcode"
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => {
-                setPassword(e.target.value);
-                if (error) setError(null);
-            }}
-            icon={Lock}
-            placeholder="••••••••"
-            labelRight={
-                <Link
-                to="/forgot-password"
-                className="text-[10px] text-primary hover:text-white transition-colors uppercase tracking-wider"
-              >
-                Lost Key?
-              </Link>
-            }
-            required
+          label="Passcode"
+          id="password"
+          type="password"
+          value={password}
+          onChange={(e) => {
+            setPassword(e.target.value);
+            if (error) setError(null);
+          }}
+          icon={Lock}
+          placeholder="••••••••"
+          labelRight={
+            <Link
+              to="/forgot-password"
+              className="text-[10px] text-primary hover:text-white transition-colors uppercase tracking-wider"
+            >
+              Lost Key?
+            </Link>
+          }
+          required
         />
 
         <button
@@ -102,12 +163,7 @@ const Login = () => {
           </span>
         </button>
 
-        {error && (
-          <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg flex items-center gap-3 text-red-400 text-xs uppercase tracking-wider animate-in fade-in slide-in-from-bottom-2">
-            <ShieldAlert className="w-4 h-4 shrink-0" />
-            <span className="font-medium">{error}</span>
-          </div>
-        )}
+        {error && <FormError message={error} />}
       </form>
 
       {/* Footer */}
@@ -115,7 +171,7 @@ const Login = () => {
         <p className="text-xs text-muted-foreground">
           No identification found? <br />
           <Link
-            to="/auth/signup"	
+            to="/auth/signup"
             className="text-primary hover:text-white transition-colors font-medium uppercase tracking-wider mt-2 inline-block border-b border-primary/20 hover:border-primary"
           >
             Create Pilot Profile

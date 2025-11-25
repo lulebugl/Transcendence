@@ -12,10 +12,10 @@ export async function signup(username: string, password: string) {
 	return response.json();
   }
   
-  export async function login(username: string, password: string) {
+  export async function login(username: string, password: string, totp?: string) {
 	const response: Response = await api("/api/users/login", {
 	  method: "POST",
-	  body: JSON.stringify({ username, password })
+	  body: JSON.stringify({ username, password, totp })
 	});
   
 	if (!response.ok) throw new Error(await getErrorMessage(response));
