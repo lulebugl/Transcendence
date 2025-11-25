@@ -7,11 +7,7 @@ import {
 } from "react";
 import { User } from "@/types";
 import { api } from "@/api";
-import {
-  login as apiLogin,
-  logout as apiLogout,
-  signup as apiSignup,
-} from "@/api";
+import * as authApi from "@/api/auth";
 import { AuthContext } from "./auth-context";
 import { useNavigate } from "react-router";
 
@@ -46,7 +42,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const signup = useCallback(
     async (username: string, password: string) => {
-      await apiSignup(username, password);
+      await authApi.signup(username, password);
       await refreshUser();
     },
     [refreshUser]
@@ -54,7 +50,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login = useCallback(
     async (username: string, pass: string, otp? : string) => {
-      const data = await apiLogin(username, pass, otp);
+      const data = await authApi.login(username, pass, otp);
 	  console.log("login response: ", data);
       await refreshUser();
 	  return data
@@ -64,14 +60,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = useCallback(async () => {
     try {
-      await apiLogout();
+      await authApi.logout();
       setUser(null);
 	  navigate("/");
     } catch (error) {
       console.error("Failed to logout:", error);
       setUser(null);
     }
-  }, []);
+  }, [navigate]);
 
   useEffect(() => {
     let ignore = false;
