@@ -48,7 +48,6 @@ export const LoginForm = () => {
       console.error("Login failed", error.message);
       setPassword("");
       setError(error.message || "Login Failed");
-      setIsSubmitting(false);
     } finally {
       setIsSubmitting(false);
     }

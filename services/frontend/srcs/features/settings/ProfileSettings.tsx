@@ -5,7 +5,7 @@ import { Camera } from "lucide-react";
 import { useMutation } from "@/hooks/useMutation";
 import { useAuth } from "@/context/auth-context";
 import { userApi } from "@/api/user";
-import { SUCCESS_TIMEOUT_MS } from "@/lib/constants";
+import { SUCCESS_NOTIFICATION_DURATION } from "@/lib/constants";
 
 export const ProfileSettings = ({ user }: { user: UserType }) => {
   const { refreshUser } = useAuth();
@@ -37,7 +37,7 @@ export const ProfileSettings = ({ user }: { user: UserType }) => {
     try {
       await updateUser({ [field]: value });
       setSuccessField(field);
-      setTimeout(() => setSuccessField(null), SUCCESS_TIMEOUT_MS);
+      setTimeout(() => setSuccessField(null), SUCCESS_NOTIFICATION_DURATION);
     } catch (err) {
       const error = err as Error;
       setErrors((prev) => ({ ...prev, [field]: error.message }));
