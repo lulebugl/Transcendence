@@ -35,7 +35,7 @@ import {
 } from "./pong-helpers";
 import { initWebSocket, sendMessage } from "./initWebSocket";
 import { createPointBar, createExitGame, addText, updatePoint } from "./pongUI";
-import Loading from "@/components/Loading";
+import { Loading } from "@/components/Loading";
 
 const ASSET_PATH = "/export_pongV0.5.glb";
 const ASSET_PATH_HDRI = "/hdriV0.1.hdr";
@@ -390,6 +390,7 @@ export const Pong = () => {
     </div>
   );
 };
+
 
 const configureImageProcessing = (
   config: ImageProcessingConfiguration

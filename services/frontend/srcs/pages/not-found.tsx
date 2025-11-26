@@ -1,8 +1,8 @@
 import { Link } from "react-router";
 import { AlertTriangle } from "lucide-react";
-import { Layout } from "@/components/layout";
+import { Layout } from "@/components/layout/layout";
 
-const NotFound = () => {
+export const NotFound = () => {
   return (
     <Layout>
       <div className="flex flex-col items-center justify-center h-[80vh] space-y-6">
@@ -33,5 +33,3 @@ const NotFound = () => {
     </Layout>
   );
 };
-
-export default NotFound;

@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router";
-import { ArrowRight, Lock, User, ShieldAlert } from "lucide-react";
+import { ArrowRight, Lock, User } from "lucide-react";
 import { FormInput } from "@/components/FormInput";
 import { useAuth } from "@/context/auth-context";
 import { FormError } from "@/components/FormError";
 
-const SignUpForm = () => {
+export const SignUpForm = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -138,5 +138,3 @@ const SignUpForm = () => {
     </div>
   );
 };
-
-export default SignUpForm;

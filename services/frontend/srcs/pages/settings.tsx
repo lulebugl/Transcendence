@@ -1,12 +1,11 @@
 import { useState } from "react";
-import { User, Shield, Save } from "lucide-react";
-import { Layout } from "@/components/layout";
+import { User, Shield } from "lucide-react";
+import { Layout } from "@/components/layout/layout";
 import { useAuth } from "@/context/auth-context";
-import ProfileSettings from "@/features/settings/ProfileSettings";
-import SecuritySettings from "@/features/settings/SecuritySettings";
-import { Button } from "@/lib/ui/button";
+import { ProfileSettings } from "@/features/settings/ProfileSettings";
+import { SecuritySettings } from "@/features/settings/SecuritySettings";
 
-const Settings = () => {
+export const Settings = () => {
   const [activeTab, setActiveTab] = useState("profile");
   const { user } = useAuth();
 
@@ -63,5 +62,3 @@ const Settings = () => {
     </Layout>
   );
 };
-
-export default Settings;

@@ -1,7 +1,7 @@
 import { Mail, Lock, Smartphone } from "lucide-react";
 import { User as UserType } from "@/types";
 
-const SecuritySettings = ({ user }: { user: UserType }) => {
+export const SecuritySettings = ({ user }: { user: UserType }) => {
   return (
     <div className="space-y-8">
       <div className="pb-6 border-b border-border">
@@ -61,5 +61,3 @@ const SecuritySettings = ({ user }: { user: UserType }) => {
     </div>
   );
 };
-
-export default SecuritySettings;

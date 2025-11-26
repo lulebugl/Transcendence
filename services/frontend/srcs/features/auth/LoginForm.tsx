@@ -6,7 +6,7 @@ import { FormInput } from "@/components/FormInput";
 import { Otp } from "./Otp";
 import { FormError } from "@/components/FormError";
 
-const Login = () => {
+export const LoginForm = () => {
   const [pseudo, setPseudo] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -48,6 +48,8 @@ const Login = () => {
       console.error("Login failed", error.message);
       setPassword("");
       setError(error.message || "Login Failed");
+      setIsSubmitting(false);
+    } finally {
       setIsSubmitting(false);
     }
   };
@@ -181,5 +183,3 @@ const Login = () => {
     </div>
   );
 };
-
-export default Login;

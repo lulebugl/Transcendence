@@ -1,7 +1,7 @@
-import { Layout } from "@/components/layout";
-import SignUpForm from "@/features/auth/SignUpForm";
+import { Layout } from "@/components/layout/layout";
+import { SignUpForm } from "@/features/auth/SignUpForm";
 
-const Signup = () => {
+export const Signup = () => {
   return (
     <Layout>
       <div className="flex flex-col items-center justify-center min-h-[80vh] px-6">
@@ -16,5 +16,3 @@ const Signup = () => {
     </Layout>
   );
 };
-
-export default Signup;

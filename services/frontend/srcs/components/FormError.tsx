@@ -11,6 +11,8 @@ export const FormError = ({ message, className }: FormErrorProps) => {
 
   return (
     <div
+      role="alert"
+      aria-live="polite"
       className={cn(
         "p-3 bg-red-500/10 border border-red-500/20 rounded-lg flex items-center gap-3 text-red-400 text-xs uppercase tracking-wider animate-in fade-in slide-in-from-bottom-2",
         className
@@ -21,4 +23,3 @@ export const FormError = ({ message, className }: FormErrorProps) => {
     </div>
   );
 };
-

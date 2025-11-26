@@ -19,6 +19,18 @@ export const Otp = ({
   isLoading,
   error,
 }: OtpProps) => {
+
+  const handleSubmit = (e: React.FormEvent) => {
+	const target = e.target as HTMLInputElement;
+	const value = target.value.replace(/\D/g, "");
+	if (value.length <= 6) {
+		setOtp(value);
+		if (value.length === 6) {
+			target.form?.requestSubmit();
+		}
+	}
+  };
+
   return (
     <div className="relative w-full max-w-md mx-auto animate-in fade-in slide-in-from-right-8 duration-300">
       <div className="relative z-10 border border-white/5 bg-card/30 backdrop-blur-xl rounded-2xl overflow-hidden min-h-[500px] flex flex-col">
@@ -32,8 +44,10 @@ export const Otp = ({
             label="Security Code"
             id="otp"
             value={otp}
-            onChange={(e) => setOtp(e.target.value)}
+            onChange={(e) => handleSubmit(e)}
             icon={KeyRound}
+			maxLength={6}
+			autoComplete="one-time-code"
             placeholder="000000"
             autoFocus
             required

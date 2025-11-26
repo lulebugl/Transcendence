@@ -3,3 +3,4 @@
 - [ ] create button components with the different styles
 - [ ] add loading state for button in login, signup and otp
 - [ ] fix register flow (not logging the user after registering)
+- [ ] look for a way to display the navbar on error fallback

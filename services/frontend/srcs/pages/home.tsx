@@ -1,7 +1,7 @@
 import { ButtonLink } from "@/lib/ui/button";
-import { Layout } from "@/components/layout";
+import { Layout } from "@/components/layout/layout";
 
-const Home = () => {
+export const Home = () => {
   return (
     <Layout>
       <div className="flex flex-col items-center justify-center min-h-[80vh] px-6">
@@ -19,5 +19,3 @@ const Home = () => {
     </Layout>
   );
 };
-
-export default Home;

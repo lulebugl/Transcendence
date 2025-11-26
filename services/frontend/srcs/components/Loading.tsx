@@ -1,6 +1,6 @@
-import { Navbar } from "@/components/layout";
+import { Navbar } from "@/components/layout/layout";
 
-const Loading = () => {
+export const Loading = () => {
   return (
     <div className="min-h-screen w-full bg-background text-foreground flex flex-col">
       <Navbar />
@@ -31,6 +31,3 @@ const Loading = () => {
     </div>
   );
 };
-
-export default Loading;
-
