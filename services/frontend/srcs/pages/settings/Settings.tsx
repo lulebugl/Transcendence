@@ -20,7 +20,7 @@ export const Settings = () => {
         {/* Sidebar Navigation */}
         <aside className="w-full md:w-64 shrink-0 mt-12">
           <div className="bg-card border border-border rounded-xl p-4 sticky top-24">
-            <h2 className="text-xl font-bold px-4 mb-4">Settings</h2>
+            <h2 className="text-xl font-bold px-4 mb-4">Account Settings</h2>
             <nav className="space-y-1">
               {TABS.map((tab) => (
                 <button

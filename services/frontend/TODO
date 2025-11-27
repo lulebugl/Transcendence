@@ -1,6 +1,7 @@
-- [ ] create the dev hub and make it only available in dev env
 - [ ] add skeletons, at least to display some form of page loads
 - [ ] create button components with the different styles
 - [ ] add loading state for button in login, signup and otp
 - [ ] fix register flow (not logging the user after registering)
 - [ ] look for a way to display the navbar on error fallback
+- [ ] Implement the delete user functionality
+- [ ] Implement avatar remove and change on frontend
