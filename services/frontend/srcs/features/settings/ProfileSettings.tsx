@@ -3,19 +3,17 @@ import { FormInput } from "@/components/FormInput";
 import { useState } from "react";
 import { Camera } from "lucide-react";
 import { useMutation } from "@/hooks/useMutation";
-import { useAuth } from "@/context/auth-context";
 import { userApi } from "@/api/user";
 import { SUCCESS_NOTIFICATION_DURATION } from "@/lib/constants";
 
 export const ProfileSettings = ({ user }: { user: UserType }) => {
-  const { refreshUser } = useAuth();
   const [successField, setSuccessField] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [userInfo, setUserInfo] = useState<UserType>(user);
 
   const { mutate: updateUser } = useMutation(userApi.updateProfile, {
     onSuccess: () => {
       console.log("Profile updated");
-      refreshUser();
     },
   });
 
@@ -35,7 +33,8 @@ export const ProfileSettings = ({ user }: { user: UserType }) => {
     clearError(field);
 
     try {
-      await updateUser({ [field]: value });
+      const response = await updateUser({ [field]: value });
+      setUserInfo(response);
       setSuccessField(field);
       setTimeout(() => setSuccessField(null), SUCCESS_NOTIFICATION_DURATION);
     } catch (err) {
@@ -63,7 +62,7 @@ export const ProfileSettings = ({ user }: { user: UserType }) => {
       <div className="flex items-center gap-6">
         <div className="relative group cursor-pointer shrink-0">
           <img
-            src={user?.avatar_url}
+            src={userInfo?.avatar_url}
             alt="Avatar"
             className="w-24 h-24 rounded-full object-cover ring-4 ring-background"
           />
@@ -93,7 +92,7 @@ export const ProfileSettings = ({ user }: { user: UserType }) => {
             <FormInput
               label="Username"
               id="username"
-              defaultValue={user?.username}
+              defaultValue={userInfo?.username}
               onBlur={(e) => handleFieldUpdate("username", e.target.value)}
               onKeyDown={handleKeyDown}
               isSuccess={successField === "username"}
@@ -105,7 +104,7 @@ export const ProfileSettings = ({ user }: { user: UserType }) => {
             <FormInput
               label="Display Name"
               id="display-name"
-              defaultValue={user?.username}
+              defaultValue={userInfo?.username}
               onBlur={(e) => handleFieldUpdate("email", e.target.value)}
               onKeyDown={handleKeyDown}
               isSuccess={successField === "email"}

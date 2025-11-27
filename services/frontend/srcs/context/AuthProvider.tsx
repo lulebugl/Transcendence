@@ -1,10 +1,4 @@
-import {
-  useState,
-  useEffect,
-  useCallback,
-  useMemo,
-  ReactNode
-} from "react";
+import { useState, useEffect, useCallback, useMemo, ReactNode } from "react";
 import { User } from "@/types";
 import { api } from "@/api";
 import * as authApi from "@/api/auth";
@@ -12,18 +6,33 @@ import { AuthContext } from "./auth-context";
 import { useNavigate } from "react-router";
 
 export interface AuthContextType {
-	user: User | null;
-	isLoading: boolean;
-	login: (username: string, password: string, otp?: string) => Promise<{ require2fa: boolean } | void>;
-	signup: (username: string, password: string) => Promise<void>;
-	logout: () => Promise<void>;
-	refreshUser: () => Promise<void>;
-  }
+  user: User | null;
+  isLoading: boolean;
+  login: (
+    username: string,
+    password: string,
+    otp?: string
+  ) => Promise<void | { require2fa: boolean }>;
+  signup: (username: string, password: string) => Promise<void>;
+  logout: () => Promise<void>;
+  refreshUser: () => Promise<void>;
+}
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
+
+  useEffect(() => {
+	const handleStorageChange = (event: StorageEvent) => {
+	  if (event.key === "accessToken" && event.newValue === null) {
+		setUser(null);
+	  }
+	};
+  
+	window.addEventListener("storage", handleStorageChange);
+	return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
   
   const refreshUser = useCallback(async () => {
     try {
@@ -49,11 +58,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   );
 
   const login = useCallback(
-    async (username: string, pass: string, otp? : string) => {
+    async (username: string, pass: string, otp?: string) => {
       const data = await authApi.login(username, pass, otp);
-	  console.log("login response: ", data);
+      console.log("login response: ", data);
       await refreshUser();
-	  return data
+      return data;
     },
     [refreshUser]
   );
@@ -62,7 +71,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       await authApi.logout();
       setUser(null);
-	  navigate("/");
+      navigate("/");
     } catch (error) {
       console.error("Failed to logout:", error);
       setUser(null);
@@ -103,4 +112,3 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
-

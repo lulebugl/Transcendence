@@ -15,6 +15,39 @@ export async function getErrorMessage(response: Response): Promise<string> {
   }
 }
 
+let refreshPromise: Promise<boolean> | null = null;
+
+// to prevent race condition when refreshing the access token
+// and "accidental" logout
+async function refreshAccessToken(): Promise<boolean> {
+  if (refreshPromise) return refreshPromise;
+
+  refreshPromise = (async () => {
+    try {
+      const response = await fetch("/api/users/refresh", {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        clearAccessToken();
+        return false;
+      }
+
+      const data = await response.json();
+      setAccessToken(data.token);
+      return true;
+    } catch {
+      clearAccessToken();
+      return false;
+    } finally {
+      refreshPromise = null;
+    }
+  })();
+
+  return refreshPromise;
+}
+
 export async function api(
   path: string,
   options: RequestInit = {}
@@ -26,8 +59,6 @@ export async function api(
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
   };
 
-  // Only add Content-Type: application/json if there is a body, or if specifically requested
-  // Otherwise, empty POSTs like logout fail because Fastify expects a JSON body
   if (options.body || !options.method || options.method === "GET") {
      headers["Content-Type"] = "application/json";
   }
@@ -39,31 +70,19 @@ export async function api(
   });
 
   if (response.status === 401) {
-    // token expired
-    const refreshResponse = await fetch("/api/users/refresh", {
-      method: "POST",
-      credentials: "include",
-    });
-
-    if (!refreshResponse.ok) {
-      clearAccessToken();
-      return response;
-    }
-
-    const data = await refreshResponse.json();
-    setAccessToken(data.token);
-
-    const retryHeaders: Record<string, string> = {
-      "Content-Type": "application/json",
-      ...((options.headers as Record<string, string>) || {}),
-      Authorization: `Bearer ${getAccessToken()}`,
-    };
+    const refreshed = await refreshAccessToken();
+    
+    if (!refreshed) return response;
 
     response = await fetch(path, {
       ...options,
-      headers: retryHeaders,
+      headers: {
+        ...headers,
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
       credentials: "include",
     });
   }
+
   return response;
 }

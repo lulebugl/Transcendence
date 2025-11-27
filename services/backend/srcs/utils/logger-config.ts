@@ -39,7 +39,13 @@ export function prettifyLogger(app: FastifyInstance) {
     if (statusCode >= 500) {
 		request.log.error(logData, `error: ${statusCode}`);
 	} else if (statusCode >= 400) {
-		request.log.warn(logData, `warn: ${statusCode}`);
+		const isExpectedAuthFailure =
+			(statusCode === 401 && request.url.startsWith("/api/users/me")) ||
+			(statusCode === 400 && request.url.startsWith("/api/users/refresh"));
+
+		if (!isExpectedAuthFailure) {
+			request.log.warn(logData, `warn: ${statusCode}`);
+		}
     }
   });
 }

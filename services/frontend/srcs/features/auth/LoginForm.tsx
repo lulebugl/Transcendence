@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router";
+import { useState, useEffect, useRef } from "react";
+import { Link, Navigate, useNavigate } from "react-router";
 import { ArrowRight, Lock, User } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
 import { FormInput } from "@/components/FormInput";
@@ -17,12 +17,10 @@ export const LoginForm = () => {
   const { login, user } = useAuth();
 
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (user) {
-      navigate("/");
-    }
-  }, [user, navigate]);
+	
+  if (user) {
+    return <Navigate to="/" replace />;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
