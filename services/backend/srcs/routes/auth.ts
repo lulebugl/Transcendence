@@ -214,29 +214,20 @@ export default async function authRoutes(fastify: FastifyInstance) {
     }
   );
 
-  // was broken but seems to work so
-  // double check to make sure
-  // also i need to fix the selecting the user based on id not the refresh token
   fastify.post(
     "/api/users/logout",
     async (req: FastifyRequest, reply: FastifyReply) => {
-      try {
-        const refreshToken = req.cookies?.refreshToken;
+      const refreshToken = req.cookies?.refreshToken;
 
-        if (refreshToken) {
-          await db
-            .update(users)
-            .set({ refresh_token: null })
-            .where(eq(users.refresh_token, refreshToken));
-        }
-
-        reply.clearCookie("refreshToken", { path: "/api/users/refresh" });
-
-        return reply.status(200).send({ message: "Logged out successfully" });
-      } catch (err) {
-        reply.clearCookie("refreshToken", { path: "/api/users/refresh" });
-        return reply.status(200).send({ message: "Logged out successfully" });
+      if (refreshToken) {
+        await db
+          .update(users)
+          .set({ refresh_token: null })
+          .where(eq(users.refresh_token, refreshToken));
       }
+
+      reply.clearCookie("refreshToken", { path: "/api/users/refresh" });
+      return reply.status(200).send({ message: "Logged out successfully" });
     }
   );
 }
