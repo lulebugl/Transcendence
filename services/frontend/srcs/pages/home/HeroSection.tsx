@@ -2,6 +2,7 @@ import { User } from "@/types";
 import { ArrowRight } from "lucide-react";
 import { ButtonLink } from "@/lib/ui/button";
 import { Badge } from "@/lib/ui/Badge";
+import { LiveIndicator, StatusDot } from "@/lib/ui/StatusDot";
 
 export const HeroSection = ({ user }: { user: User }) => {
   const rank = "Diamond";
