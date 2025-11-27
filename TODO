@@ -5,8 +5,8 @@
 - [OK] remove email handling : db, route/register /login /me , pages register & login
 - [OK] JWT enforced security
 - [NOT TESTED] Log Out api route
-- Default user picture
-- User management routes
+- [NOT TESTED] User management routes
+- [NOT TESTED] Default user picture
 - User management pages
 - Rate limiting is a bit too much for dev? (20 should be good but i encountered it very fast 😄)
 

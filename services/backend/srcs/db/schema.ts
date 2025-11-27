@@ -5,7 +5,7 @@ import { sql } from 'drizzle-orm';
 export const users = sqliteTable('users', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   username: text('username').notNull().unique(),
-  avatar_url: text('avatar_url'),
+  avatar_url: text('avatar_url').notNull().default("https://cdn.vectorstock.com/i/500p/06/32/social-network-default-profile-picture-avatar-icon-vector-57120632.jpg"),
   created_at: integer('created_at', { mode: 'timestamp' })
     .notNull()
     .default(sql`(unixepoch())`),
