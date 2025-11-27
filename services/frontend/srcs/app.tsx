@@ -5,12 +5,18 @@ import { BrowserRouter as Router, Routes, Route } from "react-router";
 import "./styles.css";
 import { AuthProvider } from "./context/AuthProvider";
 import { ProtectedRoutes } from "@/features/ProtectedRoutes";
-import { Signup } from "@/pages/auth/SignUp";
-import { Login } from "@/pages/auth/Login";
 import { Loading } from "@/components/Loading";
-import { UserProfile, Settings, Home, NotFound, TestSandbox } from "./pages";
 import { ErrorBoundary } from "./features/errors/ErrorBoundary";
 import { PongErrorFallback } from "./features/errors/ErrorFallback";
+import {
+  UserProfile,
+  Settings,
+  Home,
+  NotFound,
+  Login,
+  Signup,
+  Lobby,
+} from "./pages";
 
 // DESIGN INSPIRATION PAGES, will be deleted later
 import InspirationHome from "./pages/inspiration/inspiration";
@@ -37,7 +43,7 @@ ReactDOM.createRoot(root).render(
         <ErrorBoundary>
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/sandbox" element={<TestSandbox />} />
+			<Route path="/lobby" element={<Lobby />} />
             <Route
               path="/pong"
               element={
