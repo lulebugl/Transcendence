@@ -1,16 +1,132 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Transcendence - 3D Pong</title>
+    <title>Test Blockchain Pong</title>
   </head>
   <body>
-    <main id="root" class="w-full min-h-screen"></main>
-    <script type="module" src="/srcs/app.tsx"></script>
-    <!-- <script src="https://cdn.babylonjs.com/babylon.js"></script> -->
+    <h1>Test tournoi Pong on-chain</h1>
+
+    <h2>Enregistrer un winner</h2>
+    <label>
+      Tournament ID :
+      <input type="number" id="tournamentId" value="1" />
+    </label>
+    <br />
+    <label>
+      Winner userId :
+      <input type="number" id="winnerUserId" value="42" />
+    </label>
+    <br />
+    <button id="btnRecord">Enregistrer sur la blockchain</button>
+
+    <hr />
+
+    <h2>Récupérer le winner d'un tournoi</h2>
+    <label>
+      Tournament ID :
+      <input type="number" id="getTournamentId" value="1" />
+    </label>
+    <br />
+    <button id="btnGetResult">Obtenir le winner</button>
+
+    <hr />
+
+    <h2>Récupérer les tournois gagnés par un user</h2>
+    <label>
+      User ID :
+      <input type="number" id="getUserId" value="42" />
+    </label>
+    <br />
+    <button id="btnGetUserResults">Obtenir les tournois gagnés</button>
+
+    <hr />
+
+    <h2>Résultat</h2>
+    <pre id="output"></pre>
+
+    <script>
+      // URL relative pour que nginx puisse proxy correctement
+      const API_BASE = "/api";
+
+      const output = document.getElementById("output");
+      const btnRecord = document.getElementById("btnRecord");
+      const btnGetResult = document.getElementById("btnGetResult");
+      const btnGetUserResults = document.getElementById("btnGetUserResults");
+
+      function log(...args) {
+        output.textContent = args
+          .map((a) => (typeof a === "string" ? a : JSON.stringify(a, null, 2)))
+          .join("\n\n");
+      }
+
+      btnRecord.addEventListener("click", async () => {
+        const tournamentId = Number(
+          document.getElementById("tournamentId").value
+        );
+        const winnerUserId = Number(
+          document.getElementById("winnerUserId").value
+        );
+
+        try {
+          log("Envoi de la requête POST...");
+          const res = await fetch(
+            `${API_BASE}/tournaments/${tournamentId}/winner`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ winnerId: winnerUserId }),
+            }
+          );
+          if (!res.ok) {
+            const text = await res.text();
+            throw new Error(`HTTP ${res.status}: ${text}`);
+          }
+
+          const data = await res.json();
+          log("Réponse du backend :", data);
+        } catch (err) {
+          log("Erreur :", err.message || err);
+        }
+      });
+
+      btnGetResult.addEventListener("click", async () => {
+        const tournamentId = Number(
+          document.getElementById("getTournamentId").value
+        );
+
+        try {
+          log("Envoi de la requête GET (result)...");
+          const res = await fetch(
+            `${API_BASE}/tournaments/${tournamentId}/result`
+          );
+          if (!res.ok) {
+            const text = await res.text();
+            throw new Error(`HTTP ${res.status}: ${text}`);
+          }
+          const data = await res.json();
+          log("Résultat du tournoi :", data);
+        } catch (err) {
+          log("Erreur :", err.message || err);
+        }
+      });
+
+      btnGetUserResults.addEventListener("click", async () => {
+        const userId = Number(document.getElementById("getUserId").value);
+
+        try {
+          log("Envoi de la requête GET (user results)...");
+          const res = await fetch(`${API_BASE}/users/${userId}/results`);
+          if (!res.ok) {
+            const text = await res.text();
+            throw new Error(`HTTP ${res.status}: ${text}`);
+          }
+          const data = await res.json();
+          log("Tournois gagnés par l'utilisateur :", data);
+        } catch (err) {
+          log("Erreur :", err.message || err);
+        }
+      });
+    </script>
   </body>
 </html>
-
-

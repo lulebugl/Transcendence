@@ -1,0 +1,121 @@
+{
+  "compiler": {
+    "version": "0.8.30+commit.73712a01"
+  },
+  "language": "Solidity",
+  "output": {
+    "abi": [
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "tournamentId",
+            "type": "uint256"
+          },
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "userId",
+            "type": "uint256"
+          }
+        ],
+        "name": "TournamentRecorded",
+        "type": "event"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "tournamentId",
+            "type": "uint256"
+          }
+        ],
+        "name": "getResult",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "userId",
+            "type": "uint256"
+          }
+        ],
+        "name": "getUserResults",
+        "outputs": [
+          {
+            "internalType": "uint256[]",
+            "name": "",
+            "type": "uint256[]"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "tournamentId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "userId",
+            "type": "uint256"
+          }
+        ],
+        "name": "recordTournament",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      }
+    ],
+    "devdoc": {
+      "kind": "dev",
+      "methods": {},
+      "version": 1
+    },
+    "userdoc": {
+      "kind": "user",
+      "methods": {},
+      "version": 1
+    }
+  },
+  "settings": {
+    "compilationTarget": {
+      "transcendance.sol": "transcendancePong"
+    },
+    "evmVersion": "prague",
+    "libraries": {},
+    "metadata": {
+      "bytecodeHash": "ipfs"
+    },
+    "optimizer": {
+      "enabled": false,
+      "runs": 200
+    },
+    "remappings": []
+  },
+  "sources": {
+    "transcendance.sol": {
+      "keccak256": "0x889ef1baac1bd8360d7195ee4b024cfd93c3e5c6bd5a8dee7ecac64a8af89181",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://38b40dd383e226b2d1c037ca420f2f49687627ad82ac63e1c0772f8861980ed1",
+        "dweb:/ipfs/QmWrmU9zfWrzNRcKtud6FQEcmR1ESevoiXMr4PVr8M6kLB"
+      ]
+    }
+  },
+  "version": 1
+}

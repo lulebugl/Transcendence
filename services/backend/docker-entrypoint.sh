@@ -3,14 +3,7 @@ set -e
 
 echo "Starting database setup..."
 
-# Generate migrations (if needed)
-echo "Generating migrations..."
-pnpm db:generate
-
-echo "Running migrations..."
-pnpm db:migrate
-
-# Push schema changes
+# Push schema changes directly (no need for migrations in development)
 echo "Pushing schema changes..."
 pnpm db:push
 
