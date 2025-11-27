@@ -59,7 +59,7 @@ export function FieldLabel({
     <Label
       data-slot="field-label"
       className={cn(
-        "text-[10px] uppercase tracking-widest text-muted-foreground ml-1",
+        "text-sm font-medium text-white/80 ml-1",
         "flex w-fit gap-2 leading-snug",
         "group-data-[disabled=true]/field:opacity-50",
         "peer-disabled:cursor-not-allowed peer-disabled:opacity-50",

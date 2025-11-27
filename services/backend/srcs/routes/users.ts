@@ -3,8 +3,15 @@ import { User, users } from "../db/schema";
 import { eq, and, ne } from "drizzle-orm";
 import "dotenv/config";
 import dotenv from "dotenv";
-import { FastifyInstance, FastifyRequest, FastifySchema } from "fastify";
+import {
+  FastifyInstance,
+  FastifyReply,
+  FastifyRequest,
+  FastifySchema,
+} from "fastify";
 import { fields } from "./schema";
+import { hashPassword, verifyPassword } from "../utils/hash";
+import { channel } from "node:process";
 
 dotenv.config();
 
@@ -25,32 +32,42 @@ const UpdateProfileSchema: FastifySchema = {
       username: { ...fields.username },
       avatar_url: { ...fields.url },
     },
-	additionalProperties: false,
+    additionalProperties: false,
   },
 };
 
+const ChangePasswordSchema: FastifySchema = {
+  body: {
+    type: "object",
+    required: ["current", "new"],
+    properties: {
+      current: { ...fields.password },
+      new: { ...fields.password },
+    },
+  },
+};
 export default async function userRoutes(fastify: FastifyInstance) {
   // GET - Retrieve current user
   fastify.get(
-	"/api/users/me",
-	{ preHandler: fastify.auth },
-	async (req: FastifyRequest) => {
-	  const [user] = await db
-		.select({
-		  id: users.id,
-		  username: users.username,
-		  avatar_url: users.avatar_url,
-		  totp_secret_key: users.totp_secret_key,
-		})
-		.from(users)
-		.where(eq(users.id, req.user.id));
-  
-	  if (!user) return fastify.httpErrors.notFound("User not found");
-  
-	  const { totp_secret_key, ...userProfile } = user;
-  
-	  return { ...userProfile, totp_enabled: !!totp_secret_key };
-	}
+    "/api/users/me",
+    { preHandler: fastify.auth },
+    async (req: FastifyRequest) => {
+      const [user] = await db
+        .select({
+          id: users.id,
+          username: users.username,
+          avatar_url: users.avatar_url,
+          totp_secret_key: users.totp_secret_key,
+        })
+        .from(users)
+        .where(eq(users.id, req.user.id));
+
+      if (!user) return fastify.httpErrors.notFound("User not found");
+
+      const { totp_secret_key, ...userProfile } = user;
+
+      return { ...userProfile, totp_enabled: !!totp_secret_key };
+    }
   );
 
   // GET - Retrieve users by pages with offset and limit
@@ -116,4 +133,42 @@ export default async function userRoutes(fastify: FastifyInstance) {
     }
   );
 
+  fastify.patch(
+    "/api/users/change-password",
+    {
+      schema: ChangePasswordSchema,
+      preHandler: fastify.auth,
+    },
+    async (
+      req: FastifyRequest<{
+        Body: { new: string; current: string };
+      }>,
+      reply: FastifyReply
+    ) => {
+      const userId = req.user.id;
+      const { current, new: newpass } = req.body;
+
+      const [user] = await db
+        .select({ id: users.id, password_hash: users.password_hash })
+        .from(users)
+        .where(eq(users.id, userId));
+
+      if (!user) {
+        return reply.notFound("User not found");
+      }
+
+      const match: boolean = await verifyPassword(current, user.password_hash);
+      if (!match) {
+        return reply.unauthorized("Current password is incorrect");
+      }
+
+      const newHashedPassword = await hashPassword(newpass);
+      await db
+        .update(users)
+        .set({ password_hash: newHashedPassword })
+        .where(eq(users.id, userId));
+
+      return reply.status(200).send({ success: true });
+    }
+  );
 }

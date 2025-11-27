@@ -35,7 +35,7 @@ export function FormInput({
   return (
     <Field invalid={!!error} className="relative group">
       <div className="flex justify-between items-center">
-        <FieldLabel htmlFor={inputId}>{label}</FieldLabel>
+        <FieldLabel htmlFor={inputId} className="text-sm font-medium">{label}</FieldLabel>
         {labelRight}
       </div>
       <FieldContent>

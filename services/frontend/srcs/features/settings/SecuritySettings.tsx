@@ -1,7 +1,11 @@
-import { Mail, Lock, Smartphone } from "lucide-react";
+import { Mail, Lock, Smartphone, Eye, EyeOff } from "lucide-react";
 import { User as UserType } from "@/types";
+import { useState } from "react";
+import { ChangePassword } from "@/features/settings/ChangePassword";
 
 export const SecuritySettings = ({ user }: { user: UserType }) => {
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+
   return (
     <div className="space-y-8">
       <div className="pb-6 border-b border-border">
@@ -33,11 +37,21 @@ export const SecuritySettings = ({ user }: { user: UserType }) => {
           <h4 className="font-medium flex items-center gap-2">
             <Lock className="w-4 h-4" /> Password
           </h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <button className="w-fit text-left px-4 py-3 border border-border rounded-lg hover:bg-accent transition-colors flex justify-between items-center group">
-              <span className="text-sm">Change Password</span>
-            </button>
-          </div>
+          {!isChangingPassword ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <button
+                onClick={() => setIsChangingPassword(true)}
+                className="w-full text-left px-4 py-3 border border-border rounded-lg hover:bg-accent transition-colors flex justify-between items-center group"
+              >
+                <span className="text-sm">Change Password</span>
+                <span className="text-xs text-muted-foreground group-hover:text-foreground">
+                  Last changed 3 months ago
+                </span>
+              </button>
+            </div>
+          ) : (
+            <ChangePassword onCancel={setIsChangingPassword}/>
+          )}
         </div>
 
         <div className="pt-6 border-t border-border space-y-4">

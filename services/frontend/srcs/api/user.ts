@@ -14,4 +14,19 @@ export const userApi = {
 
     return response.json();
   },
+  changePassword: async (data: {
+    current: string;
+    new: string;
+  }): Promise<void> => {
+    const response = await api("/api/users/change-password", {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error(await getErrorMessage(response));
+    }
+
+    return response.json();
+  },
 };
