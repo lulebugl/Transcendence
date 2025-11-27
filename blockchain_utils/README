@@ -1,0 +1,5 @@
+Ajouter cle privee du wallet dans backend/utils/blockchainService.ts
+
+(https://support.metamask.io/fr/configure/accounts/how-to-export-an-accounts-private-key/)
+
+URL exploration du contract : https://testnet.routescan.io/address/0x7000a505eE05913ecB8C856E96D7e16FbB0ca0EA/contract/43113/code
