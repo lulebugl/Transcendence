@@ -1,10 +1,10 @@
 import { setAccessToken, clearAccessToken } from "./tokenStorage";
 import { api } from "./api";
 
-export async function login(email: string, password: string) {
+export async function login(username: string, password: string, totp: number) {
   const response: Response = await api("/api/users/login", {
     method: "POST",
-    body: JSON.stringify({ email, password })
+    body: JSON.stringify({ username, password, totp })
   });
 
   if (!response.ok) throw new Error("Login failed");
@@ -17,5 +17,5 @@ export async function login(email: string, password: string) {
 
 export async function logout() {
   clearAccessToken();
-  await api("/api/users/logout", { method: "POST" });
+  await api("/api/users/refresh/logout", { method: "POST", credentials: "include" });
 }

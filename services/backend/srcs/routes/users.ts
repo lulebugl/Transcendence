@@ -115,9 +115,9 @@ export default async function userRoutes(fastify: FastifyInstance) {
 			if (!user) return reply.unauthorized("Invalid credentials");
 
 			//FLAG FOR DISABLE TOTP auth 
-      		const DisableTotp: boolean = false;
+      		const DisableTotp: boolean = true;
 			const match: boolean = await verifyPassword(password, user.password_hash);
-			if (!match || (!verifyTOTP(Buffer.from(base32.decode.asBytes(decryptTotpSecret(user.secret_key, masterKey))), totp) && !DisableTotp))
+			if (!match || (!DisableTotp && !verifyTOTP(Buffer.from(base32.decode.asBytes(decryptTotpSecret(user.secret_key, masterKey))), totp)))
 				return reply.unauthorized("Invalid credentials");
 
 			const accessToken: string = fastify.jwt.sign(
@@ -180,4 +180,23 @@ export default async function userRoutes(fastify: FastifyInstance) {
 		return { user: req.user };
 		}
 	);
+
+	fastify.post("/api/users/refresh/logout",
+		async (req: FastifyRequest, reply: FastifyReply) => {
+			const refreshToken = req.cookies?.refreshToken;
+
+			if (refreshToken) {
+				await db.delete(users).where(eq(users.refresh_token, refreshToken));
+			}
+
+			reply.clearCookie("refreshToken", {
+				httpOnly: true,
+				secure: true,
+				sameSite: "strict",
+				path: "/api/users/refresh",
+				maxAge: 60 * 60 * 24 * 30,
+			});
+
+			return reply.send({ success: true });
+		});
 }

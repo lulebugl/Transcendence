@@ -34,7 +34,6 @@ export async function api(path: string, options: RequestInit = {}): Promise<Resp
 		response = await fetch(path, { 
 			...options, 
 			headers: retryHeaders,
-			credentials: "include",
 		});
 	}
 	return response;
