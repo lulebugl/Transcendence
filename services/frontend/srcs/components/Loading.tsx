@@ -1,4 +1,4 @@
-import { Navbar } from "@/components/layout/layout";
+import { Navbar } from "@/components/layout/Layout";
 
 export const Loading = () => {
   return (

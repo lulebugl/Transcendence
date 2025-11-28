@@ -6,9 +6,9 @@ import { MobileMenu } from "./mobile-menu";
 
 export const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="min-h-screen w-full bg-background text-foreground flex flex-col">
+    <div className="min-h-screen w-full bg-background text-foreground flex flex-col overflow-x-hidden">
       <Navbar />
-      <main className="flex-1 relative pt-20 px-12">{children}</main>
+      <main className="flex-1 relative pt-20 md:px-12 px-4 w-full">{children}</main>
     </div>
   );
 };
@@ -18,7 +18,7 @@ export const NAV_ITEMS = [
   { label: "Overview", path: "/" },
   { label: "Play", path: "/pong" },
   { label: "Tournaments", path: "/tournaments" },
-  ...(import.meta.env.DEV ? [{ label: "Dev-Hub", path: "/dev-hub" }] : []),
+//   ...(import.meta.env.DEV ? [{ label: "Dev-Hub", path: "/dev-hub" }] : []),
 ];
 
 export const Navbar = () => {
@@ -40,10 +40,23 @@ export const Navbar = () => {
     };
   }, [isMobileMenuOpen]);
 
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && isMobileMenuOpen) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isMobileMenuOpen]);
+
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-background/80 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+        <div className="mx-auto px-6 h-20 flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center gap-4 group">
             <div className="relative w-8 h-8 flex items-center justify-center">
@@ -64,7 +77,7 @@ export const Navbar = () => {
           </div>
 
           {/* Center Nav - Desktop */}
-          <nav className="hidden md:flex items-center gap-12">
+          <nav className="hidden md:flex items-center justify-center gap-12">
             {NAV_ITEMS.map((item) => {
               const isActive = location.pathname === item.path;
               return (

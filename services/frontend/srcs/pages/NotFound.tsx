@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import { AlertTriangle } from "lucide-react";
-import { Layout } from "@/components/layout/layout";
+import { Layout } from "@/components/layout/Layout";
 
 export const NotFound = () => {
   return (

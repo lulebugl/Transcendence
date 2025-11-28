@@ -1,5 +1,5 @@
 import { ShieldAlert } from "lucide-react";
-import { Layout } from "@/components/layout/layout";
+import { Layout } from "@/components/layout/Layout";
 import { LoginForm } from "@/features/auth/LoginForm";
 
 export const Login = () => {

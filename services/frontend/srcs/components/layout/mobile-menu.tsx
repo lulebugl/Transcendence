@@ -1,6 +1,6 @@
 import { useAuth } from "@/context/auth-context";
 import { Link } from "react-router";
-import { NAV_ITEMS } from "./layout";
+import { NAV_ITEMS } from "./Layout";
 
 interface MobileMenuProps {
   isOpen: boolean;

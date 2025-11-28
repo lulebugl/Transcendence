@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { User, Shield } from "lucide-react";
-import { Layout } from "@/components/layout/layout";
+import { Layout } from "@/components/layout/Layout";
 import { useAuth } from "@/context/auth-context";
 import { ProfileSettings } from "@/features/settings/ProfileSettings";
 import { SecuritySettings } from "@/features/settings/SecuritySettings";
