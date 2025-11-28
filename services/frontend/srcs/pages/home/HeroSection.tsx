@@ -2,12 +2,11 @@ import { User } from "@/types";
 import { ArrowRight } from "lucide-react";
 import { ButtonLink } from "@/lib/ui/button";
 import { Badge } from "@/lib/ui/Badge";
-import { LiveIndicator, StatusDot } from "@/lib/ui/StatusDot";
 
 export const HeroSection = ({ user }: { user: User }) => {
   const rank = "Diamond";
   return (
-    <section className="relative flex flex-col items-center text-center space-y-8">
+    <section className="mt-4 relative flex flex-col items-center text-center space-y-8">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-primary/5 rounded-full blur-[120px] animate-pulse-slow pointer-events-none" />
 
       <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-px h-32 bg-linear-to-b from-transparent to-primary/50" />
@@ -88,7 +87,7 @@ export const HeroSection = ({ user }: { user: User }) => {
               className="flex flex-col sm:flex-row items-center gap-4 pt-4 animate-fade-in-up"
               style={{ animationDelay: "0.4s" }}
             >
-              <ButtonLink to="/auth/signup" variant="cyber" size="xl">
+              <ButtonLink to="/auth/signup" variant="cyber" size="xl" className="font-bold!">
                 Register Now
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </ButtonLink>
