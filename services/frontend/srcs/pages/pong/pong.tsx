@@ -382,7 +382,7 @@ export const Pong = () => {
       <canvas
         ref={canvasRef}
         id="renderCanvas"
-        className="block h-screen w-screen outline-none"
+        className="block h-screen! w-screen outline-none"
         role="img"
         aria-label="Transcendence pong arena"
         tabIndex={0}

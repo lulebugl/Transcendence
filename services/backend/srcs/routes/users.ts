@@ -45,6 +45,7 @@ const ChangePasswordSchema: FastifySchema = {
     },
   },
 };
+
 export default async function userRoutes(fastify: FastifyInstance) {
   // GET - Retrieve current user
   fastify.get(
@@ -183,6 +184,7 @@ export default async function userRoutes(fastify: FastifyInstance) {
       if (deleted.length === 0) {
         return reply.internalServerError("Failed to delete user");
       }
+
       reply.code(204).send();
     }
   );
