@@ -1,10 +1,8 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/auth-context";
-import { TOURNAMENTS, RECENT_MATCHES } from "@/lib/mock-data";
 import { HeroSection } from "./HeroSection";
 import { Layout } from "@/components/layout/Layout";
 import { StatsBar } from "./StatsBar";
-import { SectionHeader } from "@/lib/ui/SectionHeader";
 import { Link } from "react-router";
 // import { StatsBar } from "./StatsBar";
 // import { MatchHistory } from "./MatchHistory";
