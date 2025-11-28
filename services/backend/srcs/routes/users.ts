@@ -170,4 +170,20 @@ export default async function userRoutes(fastify: FastifyInstance) {
       return reply.status(200).send({ success: true });
     }
   );
+
+  fastify.delete(
+    "/api/users/delete",
+    { preHandler: fastify.auth },
+    async (req: FastifyRequest, reply: FastifyReply) => {
+      const deleted = await db
+        .delete(users)
+        .where(eq(users.id, req.user.id))
+        .returning();
+
+      if (deleted.length === 0) {
+        return reply.internalServerError("Failed to delete user");
+      }
+      reply.code(204).send();
+    }
+  );
 }
