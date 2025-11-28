@@ -80,7 +80,6 @@ export async function api(
         ...headers,
         Authorization: `Bearer ${getAccessToken()}`,
       },
-      credentials: "include",
     });
   }
 
