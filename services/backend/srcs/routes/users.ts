@@ -1,5 +1,5 @@
 import { db } from "../db/client";
-import { User, users } from "../db/schema";
+import { users } from "../db/schema";
 import { eq, and, ne } from "drizzle-orm";
 import "dotenv/config";
 import dotenv from "dotenv";
@@ -11,7 +11,6 @@ import {
 } from "fastify";
 import { fields } from "./schema";
 import { hashPassword, verifyPassword } from "../utils/hash";
-import { channel } from "node:process";
 
 dotenv.config();
 

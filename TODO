@@ -6,7 +6,6 @@
 - JWT enforced security => Use function to generate secret
 - [OK] Default user picture
 	- comment on gere les uploads?
-- user update api
 - User management routes
 - [IN-PROGRESS] User management pages
 - Rate limiting login
@@ -24,11 +23,7 @@
 - [ ] changing db "path" for env and prod
 	- [ ] in dev rm the db in build and look for a way to seed it
 	- [ ] this should prevent a lot of issues
-
-- Production compatibility
-
-##REVIEW 
-- [] Log Out api route
+- [ ] make the register route also logging the user
 
 ## SECURITY
 - make certs not on git of course

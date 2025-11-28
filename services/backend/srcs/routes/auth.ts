@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import { db } from "../db/client";
-import { users } from "../db/schema";
+import { User, users } from "../db/schema";
 import { eq } from "drizzle-orm";
 import { hashPassword, verifyPassword } from "../utils/hash";
 import { generateSecret, bufferToBase32 } from "../2AF/genrate/totp_gen";
@@ -84,6 +84,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
           password_hash: password_hash,
           totp_secret_key: secret_hash,
         });
+		
         return {
           success: true,
           secret: secretBase32,
