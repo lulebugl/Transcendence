@@ -5,6 +5,7 @@ import { Camera } from "lucide-react";
 import { useMutation } from "@/hooks/useMutation";
 import { userApi } from "@/api/user";
 import { SUCCESS_NOTIFICATION_DURATION } from "@/lib/constants";
+import { Button } from "@/lib/ui";
 
 export const ProfileSettings = ({ user }: { user: UserType }) => {
   const [successField, setSuccessField] = useState<string | null>(null);
@@ -73,12 +74,20 @@ export const ProfileSettings = ({ user }: { user: UserType }) => {
         <div className="space-y-2">
           <h4 className="font-medium">Profile Picture</h4>
           <div className="flex gap-3">
-            <button className="text-xs bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors">
+            <Button
+              variant="primary"
+              size="sm"
+              className="text-xs px-4 py-2 hover:bg-primary/90"
+            >
               Upload New
-            </button>
-            <button className="text-xs border border-border px-4 py-2 rounded-lg hover:bg-accent transition-colors">
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-xs px-4 py-2 hover:bg-accent"
+            >
               Remove
-            </button>
+            </Button>
           </div>
           <p className="text-xs text-muted-foreground">
             Recommended size: 500x500px. Max size: 2MB.

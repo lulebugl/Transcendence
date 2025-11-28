@@ -41,7 +41,6 @@ export const SignUpForm = () => {
       navigate("/");
     } catch (err) {
       const error = err as Error;
-      console.error("Registration failed", error.message);
       
       const message = error.message || "Registration failed";
       const newErrors: Record<string, string> = {};

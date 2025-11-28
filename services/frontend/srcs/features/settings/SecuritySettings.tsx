@@ -1,11 +1,26 @@
-import { Mail, Lock, Smartphone, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, Smartphone, AlertTriangle } from "lucide-react";
 import { User as UserType } from "@/types";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChangePassword } from "@/features/settings/ChangePassword";
 import { Button } from "@/lib/ui";
+import { useMutation } from "@/hooks/useMutation";
+import { userApi } from "@/api/user";
 
 export const SecuritySettings = ({ user }: { user: UserType }) => {
   const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [confirmDeletion, setConfirmDeletion] = useState(false);
+  const { mutate: deleteAccount, isLoading: isDeleting } = useMutation(
+    userApi.deleteAccount,
+    {
+      onSuccess: () => {
+        window.location.href = "/";
+      },
+    }
+  );
+
+  const handleDeleteAccount = () => {
+    deleteAccount();
+  };
 
   return (
     <>
@@ -71,8 +86,52 @@ export const SecuritySettings = ({ user }: { user: UserType }) => {
           </div>
         </div>
       </div>
-      <div className="flex justify-end">
-        <Button variant="destructive">Delete Account</Button>
+      <div className="pt-6 border-t border-border">
+        <div className="flex items-center justify-between">
+          <div>
+            <h4 className="font-medium text-destructive flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4" /> Danger Zone
+            </h4>
+            <p className="text-xs text-muted-foreground mt-1">
+              Permanently delete your account and all associated data.
+            </p>
+          </div>
+
+          {!confirmDeletion ? (
+            <Button
+              variant="destructive"
+			  size="sm"
+              onClick={() => setConfirmDeletion(true)}
+              aria-label="Delete your account"
+            >
+              Delete Account
+            </Button>
+          ) : (
+            <div className="flex items-center gap-3 animate-in fade-in slide-in-from-right-2 duration-200">
+              <span className="text-sm text-destructive font-medium">
+                Are you sure?
+              </span>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setConfirmDeletion(false)}
+                disabled={isDeleting}
+                aria-label="Cancel account deletion"
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={handleDeleteAccount}
+                disabled={isDeleting}
+                aria-label="Confirm account deletion"
+              >
+                {isDeleting ? "Deleting..." : "Yes, Delete"}
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
     </>
   );

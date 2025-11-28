@@ -9,7 +9,13 @@ export async function signup(username: string, password: string) {
 
   if (!response.ok) throw new Error(await getErrorMessage(response));
 
-  return response.json();
+  try {
+    const data = await response.json();
+	console.log("token: ", data.token);
+    setAccessToken(data.token);
+  } catch (err) {
+    throw err;
+  }
 }
 
 export async function login(username: string, password: string, totp?: string) {
@@ -26,9 +32,6 @@ export async function login(username: string, password: string, totp?: string) {
   return data;
 }
 
-// TODO: Logout redo
-// TODO: Logout redo
-// TODO: Logout redo
 export async function logout() {
   clearAccessToken();
   await api("/api/users/logout", { method: "POST" });

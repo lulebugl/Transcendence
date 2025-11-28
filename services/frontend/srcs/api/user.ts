@@ -29,4 +29,13 @@ export const userApi = {
 
     return response.json();
   },
+  deleteAccount: async (): Promise<void> => {
+	const response = await api("/api/users/delete", {
+		method: "DELETE",
+	})
+
+    if (!response.ok) {
+      throw new Error(await getErrorMessage(response));
+    }
+  }
 };
