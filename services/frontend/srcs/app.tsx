@@ -15,7 +15,8 @@ import {
   NotFound,
   Login,
   Signup,
-  Lobby,
+  Lobby,	
+  Achievement,
 } from "./pages";
 
 // DESIGN INSPIRATION PAGES, will be deleted later
@@ -63,6 +64,7 @@ ReactDOM.createRoot(root).render(
             <Route element={<ProtectedRoutes />}>
               <Route path="/settings" element={<Settings />} />
               <Route path="/profile" element={<UserProfile />} />
+              <Route path="/profile/achievements" element={<Achievement />} />
             </Route>
             {/* DESIGN INSPIRATION PAGES */}
             <Route path="/inspiration">

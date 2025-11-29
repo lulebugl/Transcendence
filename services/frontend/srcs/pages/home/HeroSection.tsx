@@ -12,7 +12,7 @@ export const HeroSection = ({ user }: { user: User }) => {
       <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-px h-32 bg-linear-to-b from-transparent to-primary/50" />
       <div className="relative z-10 flex flex-col items-center space-y-8">
         <div
-          className="inline-flex items-center gap-3 px-4 py-2 rounded-full border border-primary/20 bg-primary/5 backdrop-blur-sm animate-fade-in-up relative overflow-hidden group"
+          className="inline-flex items-center gap-3 px-4 py-2 rounded-full border border-primary/20 bg-primary/5 backdrop-blur-sm animate-fade-in-up relative overflow-hidden group ml-1.5"
           style={{ animationDelay: "0.1s" }}
         >
           <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/10 to-transparent animate-shimmer" />

@@ -8,7 +8,9 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="min-h-screen w-full bg-background text-foreground flex flex-col overflow-x-hidden">
       <Navbar />
-      <main className="flex-1 relative pt-20 md:px-12 px-4 w-full">{children}</main>
+      <main className="flex-1 relative pt-20 md:px-12 px-4 w-full">
+        {children}
+      </main>
     </div>
   );
 };
@@ -18,7 +20,7 @@ export const NAV_ITEMS = [
   { label: "Overview", path: "/" },
   { label: "Play", path: "/pong" },
   { label: "Tournaments", path: "/tournaments" },
-//   ...(import.meta.env.DEV ? [{ label: "Dev-Hub", path: "/dev-hub" }] : []),
+  //   ...(import.meta.env.DEV ? [{ label: "Dev-Hub", path: "/dev-hub" }] : []),
 ];
 
 export const Navbar = () => {

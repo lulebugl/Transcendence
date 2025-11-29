@@ -5,3 +5,6 @@
 - [ ] look for a way to display the navbar on error fallback
 - [ ] Implement the delete user functionality
 - [ ] Implement avatar remove and change on frontend
+- [ ] improve navbar, maybe just keep user profile and make a dropdown
+- [ ] also remove overview and add leaderboard in nav
+- [ ] make profile pic component
