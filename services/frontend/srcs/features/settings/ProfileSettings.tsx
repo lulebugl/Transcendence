@@ -1,5 +1,5 @@
 import { User as UserType } from "@/types";
-import { FormInput } from "@/components/FormInput";
+import { FormInput } from "@/components/forms/FormInput";
 import { useState } from "react";
 import { Camera } from "lucide-react";
 import { useMutation } from "@/hooks/useMutation";

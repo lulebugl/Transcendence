@@ -1,6 +1,6 @@
-import { FormInput } from "@/components/FormInput";
+import { FormInput } from "@/components/forms/FormInput";
 import { ArrowRight, ArrowLeft, KeyRound } from "lucide-react";
-import { FormError } from "@/components/FormError";
+import { FormError } from "@/components/forms/FormError";
 
 interface OtpProps {
   otp: string;

@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router";
 import { ArrowRight, Lock, User } from "lucide-react";
-import { FormInput } from "@/components/FormInput";
+import { FormInput } from "@/components/forms/FormInput";
 import { useAuth } from "@/context/auth-context";
-import { FormError } from "@/components/FormError";
+import { FormError } from "@/components/forms/FormError";
 
 export const SignUpForm = () => {
   const [username, setUsername] = useState("");

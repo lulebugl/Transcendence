@@ -2,8 +2,8 @@ import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { useMutation } from "@/hooks/useMutation";
 import { userApi } from "@/api/user";
-import { FormInput } from "@/components/FormInput";
-import { FormError } from "@/components/FormError";
+import { FormInput } from "@/components/forms/FormInput";
+import { FormError } from "@/components/forms/FormError";
 
 interface ChangePasswordProps {
   onCancel: (value: boolean) => void;

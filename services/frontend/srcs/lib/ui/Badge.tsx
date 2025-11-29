@@ -64,7 +64,7 @@ export const Badge = ({
 
   return (
     <>
-      <span className="relative inline-flex items-center px-3 py-1 group">
+      <span className="relative inline-flex items-center px-3 py-1 group w-fit">
         {/* Dashed border with glow */}
         <span
           className={`absolute inset-0 border border-dashed ${scheme.border} ${scheme.bg} ${scheme.hoverBg} ${scheme.hoverBorder} transition-colors`}

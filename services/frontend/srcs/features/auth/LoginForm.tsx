@@ -2,9 +2,9 @@ import { useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router";
 import { ArrowRight, Lock, User } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
-import { FormInput } from "@/components/FormInput";
+import { FormInput } from "@/components/forms/FormInput";
 import { Otp } from "./Otp";
-import { FormError } from "@/components/FormError";
+import { FormError } from "@/components/forms/FormError";
 
 export const LoginForm = () => {
   const [pseudo, setPseudo] = useState("");
