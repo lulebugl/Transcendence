@@ -116,7 +116,7 @@ export const SignUpForm = () => {
 
         <button
           type="submit"
-          className="mt-4 group relative w-full py-4 bg-white text-black text-sm font-bold tracking-[0.2em] uppercase clip-path-button overflow-hidden transition-all hover:bg-white/90 hover:shadow-[0_0_20px_rgba(255,255,255,0.3)]"
+          className="mt-4 group relative w-full py-4 bg-white/90 text-black text-sm font-bold tracking-[0.2em] uppercase clip-path-button overflow-hidden transition-all hover:bg-white/90 hover:shadow-[0_0_20px_rgba(255,255,255,0.3)]"
         >
           <span className="relative flex items-center justify-center gap-3">
             Register Identity <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

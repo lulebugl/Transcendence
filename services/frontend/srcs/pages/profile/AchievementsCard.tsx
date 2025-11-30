@@ -6,7 +6,7 @@ import {
   rarityIconBg,
   type Rarity,
 } from "./achievementsData";
-import { SectionHeader } from "@/components/SectionHeaders";
+import { SectionHeader } from "@/components/ui/SectionHeader";
 
 interface AchievementsCardProps {
   maxDisplay?: number;

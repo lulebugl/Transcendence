@@ -1,7 +1,7 @@
 import { User } from "@/types";
 import { ArrowRight } from "lucide-react";
-import { ButtonLink } from "@/lib/ui/button";
-import { Badge } from "@/lib/ui/Badge";
+import { ButtonLink } from "@/components/ui/Button";
+import { DottedBadge } from "@/components/ui/Badge";
 
 export const HeroSection = ({ user }: { user: User }) => {
   const rank = "Diamond";
@@ -36,7 +36,7 @@ export const HeroSection = ({ user }: { user: User }) => {
               style={{ animationDelay: "0.3s" }}
             >
 				Your current Rank is 
-				<Badge color="blue">{rank}</Badge>
+				<DottedBadge color="blue">{rank}</DottedBadge>
               
               <span className="text-muted-foreground/60">•</span>
               <span>Top 5% Global</span>

@@ -1,10 +1,10 @@
-import MainLayout from "@/components/old-layout";
+import { Layout } from "@/components/layout/Layout";
 import Sandbox from "@/components/sandbox";
-import { ButtonLink } from "@/lib/ui/button";
+import { ButtonLink } from "@/components/ui/Button";
 
 const InspirationHome = () => {
   return (
-    <MainLayout>
+    <Layout>
       <Sandbox>
         <h1 className="text-3xl font-bold">Welcome to Transcendence</h1>
         <p className="text-gray-600 mt-2">Your 3D Pong game awaits!</p>
@@ -20,7 +20,7 @@ const InspirationHome = () => {
 			<ButtonLink to="/inspiration/gemini-design" variant="default" size="lg">Gemini Design</ButtonLink>
 		</div>
       </Sandbox>
-    </MainLayout>	
+    </Layout>	
   );
 };
 

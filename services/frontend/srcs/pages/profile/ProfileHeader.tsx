@@ -1,4 +1,4 @@
-import { Button } from "@/lib/ui";
+import { Button } from "@/components/ui";
 import { Crown, Zap, Calendar, TrendingUp, Swords, UserPlus } from "lucide-react";
 
 export const MOCK_USER = {

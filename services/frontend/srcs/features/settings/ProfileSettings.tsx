@@ -5,7 +5,8 @@ import { Camera } from "lucide-react";
 import { useMutation } from "@/hooks/useMutation";
 import { userApi } from "@/api/user";
 import { SUCCESS_NOTIFICATION_DURATION } from "@/lib/constants";
-import { Button } from "@/lib/ui";
+import { Button } from "@/components/ui";
+import { SettingsSection } from "@/components/ui/SettingsSection";
 
 export const ProfileSettings = ({ user }: { user: UserType }) => {
   const [successField, setSuccessField] = useState<string | null>(null);
@@ -51,13 +52,11 @@ export const ProfileSettings = ({ user }: { user: UserType }) => {
   };
 
   return (
-    <div className="space-y-8">
-      <div className="pb-6 border-b border-border">
-        <h3 className="text-lg font-bold mb-1">Public Profile</h3>
-        <p className="text-sm text-muted-foreground">
-          Manage how you appear to other players.
-        </p>
-      </div>
+    <SettingsSection
+      title="Public Profile"
+      description="Manage how you appear to other players."
+      className="space-y-8"
+    >
 
       {/* Avatar Section */}
       <div className="flex items-center gap-6">
@@ -111,6 +110,6 @@ export const ProfileSettings = ({ user }: { user: UserType }) => {
           </div>
         </div>
       </div>
-    </div>
+    </SettingsSection>
   );
 };

@@ -10,7 +10,7 @@ import {
 } from "./achievementsData";
 import { useMemo } from "react";
 import { Lock } from "lucide-react";
-import { SectionHeader } from "@/components/SectionHeaders";
+import { SectionHeader } from "@/components/ui/SectionHeader";
 
 export const Achievement = () => {
   return (

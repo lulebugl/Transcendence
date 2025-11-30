@@ -6,8 +6,8 @@ import {
   FieldDescription,
   FieldLabel,
   FieldError,
-} from "@/lib/ui/Field";
-import { Input } from "@/lib/ui/Input";
+} from "@/components/ui/Field";
+import { Input } from "@/components/ui/Input";
 import { cn } from "@/lib/utils";
 
 interface FormInputProps extends ComponentProps<typeof Input> {

@@ -7,7 +7,7 @@ interface InputProps extends React.ComponentProps<"input"> {
   iconClassName?: string
 }
 
-function Input({ className, type, icon: Icon, iconClassName, ...props }: InputProps) {
+const Input = ({ className, type, icon: Icon, iconClassName, ...props }: InputProps) => {
   if (Icon) {
     return (
       <div className="relative group">
@@ -44,3 +44,4 @@ function Input({ className, type, icon: Icon, iconClassName, ...props }: InputPr
 }
 
 export { Input }
+

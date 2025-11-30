@@ -11,7 +11,7 @@ import {
 import { User } from "@/types";
 import { useMutation } from "@/hooks/useMutation";
 import { userApi } from "@/api/user";
-import { Button } from "@/lib/ui";
+import { Button } from "@/components/ui";
 import { FormInput } from "@/components/forms/FormInput";
 import { FormError } from "@/components/forms/FormError";
 
@@ -240,9 +240,10 @@ export const EnableOtp = ({ user, onUpdate }: EnableOtpProps) => {
               </Button>
               <Button
                 type="submit"
-                variant="primary"
+                variant="default"
                 size="sm"
-                disabled={code.length !== 6 || isConfirming}
+                loading={isConfirming}
+                // disabled={code.length !== 6 || isConfirming}
               >
                 {isConfirming ? "Verifying..." : "Verify & Enable"}
               </Button>

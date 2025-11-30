@@ -1,8 +1,8 @@
-import MainLayout from "@/components/old-layout";
+import { Layout } from "@/components/layout/Layout";
 
 export default function DevHub() {
   return (
-    <MainLayout>
+    <Layout>
       <h1>Dev Hub</h1>
       <a
         href="https://local.drizzle.studio"
@@ -10,6 +10,6 @@ export default function DevHub() {
       >
         Drizzle Studio
       </a>
-    </MainLayout>
+    </Layout>
   );
 }

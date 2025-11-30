@@ -1,4 +1,4 @@
-import { SectionHeader } from "@/components/SectionHeaders";
+import { SectionHeader } from "@/components/ui/SectionHeader";
 import { MOCK_MATCHES } from "@/lib/mock-data";
 import { Link } from "react-router";
 

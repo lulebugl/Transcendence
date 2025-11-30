@@ -2,6 +2,7 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Link } from "react-router";
+import { Loader2 } from "lucide-react";
 
 const baseClasses =
   "inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:ring-ring/50 focus-visible:ring-2";
@@ -13,13 +14,9 @@ const variantClasses = {
     "rounded-md bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20",
   outline:
     "rounded-md border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground",
-  secondary:
-    "rounded-md bg-secondary text-secondary-foreground hover:bg-secondary/80",
   ghost: "rounded-md hover:bg-accent hover:text-accent-foreground",
-  link: "text-primary underline-offset-4 hover:underline",
   cyber:
     "relative bg-primary text-primary-foreground font-bold tracking-[0.2em] uppercase overflow-hidden hover:scale-105 hover:shadow-[0_0_40px_-10px_var(--color-primary)] active:scale-95",
-  pill: "relative rounded-full bg-primary text-primary-foreground font-bold tracking-widest uppercase overflow-hidden hover:scale-105 hover:shadow-[0_0_40px_-10px_var(--color-primary)] active:scale-95",
   glass:
     "rounded-xl border border-white/10 bg-transparent font-bold tracking-widest uppercase hover:bg-white/10 transition-all",
   underline:
@@ -48,7 +45,7 @@ function getButtonClasses(
   return cn(baseClasses, variantClasses[variant], sizeClasses[size], className);
 }
 
-// angular corners
+// angular corners for cyber variant
 export const cyberClipPath =
   "polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px)";
 
@@ -74,10 +71,43 @@ type ButtonSize = keyof typeof sizeClasses;
 type ButtonProps = {
   variant?: ButtonVariant;
   size?: ButtonSize;
-  /** Adds a slide-up overlay effect on hover (used with cyber, pill, glass variants) */
+  /** Adds a slide-up overlay effect on hover (used with cyber variant) */
   hoverOverlay?: boolean;
+  /** Shows loading spinner and disables button */
+  loading?: boolean;
   className?: string;
 };
+
+// ============================================================================
+// Shared Render Logic
+// ============================================================================
+
+interface ButtonContentProps {
+  variant: ButtonVariant;
+  showOverlay: boolean;
+  isUnderline: boolean;
+  loading?: boolean;
+  children: React.ReactNode;
+}
+
+const ButtonContent = ({ variant, showOverlay, isUnderline, loading, children }: ButtonContentProps) => {
+  const isCyber = variant === "cyber";
+
+  return (
+    <>
+      {showOverlay && <HoverOverlay />}
+      <span className="relative flex items-center justify-center gap-3">
+        {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+        {children}
+      </span>
+      {isUnderline && <UnderlineEffect />}
+    </>
+  );
+};
+
+// ============================================================================
+// Button Component
+// ============================================================================
 
 const Button = React.forwardRef<
   HTMLButtonElement,
@@ -89,6 +119,8 @@ const Button = React.forwardRef<
       variant = "default",
       size = "default",
       hoverOverlay,
+      loading = false,
+      disabled,
       children,
       ...props
     },
@@ -96,20 +128,25 @@ const Button = React.forwardRef<
   ) => {
     const isUnderline = variant === "underline";
     const showOverlay =
-      hoverOverlay ?? (variant === "cyber" || variant === "pill");
+      hoverOverlay ?? (variant === "cyber");
+    const isCyber = variant === "cyber";
 
     return (
       <button
         ref={ref}
         className={cn("group", getButtonClasses(variant, size, className))}
-        style={variant === "cyber" ? { clipPath: cyberClipPath } : undefined}
+        style={isCyber ? { clipPath: cyberClipPath } : undefined}
+        disabled={disabled || loading}
         {...props}
       >
-        {showOverlay && <HoverOverlay />}
-        <span className="relative flex items-center justify-center gap-3">
+        <ButtonContent
+          variant={variant}
+          showOverlay={showOverlay}
+          isUnderline={isUnderline}
+          loading={loading}
+        >
           {children}
-        </span>
-        {isUnderline && <UnderlineEffect />}
+        </ButtonContent>
       </button>
     );
   }
@@ -135,7 +172,7 @@ const ButtonLink = React.forwardRef<
     const isCyber = variant === "cyber";
     const isUnderline = variant === "underline";
     const showOverlay =
-      hoverOverlay ?? (variant === "cyber" || variant === "pill");
+      hoverOverlay ?? (variant === "cyber");
 
     return (
       <Link
@@ -145,11 +182,13 @@ const ButtonLink = React.forwardRef<
         style={isCyber ? { clipPath: cyberClipPath } : undefined}
         {...props}
       >
-        {showOverlay && <HoverOverlay />}
-        <span className="relative flex items-center justify-center gap-3">
+        <ButtonContent
+          variant={variant}
+          showOverlay={showOverlay}
+          isUnderline={isUnderline}
+        >
           {children}
-        </span>
-        {isUnderline && <UnderlineEffect />}
+        </ButtonContent>
       </Link>
     );
   }
@@ -166,3 +205,4 @@ export {
   type ButtonSize,
   type ButtonProps,
 };
+

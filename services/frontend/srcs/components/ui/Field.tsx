@@ -1,6 +1,6 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { Label } from "@/lib/ui/Label";
+import { Label } from "./Label";
 
 interface FieldProps extends React.ComponentProps<"div"> {
   orientation?: "vertical" | "horizontal";
@@ -123,3 +123,4 @@ export function FieldSuccess({
     </div>
   );
 }
+

@@ -1,14 +1,11 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { cn } from "@/lib/utils"
+import * as React from "react";
+import { cn } from "@/lib/utils";
 
-type LabelProps = React.LabelHTMLAttributes<HTMLLabelElement>
+type LabelProps = React.LabelHTMLAttributes<HTMLLabelElement>;
 
-function Label({
-  className,
-  ...props
-}: LabelProps) {
+function Label({ className, ...props }: LabelProps) {
   return (
     <label
       data-slot="label"
@@ -18,7 +15,7 @@ function Label({
       )}
       {...props}
     />
-  )
+  );
 }
 
-export { Label }
+export { Label };

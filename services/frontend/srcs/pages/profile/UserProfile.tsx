@@ -1,7 +1,6 @@
 import { Layout } from "@/components/layout/Layout";
-import { Badge } from "@/lib/ui/Badge";
-import { Button } from "@/lib/ui/button";
-import { Trophy, Swords, Target, Flame, TrendingUp, Users, Edit3 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Trophy, Swords, Target, Flame, TrendingUp, Users } from "lucide-react";
 import { AchievementsCard } from "./AchievementsCard";
 import { MOCK_MATCHES } from "@/lib/mock-data";
 import { MatchHistory } from "@/features/MatchHistory";

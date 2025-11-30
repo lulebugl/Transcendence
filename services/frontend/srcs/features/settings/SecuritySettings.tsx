@@ -2,12 +2,13 @@ import { Mail, Lock, Smartphone, AlertTriangle } from "lucide-react";
 import { User as UserType } from "@/types";
 import { useState, useEffect } from "react";
 import { ChangePassword } from "@/features/settings/ChangePassword";
-import { Button } from "@/lib/ui";
+import { Button } from "@/components/ui";
 import { useMutation } from "@/hooks/useMutation";
 import { userApi } from "@/api/user";
 import { EnableOtp } from "./EnableOtp";
 import { useAuth } from "@/context/auth-context";
 import { ProfileSettings } from "./ProfileSettings";
+import { SettingsSection } from "@/components/ui/SettingsSection";
 
 export const SecuritySettings = ({ user }: { user: UserType }) => {
   const [isChangingPassword, setIsChangingPassword] = useState(false);
@@ -26,13 +27,11 @@ export const SecuritySettings = ({ user }: { user: UserType }) => {
 
   return (
     <>
-      <div className="space-y-6">
-        <div className="pb-6 border-b border-border">
-          <h3 className="text-lg font-bold mb-1">Account Security</h3>
-          <p className="text-sm text-muted-foreground">
-            Manage your account access and security settings.
-          </p>
-        </div>
+      <SettingsSection
+        title="Account Security"
+        description="Manage your account access and security settings."
+        className="space-y-6"
+      >
 
         <div className="space-y-6">
           <div className="border-border space-y-4">
@@ -54,7 +53,7 @@ export const SecuritySettings = ({ user }: { user: UserType }) => {
 
           <EnableOtp user={user} onUpdate={refreshUser} />
         </div>
-      </div>
+      </SettingsSection>
       <div className="pt-6 border-t border-border">
         <div className="flex items-center justify-between">
           <div>

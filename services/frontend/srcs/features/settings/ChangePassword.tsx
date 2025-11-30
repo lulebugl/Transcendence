@@ -4,6 +4,7 @@ import { useMutation } from "@/hooks/useMutation";
 import { userApi } from "@/api/user";
 import { FormInput } from "@/components/forms/FormInput";
 import { FormError } from "@/components/forms/FormError";
+import { Button } from "@/components/ui";
 
 interface ChangePasswordProps {
   onCancel: (value: boolean) => void;
@@ -50,8 +51,11 @@ export const ChangePassword = ({ onCancel }: ChangePasswordProps) => {
       return;
     }
 
-	if (current === newpass) {
-      setErrors((prev) => ({ ...prev, current: "New password cannot be the same as the current password" }));
+    if (current === newpass) {
+      setErrors((prev) => ({
+        ...prev,
+        current: "New password cannot be the same as the current password",
+      }));
       return;
     }
 
@@ -72,7 +76,7 @@ export const ChangePassword = ({ onCancel }: ChangePasswordProps) => {
         <div className="space-y-2">
           <FormInput
             label="Current Password"
-			name="current"
+            name="current"
             type={showPassword ? "text" : "password"}
             value={passwordData.current}
             onChange={handlePasswordChange}
@@ -86,7 +90,7 @@ export const ChangePassword = ({ onCancel }: ChangePasswordProps) => {
             <FormInput
               label="New Password"
               type={showPassword ? "text" : "password"}
-			  name="new"
+              name="new"
               value={passwordData.new}
               onChange={handlePasswordChange}
               error={errors.new}
@@ -98,7 +102,7 @@ export const ChangePassword = ({ onCancel }: ChangePasswordProps) => {
             <FormInput
               label="Confirm Password"
               type={showPassword ? "text" : "password"}
-			  name="confirm"
+              name="confirm"
               value={passwordData.confirm}
               onChange={handlePasswordChange}
               error={errors.confirm}
@@ -130,28 +134,20 @@ export const ChangePassword = ({ onCancel }: ChangePasswordProps) => {
           </button>
 
           <div className="flex gap-3">
-            <button
-			  type="button"
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
               onClick={() => {
                 onCancel(false);
                 setPasswordData({ current: "", new: "", confirm: "" });
               }}
-              className="px-4 py-2 text-xs font-medium border border-border rounded-lg hover:bg-background transition-colors"
             >
               Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 text-xs font-medium bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={
-                !passwordData.current ||
-                !passwordData.new ||
-                passwordData.new !== passwordData.confirm ||
-                passwordData.new.length < 8
-              }
-            >
+            </Button>
+            <Button type="submit" variant="default" size="sm">
               Update Password
-            </button>
+            </Button>
           </div>
         </div>
       </form>
