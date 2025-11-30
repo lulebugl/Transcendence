@@ -19,26 +19,28 @@ export const Otp = ({
   isLoading,
   error,
 }: OtpProps) => {
-
   const handleSubmit = (e: React.FormEvent) => {
-	const target = e.target as HTMLInputElement;
-	const value = target.value.replace(/\D/g, "");
-	if (value.length <= 6) {
-		setOtp(value);
-		if (value.length === 6) {
-			target.form?.requestSubmit();
-		}
-	}
+    const target = e.target as HTMLInputElement;
+    const value = target.value.replace(/\D/g, "");
+
+    if (value.length <= 6) {
+      setOtp(value);
+      if (value.length === 6) {
+        setTimeout(() => {
+          target.form?.requestSubmit();
+        }, 0);
+      }
+    }
   };
 
   return (
     <div className="relative w-full max-w-md mx-auto animate-in fade-in slide-in-from-right-8 duration-300">
-      <div className="relative z-10 border border-white/5 bg-card/30 backdrop-blur-xl rounded-2xl overflow-hidden min-h-[500px] flex flex-col">
+      <div className="relative z-10 border border-white/5 bg-card/30 backdrop-blur-xl rounded-2xl overflow-hidden flex flex-col">
         <OtpHeader />
 
         <form
           onSubmit={onSubmit}
-          className="p-8 space-y-6 flex-1 flex flex-col justify-center"
+          className="p-8 h-fit flex-1 flex flex-col justify-center space-y-6"
         >
           <FormInput
             label="Security Code"
@@ -46,8 +48,8 @@ export const Otp = ({
             value={otp}
             onChange={(e) => handleSubmit(e)}
             icon={KeyRound}
-			maxLength={6}
-			autoComplete="one-time-code"
+            maxLength={6}
+            autoComplete="one-time-code"
             placeholder="000000"
             autoFocus
             required
@@ -87,20 +89,20 @@ export const Otp = ({
 };
 
 const OtpHeader = () => {
-	return (
-	  <div className="p-8 text-center border-b border-white/5 space-y-2">
-		<div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/5 border border-primary/10 mb-4">
-		  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_10px_#10b981] animate-pulse" />
-		  <span className="text-[10px] font-mono text-primary tracking-[0.2em] uppercase">
-			Security Check
-		  </span>
-		</div>
-		<h1 className="text-3xl font-bold tracking-tighter text-white">
-		  TWO-FACTOR AUTHENTICATION
-		</h1>
-		<p className="text-sm text-muted-foreground font-light">
-		  Enter the code from your authenticator app.
-		</p>
-	  </div>
-	);
-  };
+  return (
+    <div className="p-8 text-center border-b border-white/5 space-y-2">
+      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/5 border border-primary/10 mb-4">
+        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_10px_#10b981] animate-pulse" />
+        <span className="text-[10px] font-mono text-primary tracking-[0.2em] uppercase">
+          Security Check
+        </span>
+      </div>
+      <h1 className="text-3xl font-bold tracking-tighter text-white">
+        TWO-FACTOR AUTHENTICATION
+      </h1>
+      <p className="text-sm text-muted-foreground font-light">
+        Enter the code from your authenticator app.
+      </p>
+    </div>
+  );
+};

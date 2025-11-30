@@ -109,30 +109,6 @@ export const ProfileSettings = ({ user }: { user: UserType }) => {
               onFocus={() => clearError("username")}
             />
           </div>
-          <div className="space-y-2">
-            <FormInput
-              label="Display Name"
-              id="display-name"
-              defaultValue={userInfo?.username}
-              onBlur={(e) => handleFieldUpdate("email", e.target.value)}
-              onKeyDown={handleKeyDown}
-              isSuccess={successField === "email"}
-              error={errors.email}
-              onFocus={() => clearError("email")}
-            />
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Bio</label>
-          <textarea
-            rows={4}
-            defaultValue="Just a simple paddle in a complex digital world. chasing the perfect bounce."
-            className="w-full bg-background border border-border rounded-lg px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary transition-colors resize-none"
-          />
-          <p className="text-xs text-muted-foreground text-right">
-            120/500 characters
-          </p>
         </div>
       </div>
     </div>

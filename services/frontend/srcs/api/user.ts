@@ -30,12 +30,43 @@ export const userApi = {
     return response.json();
   },
   deleteAccount: async (): Promise<void> => {
-	const response = await api("/api/users/delete", {
-		method: "DELETE",
-	})
+    const response = await api("/api/users/delete", {
+      method: "DELETE",
+    });
 
     if (!response.ok) {
       throw new Error(await getErrorMessage(response));
     }
-  }
+  },
+  setupOtp: async (): Promise<{ secret: string; otpauth_url: string; qr_image: string }> => {
+    const response = await api("/api/users/2fa/setup", {
+      method: "POST",
+    });
+
+    if (!response.ok) {
+      throw new Error(await getErrorMessage(response));
+    }
+
+    return response.json();
+  },
+  confirmOtp: async (data: { secret: string; code: string }): Promise<void> => {
+    const response = await api("/api/users/2fa/confirm", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error(await getErrorMessage(response));
+    }
+  },
+  disableOtp: async (data: { password: string }): Promise<void> => {
+    const response = await api("/api/users/2fa/disable", {
+      method: "POST",
+	  body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error(await getErrorMessage(response));
+    }
+  },
 };

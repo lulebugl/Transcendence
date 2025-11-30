@@ -60,7 +60,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = useCallback(
     async (username: string, pass: string, otp?: string) => {
       const data = await authApi.login(username, pass, otp);
-      console.log("login response: ", data);
       await refreshUser();
       return data;
     },

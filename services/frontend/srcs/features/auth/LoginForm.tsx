@@ -54,8 +54,7 @@ export const LoginForm = () => {
   const handleOtpSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const trimmedOtp = otp.trim().replace(/\s+/g, "");
-    if (trimmedOtp.length !== 6) {
+    if (otp.length !== 6) {
       setError("must be 6 digits");
       setIsSubmitting(false);
       setOtp("");
