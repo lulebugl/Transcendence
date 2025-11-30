@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui";
+import { UserAvatar } from "@/components/UserAvatar";
 import { Crown, Zap, Calendar, TrendingUp, Swords, UserPlus } from "lucide-react";
 
 export const MOCK_USER = {
@@ -66,9 +67,9 @@ export const ProfileHeader = ({ user, isOwnProfile = false }: ProfileHeaderProps
 
             {/* Avatar container */}
             <div className="relative group cursor-pointer">
-              <img
-                src={user.avatar_url}
-                alt={`${user.username}'s avatar`}
+              <UserAvatar
+                username={user.username}
+                avatarUrl={user.avatar_url}
                 className="w-36 h-36 lg:w-44 lg:h-44 rounded-full object-cover border-2 border-white/10 transition-all duration-500 group-hover:border-primary/50 group-hover:scale-[1.02]"
               />
 

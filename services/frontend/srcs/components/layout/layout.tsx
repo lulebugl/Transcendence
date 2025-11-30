@@ -154,7 +154,11 @@ const UserSection = () => {
             Lv.42
           </span>
         </div>
-        <UserAvatar username={user.username} avatarUrl={user.avatar_url} />
+        <UserAvatar
+          username={user.username}
+          avatarUrl={user.avatar_url}
+          className="grayscale-25 group-hover:grayscale-0"
+        />
       </Link>
 
       <div className="hidden md:flex items-center gap-3">
@@ -177,7 +181,6 @@ const UserSection = () => {
     </div>
   );
 };
-
 
 const UserSectionSkeleton = () => (
   <div className="relative hidden md:flex items-center gap-4 animate-pulse">
