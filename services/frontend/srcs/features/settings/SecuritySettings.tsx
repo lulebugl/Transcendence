@@ -1,14 +1,13 @@
-import { Mail, Lock, Smartphone, AlertTriangle } from "lucide-react";
+import { Lock, AlertTriangle } from "lucide-react";
 import { User as UserType } from "@/types";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { ChangePassword } from "@/features/settings/ChangePassword";
 import { Button } from "@/components/ui";
 import { useMutation } from "@/hooks/useMutation";
 import { userApi } from "@/api/user";
-import { EnableOtp } from "./EnableOtp";
 import { useAuth } from "@/context/auth-context";
-import { ProfileSettings } from "./ProfileSettings";
 import { SettingsSection } from "@/components/ui/SettingsSection";
+import { OtpSettings } from "./otp";
 
 export const SecuritySettings = ({ user }: { user: UserType }) => {
   const [isChangingPassword, setIsChangingPassword] = useState(false);
@@ -51,7 +50,7 @@ export const SecuritySettings = ({ user }: { user: UserType }) => {
             )}
           </div>
 
-          <EnableOtp user={user} onUpdate={refreshUser} />
+          <OtpSettings user={user} onUpdate={refreshUser} />
         </div>
       </SettingsSection>
       <div className="pt-6 border-t border-border">

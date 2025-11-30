@@ -44,6 +44,7 @@ export function FormInput({
             id={inputId}
             icon={icon}
             className={cn(
+			  "autofill:shadow-[inset_0_0_0_1000px_#0a0a0a] autofill:[-webkit-text-fill-color:white]",
               error
                 ? "border-red-500/50 focus:border-red-500"
                 : isSuccess

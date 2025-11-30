@@ -5,6 +5,7 @@ import { useAuth } from "@/context/auth-context";
 import { FormInput } from "@/components/forms/FormInput";
 import { Otp } from "./Otp";
 import { FormError } from "@/components/forms/FormError";
+import { PasswordInput } from "@/components/forms/PasswordInput";
 
 export const LoginForm = () => {
   const [pseudo, setPseudo] = useState("");
@@ -128,10 +129,9 @@ export const LoginForm = () => {
           required
         />
 
-        <FormInput
+        <PasswordInput
           label="Passcode"
           id="password"
-          type="password"
           value={password}
           onChange={(e) => {
             setPassword(e.target.value);

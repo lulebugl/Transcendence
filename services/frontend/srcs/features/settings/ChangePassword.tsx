@@ -19,7 +19,6 @@ export const ChangePassword = ({ onCancel }: ChangePasswordProps) => {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Error state is managed by the hook
   const { mutate: changePassword, error: mutationError } = useMutation(
     userApi.changePassword,
     {

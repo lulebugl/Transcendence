@@ -1,10 +1,14 @@
 import { useRef } from "react";
+import { Input } from "../ui";
+import { FormInput } from "./FormInput";
+import { cn } from "@/lib/utils";
 
 interface OtpCodeInputProps {
   value: string;
   onChange: (value: string) => void;
   autoFocus?: boolean;
   autoSubmit?: boolean;
+  className?: string;
 }
 
 export const OtpCodeInput = ({
@@ -12,6 +16,7 @@ export const OtpCodeInput = ({
   onChange,
   autoFocus = false,
   autoSubmit = false,
+  className,
 }: OtpCodeInputProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -26,8 +31,9 @@ export const OtpCodeInput = ({
   };
 
   return (
-    <input
+    <Input
       ref={inputRef}
+	  name="otp"
       type="text"
       inputMode="numeric"
       pattern="[0-9]*"
@@ -37,7 +43,7 @@ export const OtpCodeInput = ({
       placeholder="000000"
       autoComplete="one-time-code"
       autoFocus={autoFocus}
-      className="w-48 text-center text-2xl tracking-[0.5em] font-mono bg-background border border-border rounded-lg py-3 focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
+      className={cn("w-64 text-center tracking-[0.5em] text-lg font-mono", className)}
       aria-label="Enter 6-digit verification code"
     />
   );

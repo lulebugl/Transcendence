@@ -24,7 +24,8 @@ import InspirationHome from "./pages/inspiration/inspiration";
 import CodexDesign from "./pages/inspiration/codex-design";
 import GeminiDesign from "./pages/inspiration/gemini-design";
 import TestDesign from "./pages/inspiration/test-design";
-import DevHub from "./pages/dev-hub";
+import DevHub from "./pages/dev/dev-hub";
+import { ComponentPlayground } from "./pages/dev/ComponentPlayground";
 
 const root = document.getElementById("root") as HTMLElement;
 if (!root) {
@@ -76,7 +77,8 @@ ReactDOM.createRoot(root).render(
             {/* Test Page and dev below */}
             import.meta.env.DEV && (
             <>
-              <Route path="/dev-hub" element={<DevHub />} />
+              <Route path="/dev/component-playground" element={<ComponentPlayground />} />
+              <Route path="/dev" element={<DevHub />} />
             </>
             ){/* NOT FOUND PAGE */}
             <Route path="*" element={<NotFound />} />
