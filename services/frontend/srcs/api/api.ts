@@ -4,15 +4,29 @@ import {
   clearAccessToken,
 } from "./tokenStorage";
 
-export async function getErrorMessage(response: Response): Promise<string> {
-  try {
-    const data = await response.json();
-    return (
-      data.message || data.error || response.statusText || "Request failed"
-    );
-  } catch {
-    return response.statusText || "Request failed";
+/**
+ * Wrapper around api() that automatically throws on errors and returns typed data.
+ * Use this for most API calls to reduce boilerplate.
+ */
+export async function apiRequest<T>(
+  path: string,
+  options?: RequestInit
+): Promise<T> {
+  const response = await api(path, options);
+
+  if (!response.ok) {
+    let errorMessage: string;
+    try {
+      const data = await response.json();
+      errorMessage =
+        data.message || data.error || response.statusText || "Request failed";
+    } catch {
+      errorMessage = response.statusText || "Request failed";
+    }
+    throw new Error(errorMessage);
   }
+
+  return response.json();
 }
 
 let refreshPromise: Promise<boolean> | null = null;
@@ -60,7 +74,7 @@ export async function api(
   };
 
   if (options.body || !options.method || options.method === "GET") {
-     headers["Content-Type"] = "application/json";
+    headers["Content-Type"] = "application/json";
   }
 
   let response: Response = await fetch(path, {
@@ -71,7 +85,7 @@ export async function api(
 
   if (response.status === 401) {
     const refreshed = await refreshAccessToken();
-    
+
     if (!refreshed) return response;
 
     response = await fetch(path, {
