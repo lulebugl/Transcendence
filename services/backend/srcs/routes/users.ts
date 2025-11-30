@@ -11,6 +11,7 @@ import {
 } from "fastify";
 import { fields } from "./schema";
 import { hashPassword, verifyPassword } from "../utils/hash";
+import twoFactorRoutes from "./users/2fa";
 
 dotenv.config();
 
@@ -47,6 +48,8 @@ const ChangePasswordSchema: FastifySchema = {
 };
 
 export default async function userRoutes(fastify: FastifyInstance) {
+  fastify.register(twoFactorRoutes);
+
   // GET - Retrieve current user
   fastify.get(
     "/api/users/me",
@@ -89,7 +92,6 @@ export default async function userRoutes(fastify: FastifyInstance) {
       const userId = req.user.id;
       const { username, avatar_url } = req.body;
 
-      // can this happen? i don't think so based on schema
       if (!username && !avatar_url) {
         return reply.badRequest("No fields to update");
       }
