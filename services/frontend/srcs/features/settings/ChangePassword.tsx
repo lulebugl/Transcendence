@@ -1,21 +1,25 @@
 import { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
 import { useMutation } from "@/hooks/useMutation";
 import { userApi } from "@/api/user";
-import { FormInput } from "@/components/forms/FormInput";
 import { FormError } from "@/components/forms/FormError";
-import { Button } from "@/components/ui";
+import { Button } from "@/components/ui";	
+import { PasswordInput } from "@/components/forms/PasswordInput";
 
 interface ChangePasswordProps {
   onCancel: (value: boolean) => void;
 }
 
+interface PasswordData {
+  current: string;
+  new: string;
+  confirm: string;
+}
+
 export const ChangePassword = ({ onCancel }: ChangePasswordProps) => {
-  const [showPassword, setShowPassword] = useState(false);
-  const [passwordData, setPasswordData] = useState({
+  const [passwordData, setPasswordData] = useState<PasswordData>({
     current: "",
     new: "",
-    confirm: "",
+    confirm: ""
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -73,10 +77,9 @@ export const ChangePassword = ({ onCancel }: ChangePasswordProps) => {
     <div className="bg-muted/30 border border-border rounded-lg p-5 space-y-4 animate-in slide-in-from-top-2 fade-in duration-200">
       <form onSubmit={(e) => handleChangePassword(e)} className="space-y-4">
         <div className="space-y-2">
-          <FormInput
+          <PasswordInput
             label="Current Password"
             name="current"
-            type={showPassword ? "text" : "password"}
             value={passwordData.current}
             onChange={handlePasswordChange}
             error={errors.current}
@@ -86,9 +89,8 @@ export const ChangePassword = ({ onCancel }: ChangePasswordProps) => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <FormInput
+            <PasswordInput
               label="New Password"
-              type={showPassword ? "text" : "password"}
               name="new"
               value={passwordData.new}
               onChange={handlePasswordChange}
@@ -98,18 +100,17 @@ export const ChangePassword = ({ onCancel }: ChangePasswordProps) => {
             />
           </div>
           <div className="space-y-2">
-            <FormInput
+            <PasswordInput
               label="Confirm Password"
-              type={showPassword ? "text" : "password"}
               name="confirm"
               value={passwordData.confirm}
               onChange={handlePasswordChange}
               error={errors.confirm}
-              className={`focus:ring-1 transition-colors ${
+              className={`${
                 passwordData.confirm &&
                 passwordData.new !== passwordData.confirm
-                  ? "border-red-500 focus:border-red-500 focus:ring-red-500"
-                  : "border-border focus:border-primary focus:ring-primary"
+                  ? "border-destructive focus:border-destructive focus:ring-destructive"
+                  : ""
               }`}
               placeholder="Re-enter new password"
             />
@@ -118,20 +119,7 @@ export const ChangePassword = ({ onCancel }: ChangePasswordProps) => {
 
         {mutationError && <FormError message={mutationError.message} />}
 
-        <div className="flex items-center justify-between pt-2">
-          <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1.5 transition-colors"
-          >
-            {showPassword ? (
-              <EyeOff className="w-3.5 h-3.5" />
-            ) : (
-              <Eye className="w-3.5 h-3.5" />
-            )}
-            {showPassword ? "Hide Passwords" : "Show Passwords"}
-          </button>
-
+        <div className="flex items-center justify-end pt-2">
           <div className="flex gap-3">
             <Button
               type="button"

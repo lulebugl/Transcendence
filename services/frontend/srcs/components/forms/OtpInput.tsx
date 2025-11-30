@@ -2,6 +2,7 @@ import { useRef } from "react";
 import { Input } from "../ui";
 import { FormInput } from "./FormInput";
 import { cn } from "@/lib/utils";
+import { KeyRound } from "lucide-react";
 
 interface OtpCodeInputProps {
   value: string;
@@ -9,6 +10,7 @@ interface OtpCodeInputProps {
   autoFocus?: boolean;
   autoSubmit?: boolean;
   className?: string;
+  icon?: boolean;
 }
 
 export const OtpCodeInput = ({
@@ -16,6 +18,7 @@ export const OtpCodeInput = ({
   onChange,
   autoFocus = false,
   autoSubmit = false,
+  icon = true,
   className,
 }: OtpCodeInputProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -34,6 +37,7 @@ export const OtpCodeInput = ({
     <Input
       ref={inputRef}
 	  name="otp"
+	  icon={icon ? KeyRound : undefined}
       type="text"
       inputMode="numeric"
       pattern="[0-9]*"

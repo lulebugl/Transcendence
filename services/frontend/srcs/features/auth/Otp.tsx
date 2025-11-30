@@ -1,6 +1,7 @@
 import { FormInput } from "@/components/forms/FormInput";
 import { ArrowRight, ArrowLeft, KeyRound } from "lucide-react";
 import { FormError } from "@/components/forms/FormError";
+import { OtpCodeInput } from "@/components/forms/OtpInput";
 
 interface OtpProps {
   otp: string;
@@ -19,20 +20,6 @@ export const Otp = ({
   isLoading,
   error,
 }: OtpProps) => {
-  const handleSubmit = (e: React.FormEvent) => {
-    const target = e.target as HTMLInputElement;
-    const value = target.value.replace(/\D/g, "");
-
-    if (value.length <= 6) {
-      setOtp(value);
-      if (value.length === 6) {
-        setTimeout(() => {
-          target.form?.requestSubmit();
-        }, 0);
-      }
-    }
-  };
-
   return (
     <div className="relative w-full max-w-md mx-auto animate-in fade-in slide-in-from-right-8 duration-300">
       <div className="relative z-10 border border-white/5 bg-card/30 backdrop-blur-xl rounded-2xl overflow-hidden flex flex-col">
@@ -42,18 +29,13 @@ export const Otp = ({
           onSubmit={onSubmit}
           className="p-8 h-fit flex-1 flex flex-col justify-center space-y-6"
         >
-          <FormInput
-            label="Security Code"
-            id="otp"
+          <OtpCodeInput
             value={otp}
-            onChange={(e) => handleSubmit(e)}
-            icon={KeyRound}
-            maxLength={6}
-            autoComplete="one-time-code"
-            placeholder="000000"
-            autoFocus
-            required
-            className="text-center tracking-[0.5em] font-mono text-lg"
+            onChange={(val) => setOtp(val)}
+            icon={true}
+            autoFocus={true}
+			autoSubmit={true}
+            className="text-center tracking-[0.5em] font-mono text-lg w-full"
           />
 
           <button

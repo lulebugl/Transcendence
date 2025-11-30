@@ -1,6 +1,7 @@
 import { OtpStatusCard } from "@/features/settings/otp/OtpStatusCard";
 import { OtpDisableFlow } from "@/features/settings/otp/OtpDisableFlow";
 import { OtpSetupFlow } from "@/features/settings/otp/OtpSetupFlow";
+import { ChangePassword } from "@/features/settings/ChangePassword";
 
 // Only accessible in development
 export const ComponentPlayground = () => {
@@ -10,65 +11,40 @@ export const ComponentPlayground = () => {
     <div className="p-8 space-y-12 max-w-2xl mx-auto">
       <h1 className="text-2xl font-bold">Component Playground</h1>
 
-      {/* OtpStatusCard - all states */}
-      <Section title="OtpStatusCard">
-        <Variant label="Disabled state">
-          <OtpStatusCard
-            isEnabled={false}
-            onEnable={() => console.log("enable")}
-            onDisable={() => console.log("disable")}
-          />
-        </Variant>
-        <Variant label="Enabled state">
-          <OtpStatusCard
-            isEnabled={true}
-            onEnable={() => console.log("enable")}
-            onDisable={() => console.log("disable")}
-          />
-        </Variant>
-        <Variant label="Loading state">
-          <OtpStatusCard
-            isEnabled={false}
-            isLoading={true}
-            onEnable={() => console.log("enable")}
-            onDisable={() => console.log("disable")}
-          />
-        </Variant>
-      </Section>
-
-      <Section title="OtpSetupFlow">
-        <Variant label="Setup flow">
-          <OtpSetupFlow
-            onComplete={() => console.log("complete")}
-            onCancel={() => console.log("cancel")}
-          />
-        </Variant>
-      </Section>
-
-      {/* OtpDisableFlow */}
-      <Section title="OtpDisableFlow">
-        <Variant label="Default">
-          <OtpDisableFlow
-            onComplete={() => console.log("complete")}
-            onCancel={() => console.log("cancel")}
-          />
-        </Variant>
+      <Section title="Change Password">
+        <ChangePassword onCancel={() => console.log("cancel")} />
       </Section>
     </div>
   );
 };
 
 // Helper components for the playground
-const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
+const Section = ({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) => (
   <div className="space-y-4">
     <h2 className="text-lg font-semibold border-b pb-2">{title}</h2>
     <div className="space-y-6">{children}</div>
   </div>
 );
 
-const Variant = ({ label, children }: { label: string; children: React.ReactNode }) => (
+const Variant = ({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) => (
   <div className="space-y-2">
-    <div className="text-xs text-muted-foreground uppercase tracking-wider">{label}</div>
-    <div className="border border-dashed border-border rounded-lg p-4">{children}</div>
+    <div className="text-xs text-muted-foreground uppercase tracking-wider">
+      {label}
+    </div>
+    <div className="border border-dashed border-border rounded-lg p-4">
+      {children}
+    </div>
   </div>
 );

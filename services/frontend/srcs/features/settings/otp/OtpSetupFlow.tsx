@@ -122,6 +122,7 @@ export const OtpSetupFlow = ({ onComplete, onCancel }: OtpSetupFlowProps) => {
                 setError("");
               }}
               autoSubmit
+			  icon={false}
             />
           </div>
 
