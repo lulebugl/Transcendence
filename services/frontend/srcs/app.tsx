@@ -15,7 +15,7 @@ import {
   NotFound,
   Login,
   Signup,
-  Lobby,	
+  Lobby,
   Achievement,
 } from "./pages";
 
@@ -24,8 +24,11 @@ import InspirationHome from "./pages/inspiration/inspiration";
 import CodexDesign from "./pages/inspiration/codex-design";
 import GeminiDesign from "./pages/inspiration/gemini-design";
 import TestDesign from "./pages/inspiration/test-design";
-import DevHub from "./pages/dev/dev-hub";
-import { ComponentPlayground } from "./pages/dev/ComponentPlayground";
+import {
+  DevHub,
+  PrimitivesPlayground,
+  ComponentsPlayground,
+} from "./pages/dev";
 
 const root = document.getElementById("root") as HTMLElement;
 if (!root) {
@@ -45,7 +48,7 @@ ReactDOM.createRoot(root).render(
         <ErrorBoundary>
           <Routes>
             <Route path="/" element={<Home />} />
-			<Route path="/lobby" element={<Lobby />} />
+            <Route path="/lobby" element={<Lobby />} />
             <Route
               path="/pong"
               element={
@@ -74,13 +77,21 @@ ReactDOM.createRoot(root).render(
               <Route path="gemini-design" element={<GeminiDesign />} />
               <Route path="test-design" element={<TestDesign />} />
             </Route>
-            {/* Test Page and dev below */}
-            import.meta.env.DEV && (
-            <>
-              <Route path="/dev/component-playground" element={<ComponentPlayground />} />
-              <Route path="/dev" element={<DevHub />} />
-            </>
-            ){/* NOT FOUND PAGE */}
+            {/* Dev Pages - only in development */}
+            {import.meta.env.DEV && (
+              <>
+                <Route path="/dev" element={<DevHub />} />
+                <Route
+                  path="/dev/playground/ui"
+                  element={<PrimitivesPlayground />}
+                />
+                <Route
+                  path="/dev/playground/components"
+                  element={<ComponentsPlayground />}
+                />
+              </>
+            )}
+            {/* NOT FOUND PAGE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </ErrorBoundary>
