@@ -77,8 +77,8 @@ export class Game {
     console.log(msg);
     const info = msg;
     let paddle = playerIndex === 0 ? this.state.paddleRight : this.state.paddleLeft;
-    const keyLeft = playerIndex === 0 ? 'a' : 'd';
-    const keyRight = playerIndex === 0 ? 'd' : 'a';
+    const keyRight = playerIndex === 0 ? 'a' : 'd';
+    const keyLeft = playerIndex === 0 ? 'd' : 'a';
 
     if (info.type === "playerMove" && info.key === keyLeft && paddle.position.x > TERRAIN_LIMIT_X_MIN)
       paddle.position.x += 0.5;

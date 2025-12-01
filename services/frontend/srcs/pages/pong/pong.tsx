@@ -151,9 +151,7 @@ export const Pong = () => {
       if (!disposed) {
         sceneReadyRef.current = true;
         freezeStaticMeshes(meshesRef.current);
-        if (paddlePlayerRef.current !== -1) {
-          setIsLoading(false);
-        }
+        setIsLoading(false);
       }
     });
     const uiGame = GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
@@ -230,7 +228,7 @@ export const Pong = () => {
     };
 
     const renderLoop = () => {
-      if (!sceneReadyRef.current || !scene || !engine || paddlePlayerRef.current === -1) {
+      if (!sceneReadyRef.current || !scene || !engine) {
         if (paddlePlayerRef.current === -1)
           maybeSendNotReady();
         return;
