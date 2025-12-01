@@ -55,18 +55,22 @@ export async function api(
   const token = getAccessToken();
 
   const headers: Record<string, string> = {
-    ...((options.headers as Record<string, string>) || {}),
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+	  ...((options.headers as Record<string, string>) || {}),
+	  ...(token ? { Authorization: `Bearer ${token}` } : {}),
   };
-
+	
   if (options.body || !options.method || options.method === "GET") {
      headers["Content-Type"] = "application/json";
   }
 
+  await fetch("/api/users/lastCall", {
+	...options,
+    headers,
+  });
+
   let response: Response = await fetch(path, {
     ...options,
     headers,
-    credentials: "include",
   });
 
   if (response.status === 401) {

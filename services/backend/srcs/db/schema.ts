@@ -12,6 +12,9 @@ export const users = sqliteTable('users', {
   updated_at: integer('updated_at', { mode: 'timestamp' })
     .notNull()
     .default(sql`(unixepoch())`),
+  last_call: integer('last_call', { mode: 'timestamp' })
+    .notNull()
+    .default(sql`(unixepoch())`),
   password_hash: text("password_hash").notNull(),
   refresh_token: text("refresh_token"),
   totp_secret_key: text("secret_key"),

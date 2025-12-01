@@ -1,6 +1,6 @@
 import { db } from "../db/client";
 import { users } from "../db/schema";
-import { eq, and, ne } from "drizzle-orm";
+import { eq, and, ne, InferSelectModel } from "drizzle-orm";
 import "dotenv/config";
 import dotenv from "dotenv";
 import {
@@ -14,9 +14,20 @@ import { hashPassword, verifyPassword } from "../utils/hash";
 
 dotenv.config();
 
+// Help to return user without sensible datas
+type User = InferSelectModel<typeof users>;
+export function serializeUser(user: User) {
+	const { id, username, avatar_url, last_call } = user;
+	return { id, username, avatar_url, last_call };
+}
+
 interface UserQuery {
   offset?: number;
   limit?: number;
+}
+
+interface SingleUserQuery {
+	id: number;
 }
 
 interface UpdateProfileBody {
@@ -85,11 +96,12 @@ export default async function userRoutes(fastify: FastifyInstance) {
       schema: UpdateProfileSchema,
       preHandler: fastify.auth,
     },
-    async (req, reply) => {
+    async (req: FastifyRequest, reply: FastifyReply) => {
       const userId = req.user.id;
       const { username, avatar_url } = req.body;
 
       // can this happen? i don't think so based on schema
+	  // Yes, as none of them are required so it allow the user to update them independently
       if (!username && !avatar_url) {
         return reply.badRequest("No fields to update");
       }
@@ -188,4 +200,25 @@ export default async function userRoutes(fastify: FastifyInstance) {
       reply.code(204).send();
     }
   );
+
+  	// GET - Retrieve single user
+	fastify.get(
+		"/api/users/:id", 
+		async (req: FastifyRequest<{ Querystring: SingleUserQuery }>, reply: FastifyReply) => {
+			const { id } = req.query;
+
+			const [user] = await db.select().from(users).where(eq(users.id, id));
+			if (!user) return reply.unauthorized("User not found");
+
+			return serializeUser(user);
+		}
+	);
+
+	fastify.patch(
+		"/api/users/lastCall",
+		async (req : FastifyRequest, reply : FastifyReply) => {
+			await db.update(users).set({last_call: Date.now()}).where(eq(users.id, req.user.id));
+			return reply.status(200).send({ success: true });
+		}
+	);
 }
