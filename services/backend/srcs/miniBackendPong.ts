@@ -18,6 +18,37 @@ import {
 } from './ConstVarGameLogic';
 
 export function startWebSocketServer(port = 9000) {
+  let pendingPlayer = null;
+
+  const server = http.createServer();
+  const wss = new WebSocket.Server({ server });
+
+  server.listen(port, () => {
+    console.log(`WSS server running on port ${port}`);
+  });
+
+  wss.on('connection', (ws) => {
+    console.log("Client connected");
+
+    if (pendingPlayer === null) {
+      pendingPlayer = ws;
+      ws.send(JSON.stringify({ type: "waitingPlayer" }));
+    } else {
+      // Deux joueurs prêts → démarrer un game
+      const game = new Game(0, pendingPlayer, ws);
+      game.startGame();
+
+      pendingPlayer = null;
+    }
+
+    ws.on('close', () => {
+      console.log("Client disconnected");
+    });
+  });
+}
+
+/*
+export function startWebSocketServer(port = 9000) {
 	let gameBreak = false;
 	console.log(`Inizialliazazione webSocket wss -NON CONNESSO-`)
 	
@@ -75,3 +106,5 @@ export function startWebSocketServer(port = 9000) {
     });
 });
 }
+
+*/
