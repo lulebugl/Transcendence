@@ -1,5 +1,6 @@
 import { setAccessToken, clearAccessToken } from "@/api/tokenStorage";
 import { apiRequest } from "./api";
+import { LoginResponse } from "@/api/types";
 
 export async function signup(username: string, password: string) {
   const data = await apiRequest<{ token: string }>("/api/users/register", {
@@ -9,8 +10,6 @@ export async function signup(username: string, password: string) {
 
   setAccessToken(data.token);
 }
-
-type LoginResponse = { require2fa: true } | { token: string };
 
 export async function login(username: string, password: string, totp?: string) {
   const data = await apiRequest<LoginResponse>("/api/users/login", {

@@ -1,11 +1,6 @@
 import { apiRequest } from "./api";
-import { User } from "@/types";
-
-interface SetupOtpResponse {
-  secret: string;
-  otpauth_url: string;
-  qr_image: string;
-}
+import { User } from "@/types/user";
+import { OtpSetupData } from "@/api/types";
 
 export const userApi = {
   updateProfile: async (data: Partial<User>): Promise<User> => {
@@ -28,8 +23,8 @@ export const userApi = {
       method: "DELETE",
     });
   },
-  setupOtp: async (): Promise<SetupOtpResponse> => {
-    return apiRequest<SetupOtpResponse>("/api/users/2fa/setup", {
+  setupOtp: async (): Promise<OtpSetupData> => {
+    return apiRequest<OtpSetupData>("/api/users/2fa/setup", {
       method: "POST",
     });
   },
