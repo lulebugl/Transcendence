@@ -10,7 +10,14 @@ export const startPaddleLeftX: number = 0;
 export const startPaddleLeftY: number = 1.5;
 export const startPaddleLeftZ: number = -7.5;
 
-export const TERRAIN_LIMIT_X: number = 4;
-export const TERRAIN_LIMIT_Z: number = 7.5;
-export const TERRAIN_LIMIT_Y: number = 4;
+export const TERRAIN_LIMIT_X_MIN: number = -4;
+export const TERRAIN_LIMIT_X_MAX: number = 4;
+export const TERRAIN_LIMIT_Y_MIN: number = 0;
+export const TERRAIN_LIMIT_Y_MAX: number = 4;
+export const TERRAIN_LIMIT_Z_MIN: number = -7.5;
+export const TERRAIN_LIMIT_Z_MAX: number = 7.5;
+
+export const PADDLE_WIDTH: number = 2; // Assumed width, adjust as needed
+export const BALL_SPEED: number = 0.1; // Adjust speed as needed
+
 
