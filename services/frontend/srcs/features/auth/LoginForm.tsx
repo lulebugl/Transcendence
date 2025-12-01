@@ -7,6 +7,7 @@ import { Otp } from "./Otp";
 import { FormError } from "@/components/forms/FormError";
 import { PasswordInput } from "@/components/forms/PasswordInput";
 import { LoginResponse } from "@/api/types";
+import { Button } from "@/components/ui";
 
 export const LoginForm = () => {
   const [pseudo, setPseudo] = useState("");
@@ -151,16 +152,15 @@ export const LoginForm = () => {
           required
         />
 
-        <button
+		<Button
           type="submit"
-          className="group relative w-full py-4 bg-primary text-primary-foreground text-sm font-bold tracking-[0.2em] uppercase clip-path-button overflow-hidden transition-all hover:shadow-[0_0_40px_-10px_var(--color-primary)]"
+		  variant="primary"
+		  size="lg"
+          className="group relative w-full font-bold tracking-[0.2em] uppercase rounded-none"
         >
-          <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
-          <span className="relative flex items-center justify-center gap-3">
-            Initialize{" "}
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </span>
-        </button>
+          Initialize{" "}
+          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+        </Button>
 
         {error && <FormError message={error} />}
       </form>

@@ -9,7 +9,7 @@ const baseClasses =
 
 const variantClasses = {
   default: "rounded-md bg-white/90 text-black hover:bg-white/80",
-  primary: "rounded-md bg-primary text-primary-foreground hover:bg-primary/90",
+  primary: "rounded-md bg-primary text-primary-foreground hover:brightness-110",
   destructive:
     "rounded-md bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20",
   outline:

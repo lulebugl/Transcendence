@@ -19,11 +19,6 @@ import {
   Achievement,
 } from "./pages";
 
-// DESIGN INSPIRATION PAGES, will be deleted later
-import InspirationHome from "./pages/inspiration/inspiration";
-import CodexDesign from "./pages/inspiration/codex-design";
-import GeminiDesign from "./pages/inspiration/gemini-design";
-import TestDesign from "./pages/inspiration/test-design";
 import {
   DevHub,
   PrimitivesPlayground,
@@ -70,13 +65,7 @@ ReactDOM.createRoot(root).render(
               <Route path="/profile" element={<UserProfile />} />
               <Route path="/profile/achievements" element={<Achievement />} />
             </Route>
-            {/* DESIGN INSPIRATION PAGES */}
-            <Route path="/inspiration">
-              <Route index element={<InspirationHome />} />
-              <Route path="codex-design" element={<CodexDesign />} />
-              <Route path="gemini-design" element={<GeminiDesign />} />
-              <Route path="test-design" element={<TestDesign />} />
-            </Route>
+
             {/* Dev Pages - only in development */}
             {import.meta.env.DEV && (
               <>
