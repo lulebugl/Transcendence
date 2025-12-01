@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "10840c52-cb7e-49e5-85e2-ee31f987436d",
+  "id": "82bf7818-c949-49b2-9d57-cfbc16663209",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "games": {
@@ -247,13 +247,6 @@
           "notNull": true,
           "autoincrement": false
         },
-        "email": {
-          "name": "email",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
         "avatar_url": {
           "name": "avatar_url",
           "type": "text",
@@ -290,6 +283,13 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
+        },
+        "secret_key": {
+          "name": "secret_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         }
       },
       "indexes": {
@@ -297,13 +297,6 @@
           "name": "users_username_unique",
           "columns": [
             "username"
-          ],
-          "isUnique": true
-        },
-        "users_email_unique": {
-          "name": "users_email_unique",
-          "columns": [
-            "email"
           ],
           "isUnique": true
         }

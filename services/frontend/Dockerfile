@@ -14,7 +14,7 @@ COPY public ./public
 
 RUN pnpm build
 
-FROM nginx:1.27-alpine AS prod
+FROM nginx:1.27-alpine AS production
 COPY --from=build /app/services/frontend/dist /usr/share/nginx/html
 
 RUN echo 'server { \
@@ -30,7 +30,7 @@ RUN echo 'server { \
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
 
-FROM node:20-alpine AS dev
+FROM node:20-alpine AS development
 WORKDIR /app/services/frontend
 RUN apk add --no-cache curl
 RUN corepack enable && corepack prepare pnpm@10.18.1 --activate

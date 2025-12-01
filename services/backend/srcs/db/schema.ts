@@ -5,7 +5,6 @@ import { sql } from 'drizzle-orm';
 export const users = sqliteTable('users', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   username: text('username').notNull().unique(),
-  email: text('email').notNull().unique(),
   avatar_url: text('avatar_url'),
   created_at: integer('created_at', { mode: 'timestamp' })
     .notNull()
@@ -14,7 +13,8 @@ export const users = sqliteTable('users', {
     .notNull()
     .default(sql`(unixepoch())`),
   password_hash: text("password_hash").notNull(),
-  refresh_token: text("refresh_token")
+  refresh_token: text("refresh_token"),
+  totp_secret_key: text("secret_key"),
 });
 
 // Game sessions table

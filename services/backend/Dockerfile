@@ -17,7 +17,7 @@ RUN pnpm build
 # but maybe we shouldn't have js aside maybe from exception
 RUN find ./srcs -name "*.js" -type f -exec cp {} ./dist/ \;
 
-FROM node:20-alpine AS prod
+FROM node:20-alpine AS production
 WORKDIR /app/services/backend
 ENV NODE_ENV=production
 
@@ -34,9 +34,9 @@ RUN corepack enable && corepack prepare pnpm@10.18.1 --activate && \
 
 
 EXPOSE 3000
-CMD ["./docker-entrypoint.sh", "node", "dist/index.js"]
+CMD ["./docker-entrypoint.sh", "node", "dist/server.js"]
 
-FROM node:20-alpine AS dev
+FROM node:20-alpine AS development
 
 WORKDIR /app/services/backend
 RUN corepack enable && corepack prepare pnpm@10.18.1 --activate
@@ -45,7 +45,8 @@ RUN pnpm install --frozen-lockfile=false
 
 COPY srcs ./srcs
 COPY database ./database
-COPY drizzle ./drizzle
+# COPY drizzle ./drizzle
+RUN mkdir -p ./drizzle
 COPY drizzle.config.ts ./drizzle.config.ts
 COPY docker-entrypoint.sh ./docker-entrypoint.sh
 

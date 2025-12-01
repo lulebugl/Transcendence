@@ -1,8 +1,8 @@
-export { default as Home } from "./home";
-export { default as TestSandbox } from "./sandbox";
-export { default as Test } from "./test";
-export { default as NotFound } from "./not-found";
-export { default as Login } from "./login";
-export { default as Register } from "./register";
+export { Home } from "./home/Home";
+export { NotFound } from "./NotFound";
 export { Pong } from "./pong/pong";
-export { default as TestApi } from "./TestApi";
+export { Settings } from "./settings/Settings";
+export { UserProfile } from "./profile/UserProfile";
+export { Lobby } from "./pong/Lobby";
+export { Login } from "./auth/Login";
+export { Signup } from "./auth/SignUp";

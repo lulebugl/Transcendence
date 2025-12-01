@@ -7,19 +7,15 @@ import {
   startBallX,
   startBallY,
   startBallZ,
-  startPadelRightX,
-  startPadelRightY,
-  startPadelRightZ,
-  startPadelLeftX,
-  startPadelLeftY,
-  startPadelLeftZ,
+  startPaddleRightX,
+  startPaddleRightY,
+  startPaddleRightZ,
+  startPaddleLeftX,
+  startPaddleLeftY,
+  startPaddleLeftZ,
   TERRAIN_LIMIT_X,
   TERRAIN_LIMIT_Z
 } from './ConstVarGameLogic';
-
-
-
-
 
 export function startWebSocketServer(port = 9000) {
 	let gameBreak = false;

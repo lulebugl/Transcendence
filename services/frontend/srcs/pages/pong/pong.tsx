@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 import * as GUI from '@babylonjs/gui';
 import {
   StandardMaterial,
@@ -35,14 +35,14 @@ import {
 } from "./pong-helpers";
 import { initWebSocket, sendMessage } from "./initWebSocket";
 import { createPointBar, createExitGame, addText, updatePoint } from "./pongUI";
-import { padelLeft } from "./helpersBaby";
+import { Loading } from "@/components/Loading";
 
-const ASSET_PATH = "/srcs/pages/pong/assets/AssetGlb/export_pongV0.5.glb";
-const ASSET_PATH_HDRI = "/srcs/pages/pong/assets/AssetGlb/hdriV0.1.hdr";
+const ASSET_PATH = "/export_pongV0.5.glb";
+const ASSET_PATH_HDRI = "/hdriV0.1.hdr";
 const NOT_READY_INTERVAL = 1000;
 const CAMERA_LERP = 0.08;
 const LED_OFFSET = new Vector3(0, -3, 0);
-const CAMERA_BASE_POSITION = new Vector3(0, 15, -20);
+const CAMERA_BASE_POSITION = new Vector3(0, 0, 0);
 const CAMERA_TARGET = new Vector3(0, 0, 0);
 const MOVING_MESH_INDICES = new Set([ball, paddleLeft, paddleRight]);
 
@@ -52,8 +52,8 @@ type UpdateMessage = {
   type: "update";
   state: {
     ball: { position: VectorPayload };
-    paddleLeft: { position: VectorPayload };
-    paddleRight: { position: VectorPayload };
+    paddleLeft: { position: VectorPayload, point: number };
+    paddleRight: { position: VectorPayload, point: number };
   };
 };
 
@@ -71,6 +71,7 @@ const isStartMessage = (message: BackendMessage): message is StartMessage =>
   message?.type === "start";
 
 export const Pong = () => {
+  const [isLoading, setIsLoading] = useState(true);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const engineRef = useRef<Engine | null>(null);
   const sceneRef = useRef<Scene | null>(null);
@@ -93,14 +94,8 @@ export const Pong = () => {
       return;
     }
 
-    websocketRef.current = initWebSocket("/ws", (data) => {
-      backendMessageRef.current = data as BackendMessage;
-    });
 
-    const engine = new Engine(canvas, true, {
-      preserveDrawingBuffer: true,
-      stencil: true,
-    });
+    const engine = new Engine(canvas, true);
     engine.setHardwareScalingLevel(
       Math.max(1, (window.devicePixelRatio || 1) * 0.75)
     );
@@ -156,6 +151,9 @@ export const Pong = () => {
       if (!disposed) {
         sceneReadyRef.current = true;
         freezeStaticMeshes(meshesRef.current);
+        if (paddlePlayerRef.current !== -1) {
+          setIsLoading(false);
+        }
       }
     });
     const uiGame = GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
@@ -191,7 +189,7 @@ export const Pong = () => {
     };
     exit.onPointerUpObservable.add(() => {
       let message: string;
-      if (paddlePlayerRef.current === padelLeft) {
+      if (paddlePlayerRef.current === paddleLeft) {
         message = "paddelLeft";
       }
       else {
@@ -204,13 +202,32 @@ export const Pong = () => {
       window.location.href = "/";
     });
 
+    let CameraFlag: boolean = false;
+    websocketRef.current = initWebSocket("/ws", (data) => {
+      const msg = data as BackendMessage;
+      if (isStartMessage((msg))) {
+        paddlePlayerRef.current = msg.player === 1 ? paddleRight : paddleLeft;
+        if (sceneReadyRef.current === true) {
+          moveCameraToPlayer();
+          CameraFlag = true;
+          setIsLoading(false);
+        }
+        else {
+          CameraFlag = false;
+        }
+      }
+      backendMessageRef.current = msg;
+    });
+
 
     const handleResize = () => {
       engine.resize();
     };
 
     const renderLoop = () => {
-      if (!sceneReadyRef.current || !scene || !engine) {
+      if (!sceneReadyRef.current || !scene || !engine || paddlePlayerRef.current === -1) {
+        if (paddlePlayerRef.current === -1)
+          maybeSendNotReady();
         return;
       }
 
@@ -220,14 +237,12 @@ export const Pong = () => {
           applyStateUpdate(backendMessage);
           updatePoint(pintTextLeft, backendMessage.state.paddleLeft.point);
           updatePoint(pintTextRight, backendMessage.state.paddleRight.point);
-        } else if (isStartMessage(backendMessage)) {
-          configurePlayerCamera(backendMessage.player);
         }
       }
-
-      maybeSendNotReady();
-      //followActivePlayer();
-
+      if (!CameraFlag && meshesRef.current.length > 0) {
+        moveCameraToPlayer();
+        CameraFlag = true;
+      }
       scene.render();
     };
 
@@ -290,18 +305,6 @@ export const Pong = () => {
     }
   };
 
-  const configurePlayerCamera = (player: 1 | 2) => {
-    if (!cameraRef.current) {
-      return;
-    }
-    if (player === 1) {
-      paddlePlayerRef.current = paddleRight;
-    } else if (player === 2) {
-      paddlePlayerRef.current = paddleLeft;
-    }
-    moveCameraToPlayer();
-  };
-
   const applyStateUpdate = (message: UpdateMessage) => {
     const currentMeshes = meshesRef.current;
     const ballMesh = currentMeshes[ball];
@@ -332,10 +335,6 @@ export const Pong = () => {
     }
   };
 
-  const followActivePlayer = () => {
-    moveCameraToPlayer();
-  };
-
   const moveCameraToPlayer = (instant: boolean = false) => {
     if (paddlePlayerRef.current === -1 || !cameraRef.current || meshesRef.current.length === 0) {
       return;
@@ -349,10 +348,10 @@ export const Pong = () => {
         ? offsetRight.current
         : offsetLeft.current;
     const desiredPosition = activeMesh.getAbsolutePosition().add(offset);
-    const currentCamera = cameraRef.current;
+    //const currentCamera = cameraRef.current;
     const targetMesh = meshesRef.current[0];
-    currentCamera.position = desiredPosition;
-    currentCamera.targetMesh = targetMesh;
+    cameraRef.current.position = desiredPosition;
+    cameraRef.current.target = targetMesh.getAbsolutePosition();
   };
 
   const maybeSendNotReady = () => {
@@ -374,16 +373,24 @@ export const Pong = () => {
   };
 
   return (
-    <canvas
-      ref={canvasRef}
-      id="renderCanvas"
-      className="block h-screen w-screen"
-      role="img"
-      aria-label="Transcendence pong arena"
-      tabIndex={0}
-    />
+    <div className="relative w-screen h-screen overflow-hidden">
+      {isLoading && (
+        <div className="absolute inset-0 z-50">
+          <Loading />
+        </div>
+      )}
+      <canvas
+        ref={canvasRef}
+        id="renderCanvas"
+        className="block h-screen! w-screen outline-none"
+        role="img"
+        aria-label="Transcendence pong arena"
+        tabIndex={0}
+      />
+    </div>
   );
 };
+
 
 const configureImageProcessing = (
   config: ImageProcessingConfiguration

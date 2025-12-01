@@ -1,9 +1,22 @@
+import React from "react";
+import { lazy, Suspense } from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router";
-import TestSandbox from "./pages/sandbox";
-import { Home, Test, NotFound, Pong, TestApi } from "./pages";
+import { BrowserRouter as Router, Routes, Route } from "react-router";
 import "./styles.css";
-import { AuthProvider } from "./context/AuthContext";
+import { AuthProvider } from "./context/AuthProvider";
+import { ProtectedRoutes } from "@/features/ProtectedRoutes";
+import { Loading } from "@/components/Loading";
+import { ErrorBoundary } from "./features/errors/ErrorBoundary";
+import { PongErrorFallback } from "./features/errors/ErrorFallback";
+import {
+  UserProfile,
+  Settings,
+  Home,
+  NotFound,
+  Login,
+  Signup,
+  Lobby,
+} from "./pages";
 
 // DESIGN INSPIRATION PAGES, will be deleted later
 import InspirationHome from "./pages/inspiration/inspiration";
@@ -11,10 +24,6 @@ import CodexDesign from "./pages/inspiration/codex-design";
 import GeminiDesign from "./pages/inspiration/gemini-design";
 import TestDesign from "./pages/inspiration/test-design";
 import DevHub from "./pages/dev-hub";
-import Signup from "@/pages/auth/SignUp";
-import LoginPage from "@/pages/auth/Login";
-import Login from "@/pages/login";
-import Register from "@/pages/register";
 
 const root = document.getElementById("root") as HTMLElement;
 if (!root) {
@@ -23,38 +32,55 @@ if (!root) {
   );
 }
 
+const PongPage = lazy(() =>
+  import("./pages/pong/pong").then((module) => ({ default: module.Pong }))
+);
+
 ReactDOM.createRoot(root).render(
-  <AuthProvider>
+  <React.StrictMode>
     <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/sandbox" element={<TestSandbox />} />
-        <Route path="/test" element={<Test />} />
-        <Route path="/pong" element={<Pong />} />
-
-        {/* AUTH PAGES */}
-        <Route path="/auth/login" element={<LoginPage />} />
-        <Route path="/auth/signup" element={<Signup />} />
-
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Register />} />
-        <Route path="/testApi" element={<TestApi />} />
-
-        {/* DESIGN INSPIRATION PAGES */}
-        <Route path="/inspiration">
-          <Route index element={<InspirationHome />} />
-          <Route path="codex-design" element={<CodexDesign />} />
-          <Route path="gemini-design" element={<GeminiDesign />} />
-          <Route path="test-design" element={<TestDesign />} />
-        </Route>
-
-        {/* DEV HUB PAGE */}
-        <Route path="/dev-hub" element={<DevHub />} />
-
-        {/* NOT FOUND PAGE */}
-        {/* <Route path="/not-found" element={<NotFound />} /> */}
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <AuthProvider>
+        <ErrorBoundary>
+          <Routes>
+            <Route path="/" element={<Home />} />
+			<Route path="/lobby" element={<Lobby />} />
+            <Route
+              path="/pong"
+              element={
+                <ErrorBoundary fallback={<PongErrorFallback />}>
+                  <Suspense fallback={<Loading />}>
+                    <PongPage />
+                  </Suspense>
+                </ErrorBoundary>
+              }
+            />
+            {/* Just to demonstrate the loading state */}
+            <Route path="/loading" element={<Loading />} />
+            {/* AUTH PAGES */}
+            <Route path="/auth/login" element={<Login />} />
+            <Route path="/auth/signup" element={<Signup />} />
+            {/* User Pages */}
+            <Route element={<ProtectedRoutes />}>
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/profile" element={<UserProfile />} />
+            </Route>
+            {/* DESIGN INSPIRATION PAGES */}
+            <Route path="/inspiration">
+              <Route index element={<InspirationHome />} />
+              <Route path="codex-design" element={<CodexDesign />} />
+              <Route path="gemini-design" element={<GeminiDesign />} />
+              <Route path="test-design" element={<TestDesign />} />
+            </Route>
+            {/* Test Page and dev below */}
+            import.meta.env.DEV && (
+            <>
+              <Route path="/dev-hub" element={<DevHub />} />
+            </>
+            ){/* NOT FOUND PAGE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </ErrorBoundary>
+      </AuthProvider>
     </Router>
-  </AuthProvider>
+  </React.StrictMode>
 );
