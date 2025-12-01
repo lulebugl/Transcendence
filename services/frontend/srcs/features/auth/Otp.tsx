@@ -1,5 +1,4 @@
-import { FormInput } from "@/components/forms/FormInput";
-import { ArrowRight, ArrowLeft, KeyRound } from "lucide-react";
+import { ArrowRight, ArrowLeft } from "lucide-react";
 import { FormError } from "@/components/forms/FormError";
 import { OtpCodeInput } from "@/components/forms/OtpInput";
 

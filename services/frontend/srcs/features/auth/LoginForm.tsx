@@ -6,6 +6,7 @@ import { FormInput } from "@/components/forms/FormInput";
 import { Otp } from "./Otp";
 import { FormError } from "@/components/forms/FormError";
 import { PasswordInput } from "@/components/forms/PasswordInput";
+import { LoginResponse } from "@/api/types";
 
 export const LoginForm = () => {
   const [pseudo, setPseudo] = useState("");
@@ -34,8 +35,8 @@ export const LoginForm = () => {
         return;
       }
 
-      const data = await login(username, password);
-      if (data && data.require2fa) {
+      const data = await login(username, password) as LoginResponse;
+      if (data && "require2fa" in data) {
         setRequire2fa(true);
         setIsSubmitting(false);
         return;

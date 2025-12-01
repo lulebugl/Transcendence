@@ -7,12 +7,7 @@ import { Button } from "@/components/ui";
 import { OtpCodeInput } from "@/components/forms/OtpInput";
 import { CopyButton } from "@/components/ui/CopyButton";
 import { FormError } from "@/components/forms/FormError";
-
-interface SetupData {
-  secret: string;
-  otpauth_url: string;
-  qr_image: string;
-}
+import { OtpSetupData } from "@/api/types";
 
 interface OtpSetupFlowProps {
   onComplete: () => void;
@@ -20,14 +15,14 @@ interface OtpSetupFlowProps {
 }
 
 export const OtpSetupFlow = ({ onComplete, onCancel }: OtpSetupFlowProps) => {
-  const [setupData, setSetupData] = useState<SetupData | null>(null);
+  const [setupData, setSetupData] = useState<OtpSetupData | null>(null);
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
 
   const { mutate: setupOtp, isLoading: isSettingUp } = useMutation(
     userApi.setupOtp,
     {
-      onSuccess: (data) => setSetupData(data),
+      onSuccess: (data: OtpSetupData) => setSetupData(data),
       onError: (err) => setError((err as Error).message),
     }
   );
@@ -122,7 +117,7 @@ export const OtpSetupFlow = ({ onComplete, onCancel }: OtpSetupFlowProps) => {
                 setError("");
               }}
               autoSubmit
-			  icon={false}
+              icon={false}
             />
           </div>
 

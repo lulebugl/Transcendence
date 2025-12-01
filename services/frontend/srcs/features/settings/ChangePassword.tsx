@@ -2,11 +2,11 @@ import { useState } from "react";
 import { useMutation } from "@/hooks/useMutation";
 import { userApi } from "@/api/user";
 import { FormError } from "@/components/forms/FormError";
-import { Button } from "@/components/ui";	
+import { Button } from "@/components/ui";
 import { PasswordInput } from "@/components/forms/PasswordInput";
 
 interface ChangePasswordProps {
-  onCancel: (value: boolean) => void;
+  onCancel: () => void;
 }
 
 interface PasswordData {
@@ -15,29 +15,32 @@ interface PasswordData {
   confirm: string;
 }
 
+const initialState: PasswordData = {
+  current: "",
+  new: "",
+  confirm: "",
+};
+
 export const ChangePassword = ({ onCancel }: ChangePasswordProps) => {
-  const [passwordData, setPasswordData] = useState<PasswordData>({
-    current: "",
-    new: "",
-    confirm: ""
-  });
+  const [passwordData, setPasswordData] = useState<PasswordData>(initialState);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const { mutate: changePassword, error: mutationError } = useMutation(
-    userApi.changePassword,
-    {
-      onSuccess: () => {
-        setPasswordData({ current: "", new: "", confirm: "" });
-        onCancel(false);
-      },
-      onError: () => {},
-    }
-  );
+  const {
+    mutate: changePassword,
+    isLoading,
+    error: mutationError,
+  } = useMutation(userApi.changePassword, {
+    onSuccess: () => {
+      setPasswordData(initialState);
+      onCancel();
+    },
+    onError: () => {},
+  });
 
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPasswordData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-    if (errors[e.target.name])
-      setErrors((prev) => ({ ...prev, [e.target.name]: undefined }));
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setPasswordData((prev) => ({ ...prev, [name]: value }));
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: undefined }));
   };
 
   const handleChangePassword = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -46,24 +49,22 @@ export const ChangePassword = ({ onCancel }: ChangePasswordProps) => {
     const newpass = passwordData.new.trim();
     const confirm = passwordData.confirm.trim();
 
+    const newErrors: Record<string, string> = {};
     if (newpass.length < 8) {
-      setErrors((prev) => ({
-        ...prev,
-        new: "Password must be at least 8 characters",
-      }));
-      return;
+      newErrors.new = "Password must be at least 8 characters";
     }
 
     if (current === newpass) {
-      setErrors((prev) => ({
-        ...prev,
-        current: "New password cannot be the same as the current password",
-      }));
-      return;
+      newErrors.current =
+        "New password cannot be the same as the current password";
     }
 
     if (newpass !== confirm) {
-      setErrors((prev) => ({ ...prev, confirm: "Passwords do not match" }));
+      newErrors.confirm = "Passwords do not match";
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       return;
     }
 
@@ -75,13 +76,13 @@ export const ChangePassword = ({ onCancel }: ChangePasswordProps) => {
 
   return (
     <div className="bg-muted/30 border border-border rounded-lg p-5 space-y-4 animate-in slide-in-from-top-2 fade-in duration-200">
-      <form onSubmit={(e) => handleChangePassword(e)} className="space-y-4">
+      <form onSubmit={handleChangePassword} className="space-y-4">
         <div className="space-y-2">
           <PasswordInput
             label="Current Password"
             name="current"
             value={passwordData.current}
-            onChange={handlePasswordChange}
+            onChange={handleChange}
             error={errors.current}
             placeholder="Enter current password"
           />
@@ -93,7 +94,7 @@ export const ChangePassword = ({ onCancel }: ChangePasswordProps) => {
               label="New Password"
               name="new"
               value={passwordData.new}
-              onChange={handlePasswordChange}
+              onChange={handleChange}
               error={errors.new}
               placeholder="Min. 8 characters"
               description="Must be at least 8 characters"
@@ -104,7 +105,7 @@ export const ChangePassword = ({ onCancel }: ChangePasswordProps) => {
               label="Confirm Password"
               name="confirm"
               value={passwordData.confirm}
-              onChange={handlePasswordChange}
+              onChange={handleChange}
               error={errors.confirm}
               className={`${
                 passwordData.confirm &&
@@ -126,13 +127,18 @@ export const ChangePassword = ({ onCancel }: ChangePasswordProps) => {
               variant="ghost"
               size="sm"
               onClick={() => {
-                onCancel(false);
+                onCancel();
                 setPasswordData({ current: "", new: "", confirm: "" });
               }}
             >
               Cancel
             </Button>
-            <Button type="submit" variant="default" size="sm">
+            <Button
+              type="submit"
+              variant="default"
+              size="sm"
+              loading={isLoading}
+            >
               Update Password
             </Button>
           </div>

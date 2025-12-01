@@ -1,5 +1,5 @@
 import { Lock, AlertTriangle } from "lucide-react";
-import { User as UserType } from "@/types";
+import { User } from "@/types/user";
 import { useState } from "react";
 import { ChangePassword } from "@/features/settings/ChangePassword";
 import { Button } from "@/components/ui";
@@ -9,7 +9,7 @@ import { useAuth } from "@/context/auth-context";
 import { SettingsSection } from "@/components/ui/SettingsSection";
 import { OtpSettings } from "./otp";
 
-export const SecuritySettings = ({ user }: { user: UserType }) => {
+export const SecuritySettings = ({ user }: { user: User }) => {
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [confirmDeletion, setConfirmDeletion] = useState(false);
   const { refreshUser } = useAuth();
@@ -31,7 +31,6 @@ export const SecuritySettings = ({ user }: { user: UserType }) => {
         description="Manage your account access and security settings."
         className="space-y-6"
       >
-
         <div className="space-y-6">
           <div className="border-border space-y-4">
             <h4 className="font-medium flex items-center gap-2">
@@ -46,7 +45,7 @@ export const SecuritySettings = ({ user }: { user: UserType }) => {
                 Change Password
               </Button>
             ) : (
-              <ChangePassword onCancel={setIsChangingPassword} />
+              <ChangePassword onCancel={() => setIsChangingPassword(false)} />
             )}
           </div>
 
