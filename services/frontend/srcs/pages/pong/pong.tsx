@@ -34,7 +34,7 @@ import {
   updateMeshPosition,
 } from "./pong-helpers";
 import { initWebSocket, sendMessage } from "./initWebSocket";
-import { createPointBar, createExitGame, addText, updatePoint } from "./pongUI";
+import { createPointBar, createExitGame, addText, updatePoint, createStartGame } from "./pongUI";
 import { Loading } from "@/components/Loading";
 
 const ASSET_PATH = "/export_pongV0.5.glb";
@@ -162,9 +162,11 @@ export const Pong = () => {
     const pintTextRight = addText(barPointRight, "white", 35);
     const pintTextLeft = addText(barPointLeft, "white", 35);
     const exit = createExitGame();
+    const start = createStartGame();
     uiGame.addControl(barPointRight);
     uiGame.addControl(barPointLeft);
     uiGame.addControl(exit);
+    uiGame.addControl(start);
     const handleKeyDown = (event: KeyboardEvent) => {
       if (
         !sceneReadyRef.current ||
@@ -203,20 +205,23 @@ export const Pong = () => {
     });
 
     let CameraFlag: boolean = false;
-    websocketRef.current = initWebSocket("/ws", (data) => {
-      const msg = data as BackendMessage;
-      if (isStartMessage((msg))) {
-        paddlePlayerRef.current = msg.player === 1 ? paddleRight : paddleLeft;
-        if (sceneReadyRef.current === true) {
-          moveCameraToPlayer();
-          CameraFlag = true;
-          setIsLoading(false);
+    start.onPointerUpObservable.add(() => {
+      websocketRef.current = initWebSocket("/ws", (data) => {
+        const msg = data as BackendMessage;
+        if (isStartMessage((msg))) {
+          paddlePlayerRef.current = msg.player === 1 ? paddleRight : paddleLeft;
+          if (sceneReadyRef.current === true) {
+            moveCameraToPlayer();
+            CameraFlag = true;
+          }
+          else {
+            CameraFlag = false;
+          }
         }
-        else {
-          CameraFlag = false;
-        }
-      }
-      backendMessageRef.current = msg;
+        backendMessageRef.current = msg;
+      });
+      setIsLoading(false); // Game has started and initial setup is complete, so hide loading indicator
+      start.dispose();
     });
 
 
