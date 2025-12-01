@@ -1,4 +1,4 @@
-import { User } from "@/types";
+import { User } from "@/types/user";
 import { ArrowRight } from "lucide-react";
 import { ButtonLink } from "@/components/ui/Button";
 import { DottedBadge } from "@/components/ui/Badge";
@@ -87,7 +87,7 @@ export const HeroSection = ({ user }: { user: User }) => {
               className="flex flex-col sm:flex-row items-center gap-4 pt-4 animate-fade-in-up"
               style={{ animationDelay: "0.4s" }}
             >
-              <ButtonLink to="/auth/signup" variant="cyber" size="xl" className="font-bold!">
+              <ButtonLink to="/auth/signup" variant="cyber" size="lg" className="font-bold!">
                 Register Now
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </ButtonLink>

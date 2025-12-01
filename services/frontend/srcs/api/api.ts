@@ -26,7 +26,17 @@ export async function apiRequest<T>(
     throw new Error(errorMessage);
   }
 
-  return response.json();
+  const contentLength = response.headers.get("Content-Length");
+  if (response.status === 204 || contentLength === "0") {
+    return undefined as T;
+  }
+
+  const text = await response.text();
+  if (!text) {
+    return undefined as T;
+  }
+
+  return JSON.parse(text) as T;
 }
 
 let refreshPromise: Promise<boolean> | null = null;

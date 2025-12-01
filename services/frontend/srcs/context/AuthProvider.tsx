@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo, ReactNode } from "react";
-import { User } from "@/types";
+import { User } from "@/types/user";
 import { api } from "@/api";
 import * as authApi from "@/api/auth";
 import { AuthContext } from "./auth-context";
@@ -35,6 +35,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
   
   const refreshUser = useCallback(async () => {
+	console.log("Refetching user");
     try {
       const res = await api("/api/users/me");
       if (res.ok) {
