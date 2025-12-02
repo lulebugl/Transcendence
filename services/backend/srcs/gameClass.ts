@@ -21,6 +21,10 @@ import {
   BALL_SPEED
 } from './ConstVarGameLogic';
 
+async function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 function InfoInGame(
   id = 0,
   ballx = startBallX, bally = startBallY, ballz = startBallZ,
@@ -80,9 +84,9 @@ export class Game {
     const keyRight = playerIndex === 0 ? 'a' : 'd';
     const keyLeft = playerIndex === 0 ? 'd' : 'a';
 
-    if (info.type === "playerMove" && info.key === keyLeft && paddle.position.x < TERRAIN_LIMIT_X_MIN && paddle.position.x > TERRAIN_LIMIT_X_MAX)
+    if (info.type === "playerMove" && info.key === keyLeft && paddle.position.x + 0.5 < TERRAIN_LIMIT_X_MAX)
       paddle.position.x += 0.5;
-    else if (info.type === "playerMove" && info.key === keyRight && paddle.position.x < TERRAIN_LIMIT_X_MAX && paddle.position.x > TERRAIN_LIMIT_X_MIN)
+    else if (info.type === "playerMove" && info.key === keyRight && paddle.position.x - 0.5 > TERRAIN_LIMIT_X_MIN)
       paddle.position.x -= 0.5;
     else if (info.type === "Not ready")
       this.setCamera(this.players)
@@ -140,10 +144,15 @@ export class Game {
     this.broadcast({ type: 'update', state: this.state });
   }
 
-  resetBall() {
+  async resetBall() {
     this.state.ball.position.x = startBallX;
     this.state.ball.position.z = startBallZ;
-    this.state.ball.speed = BALL_SPEED;
+    this.state.ball.speed = 0; // Stop the ball
+    this.state.ball.angle = Math.PI / 2; // Point it straight up (or any fixed direction)
+
+    await sleep(1000); // Wait for 2 seconds
+
+    this.state.ball.speed = BALL_SPEED; // Restart the ball
     this.state.ball.angle = Math.random() < 0.5 ? Math.PI / 4 : 5 * Math.PI / 4; // Random direction
   }
 

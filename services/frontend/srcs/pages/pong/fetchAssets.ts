@@ -1,5 +1,4 @@
 
-import "@babylonjs/loaders";
 
 export const fetchPongAssets = async (assetPath: string = "/export_pongV0.5.glb"): Promise<void> => {
     try {

@@ -24,7 +24,7 @@ import { Loading } from "@/components/Loading";
 const ASSET_PATH = "/export_pongV0.5.glb";
 const NOT_READY_INTERVAL = 1000;
 const CAMERA_BASE_POSITION = new Vector3(0, 0, 0);
-const CAMERA_TARGET = new Vector3(0, 0, 0);
+const CAMERA_TARGET = new Vector3(0, 1000, 0);
 const MOVING_MESH_INDICES = new Set([ball, paddleLeft, paddleRight]);
 
 type VectorPayload = { x: number; y: number; z: number };
@@ -92,8 +92,8 @@ export const TestPongDev = () => {
         const camera = new ArcRotateCamera(
             "camera",
             Math.PI / 2,
-            Math.PI / 2.2,
-            10,
+            Math.PI / 3,
+            15,
             CAMERA_TARGET.clone(),
             scene
         );
