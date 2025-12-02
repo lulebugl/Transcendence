@@ -1,7 +1,7 @@
 @import "tailwindcss";
 /* @import "tw-animate-css"; */
 
-@custom-variant dark (&:is(.dark *));
+/* @custom-variant dark (&:is(.dark *)); */
 /* @import "tailwindcss/preflight.css" layer(base); */
 
 *,
@@ -9,67 +9,6 @@
 *::after {
   box-sizing: border-box;
   min-width: 0;
-}
-
-html {
-  overflow-x: hidden;
-  scroll-behavior: smooth;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  
-  /* Fluid typography: base font scales from ~14px (mobile) to 16px (desktop) */
-  /* All rem-based sizes (Tailwind's text-sm, text-lg, etc.) scale proportionally */
-  /* font-size: clamp(0.9rem, 0.85rem, 1.2rem); */
-}
-
-html,
-body,
-#app {
-  height: 100%;
-  width: 100%;
-  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-}
-
-body {
-  overflow-x: hidden;
-  /* Prevent text size adjustment on orientation change (iOS) */
-  -webkit-text-size-adjust: 100%;
-}
-
-/* Responsive media - never overflow container */
-img,
-video,
-canvas,
-svg {
-  max-width: 100%;
-  height: auto;
-  display: block;
-}
-
-/* Prevent long words/URLs from breaking layout */
-p,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-li,
-span,
-a {
-  overflow-wrap: break-word;
-  word-wrap: break-word;
-}
-
-/* Better touch targets on mobile */
-@media (pointer: coarse) {
-  button,
-  a,
-  input,
-  select,
-  textarea {
-    min-height: 44px;
-  }
 }
 
 :root {
@@ -177,6 +116,67 @@ a {
   }
 }
 
+html {
+	overflow-x: hidden;
+	scroll-behavior: smooth;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	
+	/* Fluid typography: base font scales from ~14px (mobile) to 16px (desktop) */
+	/* All rem-based sizes (Tailwind's text-sm, text-lg, etc.) scale proportionally */
+	/* font-size: clamp(0.9rem, 0.85rem, 1.2rem); */
+  }
+  
+  html,
+  body,
+  #app {
+	height: 100%;
+	width: 100%;
+	font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  
+  body {
+	overflow-x: hidden;
+	/* Prevent text size adjustment on orientation change (iOS) */
+	-webkit-text-size-adjust: 100%;
+  }
+  
+  /* Responsive media - never overflow container */
+  img,
+  video,
+  canvas,
+  svg {
+	max-width: 100%;
+	height: auto;
+	display: block;
+  }
+  
+  /* Prevent long words/URLs from breaking layout */
+  p,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  li,
+  span,
+  a {
+	overflow-wrap: break-word;
+	word-wrap: break-word;
+  }
+  
+  /* Better touch targets on mobile */
+  @media (pointer: coarse) {
+	button,
+	a,
+	input,
+	select,
+	textarea {
+	  min-height: 44px;
+	}
+  }
+  
 /* Refined Atmosphere */
 body {
   background-color: var(--background);
