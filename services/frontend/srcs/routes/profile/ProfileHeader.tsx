@@ -1,6 +1,13 @@
 import { Button } from "@/components/ui";
 import { UserAvatar } from "@/components/UserAvatar";
-import { Crown, Zap, Calendar, TrendingUp, Swords, UserPlus } from "lucide-react";
+import {
+  Crown,
+  Zap,
+  Calendar,
+  TrendingUp,
+  Swords,
+  UserPlus,
+} from "lucide-react";
 
 export const MOCK_USER = {
   id: 1,
@@ -45,7 +52,10 @@ interface ProfileHeaderProps {
   isOwnProfile?: boolean;
 }
 
-export const ProfileHeader = ({ user, isOwnProfile = false }: ProfileHeaderProps) => {
+export const ProfileHeader = ({
+  user,
+  isOwnProfile = false,
+}: ProfileHeaderProps) => {
   const xpProgress = (user.xp / user.nextLevelXp) * 100;
   const percentile = ((user.rankPosition / user.totalPlayers) * 100).toFixed(1);
   const status = statusConfig[user.status];
@@ -94,30 +104,20 @@ export const ProfileHeader = ({ user, isOwnProfile = false }: ProfileHeaderProps
           {/* User Info */}
           <div className="flex-1 text-center lg:text-left space-y-6 pb-2">
             {/* Username + Rank */}
-			{!isOwnProfile && (
-                <div className="flex items-center justify-center lg:justify-start gap-3 pt-2">
-                  <button
-                    type="button"
-                    className="group flex items-center gap-2 px-4 py-2 border border-white/10 rounded-full hover:border-primary/50 hover:bg-primary/5 transition-all duration-300"
-                    aria-label={`Add ${user.username} as friend`}
-                  >
-                    <UserPlus className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
-                    <span className="text-xs uppercase tracking-widest text-muted-foreground group-hover:text-white transition-colors">
-                      Add Friend
-                    </span>
-                  </button>
-				  {/* <Button
-                    variant="cyber"
-					className="bg-none"
-                    aria-label={`Add ${user.username} as friend`}
-                  >
-                    <UserPlus className="w-4 h-4" />
-                    <span className="text-xs uppercase tracking-widest">
-                      Add Friend
-                    </span>
-                  </Button> */}
-                </div>
-              )}
+            {!isOwnProfile && (
+              <div className="flex items-center justify-center lg:justify-start gap-3 pt-2">
+                <Button
+                  variant="cyber"
+                  className="prim"
+                  aria-label={`Add ${user.username} as friend`}
+                >
+                  <UserPlus className="w-4 h-4" />
+                  <span className="text-xs uppercase tracking-widest">
+                    Add Friend
+                  </span>
+                </Button>
+              </div>
+            )}
             <div className="space-y-3">
               <div className="flex flex-col lg:flex-row lg:items-baseline gap-3">
                 <h1 className="text-4xl lg:text-5xl font-display font-medium tracking-tight text-white">
@@ -138,7 +138,9 @@ export const ProfileHeader = ({ user, isOwnProfile = false }: ProfileHeaderProps
                     Experience
                   </span>
                   <span className="font-mono text-muted-foreground">
-                    <span className="text-white">{user.xp.toLocaleString()}</span>
+                    <span className="text-white">
+                      {user.xp.toLocaleString()}
+                    </span>
                     <span className="mx-1">/</span>
                     {user.nextLevelXp.toLocaleString()}
                   </span>
@@ -150,7 +152,6 @@ export const ProfileHeader = ({ user, isOwnProfile = false }: ProfileHeaderProps
                   />
                 </div>
               </div>
-
             </div>
           </div>
         </div>
@@ -164,9 +165,7 @@ export const ProfileHeader = ({ user, isOwnProfile = false }: ProfileHeaderProps
               label="Global Rank"
             />
             <StatCard
-              icon={
-                <Swords className="w-4 h-4" />
-              }
+              icon={<Swords className="w-4 h-4" />}
               value={`Top ${percentile}`}
               label="Percentile"
             />
