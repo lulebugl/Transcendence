@@ -1,5 +1,5 @@
 // Primitives
-export { Button, ButtonLink, variantClasses, sizeClasses, type ButtonVariant, type ButtonSize, type ButtonProps } from "./Button";
+export { Button, type ButtonProps, type ButtonVariant, type ButtonSize } from "./Button";
 export { Input } from "./Input";
 export { Label } from "./Label";
 export { Field, FieldContent, FieldLabel, FieldDescription, FieldError, FieldSuccess } from "./Field";

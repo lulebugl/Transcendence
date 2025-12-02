@@ -1,13 +1,10 @@
 import {
   Button,
-  variantClasses,
-  sizeClasses,
   DottedBadge,
   colorSchemes,
   type BadgeColor,
   StatusDot,
   LiveIndicator,
-  Separator,
   Input,
   Label,
   Field,
@@ -18,8 +15,10 @@ import {
 } from "@/components/ui";
 import { VariantMatrix } from "../components/VariantMatrix";
 import { User, Mail } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { Section, SubSection, Variant } from "./utils";
+
+const buttonVariants = ["default", "primary", "destructive", "outline", "ghost", "glass", "cyber", "underline"] as const;
+const buttonSizes = ["default", "sm", "lg"] as const;
 
 export const PrimitivesPlayground = () => {
   if (import.meta.env.PROD) return null;
@@ -37,8 +36,8 @@ export const PrimitivesPlayground = () => {
         <SubSection title="Variants & Sizes" className="border-none">
           <VariantMatrix
             component={Button}
-            variants={Object.keys(variantClasses)}
-            sizes={Object.keys(sizeClasses)}
+            variants={buttonVariants as unknown as string[]}
+            sizes={buttonSizes as unknown as string[]}
             baseProps={{ children: "Button" }}
           />
         </SubSection>

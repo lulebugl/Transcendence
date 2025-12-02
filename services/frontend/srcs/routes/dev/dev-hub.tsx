@@ -1,5 +1,6 @@
+import { Link } from "react-router";
 import { Layout } from "@/components/layout/Layout";
-import { ButtonLink } from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
 
 export function DevHub() {
   return (
@@ -7,15 +8,21 @@ export function DevHub() {
       <div className="container pt-24 mx-auto flex flex-col items-center justify-center gap-4 max-w-2xl">
         <h1 className="text-3xl font-bold mb-8">Dev Hub</h1>
         <div className="flex flex-col gap-4 w-full">
-          <ButtonLink to="https://local.drizzle.studio">
-            Drizzle Studio
-          </ButtonLink>
-          <ButtonLink to="/dev/playground/ui">
-            UI Playground
-          </ButtonLink>
-          <ButtonLink to="/dev/playground/components">
-            Components Playground
-          </ButtonLink>
+          <Button asChild>
+            <a
+              href="https://local.drizzle.studio"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Drizzle Studio
+            </a>
+          </Button>
+          <Button asChild>
+            <Link to="/dev/playground/ui">UI Playground</Link>
+          </Button>
+          <Button asChild>
+            <Link to="/dev/playground/components">Components Playground</Link>
+          </Button>
         </div>
       </div>
     </Layout>

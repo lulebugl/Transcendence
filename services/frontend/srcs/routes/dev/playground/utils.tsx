@@ -5,11 +5,13 @@ import { cn } from "@/lib/utils";
 const Section = ({
   title,
   children,
+  className,
 }: {
   title: string;
   children: React.ReactNode;
+  className?: string;
 }) => (
-  <section className="space-y-10">
+  <section className={cn("space-y-10", className)}>
     <h2 className="text-xl font-semibold border-b border-border pb-3">
       {title}
     </h2>
@@ -20,11 +22,13 @@ const Section = ({
 const SubSection = ({
   title,
   children,
+  className,
 }: {
   title: string;
   children: React.ReactNode;
+  className?: string;
 }) => (
-  <div className="space-y-6">
+  <div className={cn("space-y-6", className)}>
     <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
       {title}
     </h3>
@@ -35,11 +39,13 @@ const SubSection = ({
 const Variant = ({
   label,
   children,
+  className,
 }: {
   label: string;
   children: React.ReactNode;
+  className?: string;
 }) => (
-  <div className="space-y-3">
+  <div className={cn("space-y-3", className)}>
     <span className="text-xs text-muted-foreground/70">{label}</span>
     <div className="border border-dashed border-border rounded-lg p-6">
       {children}

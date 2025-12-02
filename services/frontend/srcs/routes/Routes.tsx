@@ -1,4 +1,6 @@
+/* eslint-disable react-refresh/only-export-components */
 import { lazy, Suspense } from "react";
+import { Outlet } from "react-router";
 import { Loading } from "@/components/Loading";
 import { ErrorBoundary } from "@/components/errors/ErrorBoundary";
 import { PongErrorFallback } from "@/components/errors/ErrorFallback";
@@ -44,13 +46,11 @@ export const protectedRoutes: RouteConfig[] = [
   { path: "/profile/achievements", element: <Achievements /> },
 ];
 
-
 // ============================================================================
 // Dev Routes
 // ============================================================================
 
-// lazy loading dev routes
-// enable removing files from the build
+// Lazy loading dev routes - enables tree-shaking in production
 const DevHub = lazy(() =>
   import("@/routes/dev").then((m) => ({ default: m.DevHub }))
 );
@@ -65,8 +65,16 @@ const ComponentsPlayground = lazy(() =>
   }))
 );
 
-export const devRoutes: RouteConfig[] = import.meta.env.DEV ? [
-  { path: "/dev", element: <DevHub /> },
-  { path: "/dev/playground/ui", element: <PrimitivesPlayground /> },
-  { path: "/dev/playground/components", element: <ComponentsPlayground /> },
-] : [];
+export const DevLayout = () => (
+  <Suspense fallback={<Loading />}>
+    <Outlet />
+  </Suspense>
+);
+
+export const devRoutes: RouteConfig[] = import.meta.env.DEV
+  ? [
+      { path: "", element: <DevHub /> },
+      { path: "playground/ui", element: <PrimitivesPlayground /> },
+      { path: "playground/components", element: <ComponentsPlayground /> },
+    ]
+  : [];

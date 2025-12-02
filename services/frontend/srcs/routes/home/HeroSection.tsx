@@ -1,6 +1,7 @@
+import { Link } from "react-router";
 import { User } from "@/types/user";
 import { ArrowRight } from "lucide-react";
-import { ButtonLink } from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
 import { DottedBadge } from "@/components/ui/Badge";
 
 export const HeroSection = ({ user }: { user: User }) => {
@@ -35,9 +36,8 @@ export const HeroSection = ({ user }: { user: User }) => {
               className="text-lg text-muted-foreground max-w-xl leading-relaxed font-light animate-fade-in-up flex items-center justify-center gap-3"
               style={{ animationDelay: "0.3s" }}
             >
-				Your current Rank is 
-				<DottedBadge color="blue">{rank}</DottedBadge>
-              
+              Your current Rank is
+              <DottedBadge color="blue">{rank}</DottedBadge>
               <span className="text-muted-foreground/60">•</span>
               <span>Top 5% Global</span>
             </p>
@@ -46,24 +46,21 @@ export const HeroSection = ({ user }: { user: User }) => {
               className="flex items-center gap-6 pt-4 animate-fade-in-up"
               style={{ animationDelay: "0.4s" }}
             >
-              <ButtonLink
-                to="/lobby"
+              <Button
+                asChild
                 variant="cyber"
                 size="lg"
-                className="min-w-[200px] font-bold!"
+                className="min-w-52"
               >
-                Play Now
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </ButtonLink>
+                <Link to="/lobby">
+                  Play Now
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </Link>
+              </Button>
 
-              <ButtonLink
-                to="/tournaments"
-                variant="underline"
-                size="lg"
-                className="font-bold!"
-              >
-                Tournaments
-              </ButtonLink>
+              <Button asChild variant="underline" size="lg" className="font-bold!">
+                <Link to="/tournaments">Tournaments</Link>
+              </Button>
             </div>
           </>
         ) : (
@@ -87,14 +84,16 @@ export const HeroSection = ({ user }: { user: User }) => {
               className="flex flex-col sm:flex-row items-center gap-4 pt-4 animate-fade-in-up"
               style={{ animationDelay: "0.4s" }}
             >
-              <ButtonLink to="/auth/signup" variant="cyber" size="lg" className="font-bold!">
-                Register Now
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </ButtonLink>
+              <Button asChild variant="cyber" size="lg" className="font-bold!">
+                <Link to="/auth/signup">
+                  Register Now
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </Link>
+              </Button>
 
-              <ButtonLink to="/tournaments" variant="underline" size="lg">
-                See Live Events
-              </ButtonLink>
+              <Button asChild variant="underline" size="lg">
+                <Link to="/tournaments">See Live Events</Link>
+              </Button>
             </div>
 
             <div

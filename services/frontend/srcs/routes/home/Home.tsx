@@ -1,20 +1,12 @@
-import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { HeroSection } from "./HeroSection";
 import { Layout } from "@/components/layout/Layout";
 import { StatsBar } from "./StatsBar";
-import { Link } from "react-router";
 import { MatchHistory } from "@/routes/profile/MatchHistory";
 import { MOCK_MATCHES } from "@/lib/mock-data";
-// import { StatsBar } from "./StatsBar";
-// import { MatchHistory } from "./MatchHistory";
-// import { FeaturedEvent } from "./FeaturedEvent";
-// import { GuestFeatureCards } from "./GuestFeatureCards";
-// import { GuestLiveCircuit } from "./GuestLiveCircuit";
 
 export const Home = () => {
   const { user } = useAuth();
-  //   const featuredTournament = TOURNAMENTS.find((t) => t.status === "Live");
 
   return (
     <Layout>
