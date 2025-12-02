@@ -10,6 +10,13 @@ export default function DevHub() {
       >
         Drizzle Studio
       </a>
+      <br />
+      <a
+        href="/pong-test"
+        className="text-blue-500 hover:text-blue-700"
+      >
+        Pong Test
+      </a>
     </MainLayout>
   );
 }

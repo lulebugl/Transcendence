@@ -24,7 +24,7 @@ import CodexDesign from "./pages/inspiration/codex-design";
 import GeminiDesign from "./pages/inspiration/gemini-design";
 import TestDesign from "./pages/inspiration/test-design";
 import DevHub from "./pages/dev-hub";
-
+import { TestPongDev } from "./pages/pong/testPongDev";
 const root = document.getElementById("root") as HTMLElement;
 if (!root) {
   throw new Error(
@@ -43,7 +43,7 @@ ReactDOM.createRoot(root).render(
         <ErrorBoundary>
           <Routes>
             <Route path="/" element={<Home />} />
-			<Route path="/lobby" element={<Lobby />} />
+            <Route path="/lobby" element={<Lobby />} />
             <Route
               path="/pong"
               element={
@@ -72,11 +72,9 @@ ReactDOM.createRoot(root).render(
               <Route path="test-design" element={<TestDesign />} />
             </Route>
             {/* Test Page and dev below */}
-            import.meta.env.DEV && (
-            <>
-              <Route path="/dev-hub" element={<DevHub />} />
-            </>
-            ){/* NOT FOUND PAGE */}
+            <Route path="/dev-hub" element={<DevHub />} />
+            <Route path="/pong-test" element={<TestPongDev />} />
+            {/* NOT FOUND PAGE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </ErrorBoundary>
