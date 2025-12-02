@@ -1,9 +1,16 @@
-import { useState, useEffect, useCallback, useMemo, ReactNode } from "react";
+import {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  ReactNode,
+  createContext,
+} from "react";
 import { User } from "@/types/user";
 import { api } from "@/api";
 import * as authApi from "@/api/auth";
-import { AuthContext } from "./auth-context";
 import { useNavigate } from "react-router";
+import { LoginResponse } from "@/api/types";
 
 export interface AuthContextType {
   user: User | null;
@@ -12,11 +19,16 @@ export interface AuthContextType {
     username: string,
     password: string,
     otp?: string
-  ) => Promise<void | { require2fa: boolean }>;
+  ) => Promise<LoginResponse>;
   signup: (username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
 }
+
+/* eslint-disable react-refresh/only-export-components */
+export const AuthContext = createContext<AuthContextType | undefined>(
+  undefined
+);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -24,18 +36,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-	const handleStorageChange = (event: StorageEvent) => {
-	  if (event.key === "accessToken" && event.newValue === null) {
-		setUser(null);
-	  }
-	};
-  
-	window.addEventListener("storage", handleStorageChange);
-	return () => window.removeEventListener("storage", handleStorageChange);
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === "accessToken" && event.newValue === null) {
+        setUser(null);
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
-  
+
   const refreshUser = useCallback(async () => {
-	console.log("Refetching user");
+    console.log("Refetching user");
     try {
       const res = await api("/api/users/me");
       if (res.ok) {

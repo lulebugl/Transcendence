@@ -1,5 +1,5 @@
 import { AuthLayout } from "@/components/layout/AuthLayout";
-import { SignUpForm } from "@/features/auth/SignUpForm";
+import { SignUpForm } from "./SignUpForm";
 
 export const Signup = () => {
   return (

@@ -1,9 +1,9 @@
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/Button";
 import { Trophy, Swords, Target, Flame, TrendingUp, Users } from "lucide-react";
-import { AchievementsCard } from "./AchievementsCard";
+import { AchievementsCard } from "./achievements/AchievementsCard";
 import { MOCK_MATCHES } from "@/lib/mock-data";
-import { MatchHistory } from "@/features/MatchHistory";
+import { MatchHistory } from "./MatchHistory";
 import { ProfileHeader, MOCK_USER } from "./ProfileHeader";
 
 const MOCK_STATS = {
@@ -87,29 +87,6 @@ const StatsGrid = ({ stats }: { stats: typeof MOCK_STATS }) => {
     </section>
   );
 };
-
-const QuickActions = () => {
-  return (
-    <section className="flex flex-wrap gap-3 justify-center md:justify-start">
-      <Button variant="cyber" size="lg">
-        <Swords className="w-4 h-4" />
-        Find Match
-      </Button>
-      <Button variant="glass" size="lg">
-        <Users className="w-4 h-4" />
-        Friends
-      </Button>
-      <Button variant="glass" size="lg">
-        <Trophy className="w-4 h-4" />
-        Tournaments
-      </Button>
-    </section>
-  );
-};
-
-// ============================================================================
-// Main Component
-// ============================================================================
 
 export const UserProfile = () => {
   return (

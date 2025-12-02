@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router";
 import { ArrowRight, Lock, User } from "lucide-react";
 import { FormInput } from "@/components/forms/FormInput";
-import { useAuth } from "@/context/auth-context";
+import { useAuth } from "@/hooks/useAuth";
 import { FormError } from "@/components/forms/FormError";
 
 export const SignUpForm = () => {

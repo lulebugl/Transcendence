@@ -1,9 +1,9 @@
 import { Lock } from "lucide-react";
 import { User } from "@/types/user";
 import { useState } from "react";
-import { ChangePassword } from "@/features/settings/ChangePassword";
+import { ChangePassword } from "./ChangePassword";
 import { Button } from "@/components/ui";
-import { useAuth } from "@/context/auth-context";
+import { useAuth } from "@/hooks/useAuth";
 import { SettingsSection } from "@/components/ui/SettingsSection";
 import { OtpSettings } from "./otp";
 import { DeleteAccount } from "./DeleteAccount";

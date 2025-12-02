@@ -1,8 +1,8 @@
 import { FormInput } from "@/components/forms/FormInput";
 import { PasswordInput } from "@/components/forms/PasswordInput";
 import { OtpCodeInput } from "@/components/forms/OtpInput";
-import { OtpStatusCard } from "@/features/settings/otp/OtpStatusCard";
-import { ChangePassword } from "@/features/settings/ChangePassword";
+import { OtpStatusCard } from "@/routes/settings/otp/OtpStatusCard";
+import { ChangePassword } from "@/routes/settings/ChangePassword";
 import { useState } from "react";
 import { Mail } from "lucide-react";
 import { Section, SubSection, Variant } from "./utils";

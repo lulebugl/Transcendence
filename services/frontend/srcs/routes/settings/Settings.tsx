@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { User, Shield } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
-import { useAuth } from "@/context/auth-context";
-import { ProfileSettings } from "@/features/settings/ProfileSettings";
-import { SecuritySettings } from "@/features/settings/SecuritySettings";
+import { useAuth } from "@/hooks/useAuth";
+import { ProfileSettings } from "./ProfileSettings";
+import { SecuritySettings } from "./SecuritySettings";
 
 const TABS = [
   { id: "profile", label: "Profile", icon: User },

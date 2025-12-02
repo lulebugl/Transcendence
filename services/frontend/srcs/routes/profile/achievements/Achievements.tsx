@@ -12,7 +12,7 @@ import { useMemo } from "react";
 import { Lock } from "lucide-react";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 
-export const Achievement = () => {
+export const Achievements = () => {
   return (
     <Layout>
       <div className="max-w-4xl mx-auto py-8 md:py-12 space-y-6 animate-fade-in">

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router";
 import { ArrowRight, Lock, User } from "lucide-react";
-import { useAuth } from "@/context/auth-context";
+import { useAuth } from "@/hooks/useAuth";
 import { FormInput } from "@/components/forms/FormInput";
 import { Otp } from "./Otp";
 import { FormError } from "@/components/forms/FormError";

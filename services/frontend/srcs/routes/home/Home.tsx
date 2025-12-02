@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import { useAuth } from "@/context/auth-context";
+import { useAuth } from "@/hooks/useAuth";
 import { HeroSection } from "./HeroSection";
 import { Layout } from "@/components/layout/Layout";
 import { StatsBar } from "./StatsBar";
 import { Link } from "react-router";
-import { MatchHistory } from "@/features/MatchHistory";
+import { MatchHistory } from "@/routes/profile/MatchHistory";
 import { MOCK_MATCHES } from "@/lib/mock-data";
 // import { StatsBar } from "./StatsBar";
 // import { MatchHistory } from "./MatchHistory";

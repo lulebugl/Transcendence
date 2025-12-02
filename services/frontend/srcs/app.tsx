@@ -1,90 +1,35 @@
 import React from "react";
-import { lazy, Suspense } from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter as Router, Routes, Route } from "react-router";
+import { BrowserRouter, Route, Routes } from "react-router";
+import { AuthProvider } from "@/Providers";
+import { ErrorBoundary } from "@/components/errors/ErrorBoundary";
+import { devRoutes, protectedRoutes, publicRoutes } from "./routes/Routes";
+import { ProtectedRoutes } from "./routes/ProtectedRoutes";
 import "./styles.css";
-import { AuthProvider } from "./context/AuthProvider";
-import { ProtectedRoutes } from "@/features/ProtectedRoutes";
-import { Loading } from "@/components/Loading";
-import { ErrorBoundary } from "./features/errors/ErrorBoundary";
-import { PongErrorFallback } from "./features/errors/ErrorFallback";
-import {
-  UserProfile,
-  Settings,
-  Home,
-  NotFound,
-  Login,
-  Signup,
-  Lobby,
-  Achievement,
-} from "./pages";
 
-import {
-  DevHub,
-  PrimitivesPlayground,
-  ComponentsPlayground,
-} from "./pages/dev";
-
-const root = document.getElementById("root") as HTMLElement;
-if (!root) {
-  throw new Error(
-    "Root element not found. Make sure <main id='root'> exists in index.html"
-  );
-}
-
-const PongPage = lazy(() =>
-  import("./pages/pong/pong").then((module) => ({ default: module.Pong }))
-);
-
-ReactDOM.createRoot(root).render(
+ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <Router>
+    <BrowserRouter>
       <AuthProvider>
         <ErrorBoundary>
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/lobby" element={<Lobby />} />
-            <Route
-              path="/pong"
-              element={
-                <ErrorBoundary fallback={<PongErrorFallback />}>
-                  <Suspense fallback={<Loading />}>
-                    <PongPage />
-                  </Suspense>
-                </ErrorBoundary>
-              }
-            />
-            {/* Just to demonstrate the loading state */}
-            <Route path="/loading" element={<Loading />} />
-            {/* AUTH PAGES */}
-            <Route path="/auth/login" element={<Login />} />
-            <Route path="/auth/signup" element={<Signup />} />
-            {/* User Pages */}
+            {publicRoutes.map(({ path, element }) => (
+              <Route key={path} path={path} element={element} />
+            ))}
+
             <Route element={<ProtectedRoutes />}>
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/profile" element={<UserProfile />} />
-              <Route path="/profile/achievements" element={<Achievement />} />
+              {protectedRoutes.map(({ path, element }) => (
+                <Route key={path} path={path} element={element} />
+              ))}
             </Route>
 
-            {/* Dev Pages - only in development */}
-            {import.meta.env.DEV && (
-              <>
-                <Route path="/dev" element={<DevHub />} />
-                <Route
-                  path="/dev/playground/ui"
-                  element={<PrimitivesPlayground />}
-                />
-                <Route
-                  path="/dev/playground/components"
-                  element={<ComponentsPlayground />}
-                />
-              </>
-            )}
-            {/* NOT FOUND PAGE */}
-            <Route path="*" element={<NotFound />} />
+            {import.meta.env.DEV &&
+              devRoutes.map(({ path, element }) => (
+                <Route key={path} path={path} element={element} />
+              ))}
           </Routes>
         </ErrorBoundary>
       </AuthProvider>
-    </Router>
+    </BrowserRouter>
   </React.StrictMode>
 );

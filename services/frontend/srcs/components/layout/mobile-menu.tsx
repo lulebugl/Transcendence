@@ -1,4 +1,4 @@
-import { useAuth } from "@/context/auth-context";
+import { useAuth } from "@/hooks/useAuth";
 import { Link } from "react-router";
 import { NAV_ITEMS } from "./Layout";
 

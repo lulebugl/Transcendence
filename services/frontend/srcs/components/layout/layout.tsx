@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router";
 import { LogIn, LogOut, Settings, Menu, X } from "lucide-react";
-import { useAuth } from "@/context/auth-context";
+import { useAuth } from "@/hooks/useAuth";
 import { MobileMenu } from "./mobile-menu";
 import { UserAvatar } from "@/components/UserAvatar";
 
