@@ -44,13 +44,14 @@ function InfoInJson(
 export function startWebSocketServer(port = 9000) {
 	let gameBreak = false;
 	console.log(`Inizialliazazione webSocket wss -NON CONNESSO-`)
-	function setupGameState(ws) {
-		ws.send(InfoInJson());
-	}
+
+	// Map to store active game sessions: matchId -> { player1, player2, game }
+	const games = new Map<string, { player1: WebSocket | null, player2: WebSocket | null, game: Game | null }>();
+
 	function setupHeartbeat(ws) {
 		ws.isAlive = true;
 		ws.on('pong', () => {
-			console.log("pong ricevuto");
+			// console.log("pong ricevuto");
 			ws.isAlive = true;
 		});
 	}
@@ -71,34 +72,61 @@ export function startWebSocketServer(port = 9000) {
 			ws.ping();
 		});
 	}, 3000);
-	const speed = 0.5;
+
 	wss.on('close', () => {
 		clearInterval(heartbeatInterval);
 		console.log("close WebSocket");
 	});
-	let pendingPlayer = null;
 
-
-	wss.on('connection', (ws) => {
+	wss.on('connection', (ws, req) => {
 		setupHeartbeat(ws);
 		console.log('Nuovo client connesso!');
-		if (pendingPlayer === null) {
-			pendingPlayer = ws;
-			ws.send(JSON.stringify({ type: "start", player: 1 }));
+
+		// Extract matchId from URL
+		const url = new URL(req.url, `http://${req.headers.host}`);
+		const matchId = url.searchParams.get('matchId');
+
+		if (!matchId) {
+			console.log("No matchId provided, closing connection");
+			ws.close();
+			return;
 		}
-		else {
-			pendingPlayer.send(JSON.stringify({ type: "start", player: 1 }));
-			ws.send(JSON.stringify({ type: "start", player: 2 }));
-			//TODO: add random ID
-			const game = new Game(0, pendingPlayer, ws);
-			pendingPlayer = null;
+
+		let session = games.get(matchId);
+		if (!session) {
+			session = { player1: null, player2: null, game: null };
+			games.set(matchId, session);
 		}
-		//    ws.on('message', (event) => {
-		//        console.log('Messaggio ricevuto dal client:', event.toString());
-		//	});
+
+		if (!session.player1) {
+			session.player1 = ws;
+			ws.send(JSON.stringify({ type: "waiting", message: "Waiting for opponent..." }));
+			console.log(`Player 1 connected to match ${matchId}`);
+		} else if (!session.player2) {
+			session.player2 = ws;
+			console.log(`Player 2 connected to match ${matchId}`);
+
+			// Notify players
+			session.player1.send(JSON.stringify({ type: "start", player: 1 }));
+			session.player2.send(JSON.stringify({ type: "start", player: 2 }));
+
+			// Start Game
+			session.game = new Game(matchId, session.player1, session.player2);
+		} else {
+			console.log(`Match ${matchId} is full`);
+			ws.send(JSON.stringify({ type: "error", message: "Match full" }));
+			ws.close();
+		}
+
 		ws.on('close', () => {
-			console.log('Client disconnesso');
-			//pendingPlayer = null;
+			console.log(`Client disconnected from match ${matchId}`);
+			// Handle disconnection logic - maybe end game?
+			if (session) {
+				if (session.game) {
+					session.game.stop();
+				}
+				games.delete(matchId);
+			}
 		});
 	});
 }

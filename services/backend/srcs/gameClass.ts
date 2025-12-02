@@ -75,7 +75,23 @@ export class Game {
       });
     });
 
-    this.loop = setInterval(() => this.update(), 16);
+    this.startTimer();
+  }
+
+  startTimer() {
+    let countdown = 3;
+    // Send initial 3
+    this.broadcast({ type: 'timer', count: countdown });
+
+    const interval = setInterval(() => {
+      countdown--;
+      if (countdown < 0) {
+        clearInterval(interval);
+        this.loop = setInterval(() => this.update(), 16);
+      } else {
+        this.broadcast({ type: 'timer', count: countdown });
+      }
+    }, 1000);
   }
   updateKey(msg, playerIndex) {
     console.log(msg);

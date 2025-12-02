@@ -18,7 +18,7 @@ import {
     updateMeshPosition,
 } from "./pong-helpers";
 import { initWebSocket, sendMessage } from "./initWebSocket";
-import { createPointBar, createExitGame, addText, updatePoint, createStartGame } from "./pongUI";
+import { createPointBar, createExitGame, addText, updatePoint, createStartGame, createTimerBlock } from "./pongUI";
 import { Loading } from "@/components/Loading";
 
 const ASSET_PATH = "/export_pongV0.5.glb";
@@ -51,6 +51,14 @@ const isUpdateMessage = (message: BackendMessage): message is UpdateMessage =>
 const isStartMessage = (message: BackendMessage): message is StartMessage =>
     message?.type === "start";
 
+type TimerMessage = {
+    type: "timer";
+    count: number;
+};
+
+const isTimerMessage = (message: BackendMessage): message is TimerMessage =>
+    message?.type === "timer";
+
 export const TestPongDev = () => {
     const [isLoading, setIsLoading] = useState(true);
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -63,6 +71,7 @@ export const TestPongDev = () => {
     const paddlePlayerRef = useRef<number>(-1);
     const meshesRef = useRef<AbstractMesh[]>([]);
     const lastNotReadyRef = useRef<number>(0);
+    // const [timer, setTimer] = useState<number | null>(null); // Removed React state
 
     const offsetLeft = useRef(new Vector3(0, 10, -13)); //Bianco
     const offsetRight = useRef(new Vector3(0, 10, 13)); // Viola
@@ -118,11 +127,13 @@ export const TestPongDev = () => {
         const pintTextRight = addText(barPointRight, "white", 35);
         const pintTextLeft = addText(barPointLeft, "white", 35);
         const exit = createExitGame();
-        const start = createStartGame();
+        // const start = createStartGame(); // Removed manual start
+        const timerBlock = createTimerBlock();
         uiGame.addControl(barPointRight);
         uiGame.addControl(barPointLeft);
         uiGame.addControl(exit);
-        uiGame.addControl(start);
+        uiGame.addControl(timerBlock);
+        // uiGame.addControl(start);
         const handleKeyDown = (event: KeyboardEvent) => {
             if (
                 !sceneReadyRef.current ||
@@ -161,8 +172,13 @@ export const TestPongDev = () => {
         });
 
         let CameraFlag: boolean = false;
-        start.onPointerUpObservable.add(() => {
-            websocketRef.current = initWebSocket("/ws", (data) => {
+
+        // Auto-start connection if matchId is present
+        const params = new URLSearchParams(window.location.search);
+        const matchId = params.get("matchId");
+
+        if (matchId && sceneReadyRef.current === true) {
+            websocketRef.current = initWebSocket(`/ws?matchId=${matchId}`, (data) => {
                 const msg = data as BackendMessage;
                 if (isStartMessage((msg))) {
                     paddlePlayerRef.current = msg.player === 1 ? paddleRight : paddleLeft;
@@ -173,12 +189,19 @@ export const TestPongDev = () => {
                     else {
                         CameraFlag = false;
                     }
+                } else if (isTimerMessage(msg)) {
+                    // setTimer(msg.count);
+                    if (msg.count > 0) {
+                        timerBlock.text = msg.count.toString();
+                        timerBlock.isVisible = true;
+                    } else {
+                        timerBlock.isVisible = false;
+                    }
                 }
                 backendMessageRef.current = msg;
             });
-            setIsLoading(false); // Game has started and initial setup is complete, so hide loading indicator
-            start.dispose();
-        });
+            setIsLoading(false);
+        }
 
 
         const handleResize = () => {
@@ -316,6 +339,15 @@ export const TestPongDev = () => {
             {isLoading && (
                 <div className="absolute inset-0 z-50">
                     <Loading />
+                </div>
+            )}
+            {!new URLSearchParams(window.location.search).get("matchId") && (
+                <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 text-white">
+                    <div className="text-center">
+                        <h2 className="text-2xl font-bold mb-4">No Match ID</h2>
+                        <p className="mb-4">Please join a game from the Lobby.</p>
+                        <a href="/lobby" className="px-4 py-2 bg-blue-600 rounded hover:bg-blue-700">Go to Lobby</a>
+                    </div>
                 </div>
             )}
             <canvas

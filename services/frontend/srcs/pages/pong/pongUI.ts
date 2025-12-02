@@ -68,5 +68,18 @@ export function createStartGame(): any {
   playButton.fontSize = 10;
   playButton.top = 25;
   playButton.left = 30;
+  playButton.left = 30;
   return playButton;
+}
+
+export function createTimerBlock(): GUI.TextBlock {
+  const timerText = new GUI.TextBlock("timerText");
+  timerText.color = "white";
+  timerText.fontSize = 150;
+  timerText.text = "";
+  timerText.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+  timerText.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+  timerText.shadowColor = "black";
+  timerText.shadowBlur = 10;
+  return timerText;
 }
