@@ -80,9 +80,9 @@ export class Game {
     const keyRight = playerIndex === 0 ? 'a' : 'd';
     const keyLeft = playerIndex === 0 ? 'd' : 'a';
 
-    if (info.type === "playerMove" && info.key === keyLeft && paddle.position.x > TERRAIN_LIMIT_X_MIN)
+    if (info.type === "playerMove" && info.key === keyLeft && paddle.position.x < TERRAIN_LIMIT_X_MIN && paddle.position.x > TERRAIN_LIMIT_X_MAX)
       paddle.position.x += 0.5;
-    else if (info.type === "playerMove" && info.key === keyRight && paddle.position.x < TERRAIN_LIMIT_X_MAX)
+    else if (info.type === "playerMove" && info.key === keyRight && paddle.position.x < TERRAIN_LIMIT_X_MAX && paddle.position.x > TERRAIN_LIMIT_X_MIN)
       paddle.position.x -= 0.5;
     else if (info.type === "Not ready")
       this.setCamera(this.players)
