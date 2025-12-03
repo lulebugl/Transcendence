@@ -1,17 +1,18 @@
 import { useAuth } from "@/hooks/useAuth";
 import { Link } from "react-router";
-import { NAV_ITEMS } from "./Layout";
 
 interface MobileMenuProps {
   isOpen: boolean;
   onClose: () => void;
   currentPath: string;
+  navItems: { label: string; path: string }[];
 }
 
 export const MobileMenu = ({
   isOpen,
   onClose,
   currentPath,
+  navItems,
 }: MobileMenuProps) => {
   const { user, logout } = useAuth();
 
@@ -38,7 +39,7 @@ export const MobileMenu = ({
         }`}
       >
         <div className="max-w-7xl mx-auto px-6 py-6 space-y-2">
-          {NAV_ITEMS.map((item) => {
+          {navItems.map((item) => {
             const isActive = currentPath === item.path;
             return (
               <Link

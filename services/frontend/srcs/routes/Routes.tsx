@@ -7,10 +7,10 @@ import { PongErrorFallback } from "@/components/errors/ErrorFallback";
 import { Home } from "@/routes/home";
 import { Login, Signup } from "@/routes/auth";
 import { Settings } from "@/routes/settings";
-import { UserProfile } from "@/routes/profile";
-import { Achievements } from "@/routes/profile/achievements";
-import { Lobby } from "@/routes/pong";
+import { UserProfile, Achievements } from "@/routes/profile";
+import { Lobby } from "@/routes/lobby";
 import { NotFound } from "@/routes/NotFound";
+import { Tournaments } from "@/routes/tournaments";
 
 const Pong = lazy(() =>
   import("@/routes/pong/pong").then((m) => ({ default: m.Pong }))
@@ -24,6 +24,7 @@ interface RouteConfig {
 export const publicRoutes: RouteConfig[] = [
   { path: "/", element: <Home /> },
   { path: "/lobby", element: <Lobby /> },
+  { path: "/tournaments", element: <Tournaments /> },
   {
     path: "/pong",
     element: (

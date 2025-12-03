@@ -6,6 +6,8 @@ import { ChangePassword } from "@/routes/settings/ChangePassword";
 import { useState } from "react";
 import { Mail } from "lucide-react";
 import { Section, SubSection, Variant } from "./utils";
+import { GameMockCard } from "@/routes/lobby";
+import { Layout } from "@/components/layout/Layout";
 
 export const ComponentsPlayground = () => {
   const [otpValue, setOtpValue] = useState("");
@@ -13,6 +15,7 @@ export const ComponentsPlayground = () => {
   if (import.meta.env.PROD) return null;
 
   return (
+	<Layout>
     <div className="min-h-screen flex flex-col items-center py-16 px-4">
       <div className="w-full max-w-xl space-y-16">
         {/* Header */}
@@ -141,8 +144,16 @@ export const ComponentsPlayground = () => {
             <ChangePassword onCancel={() => console.log("Cancel")} />
           </SubSection>
         </Section>
+		<Section title="Game Components">
+			<SubSection title="GameMockCard">
+				<Variant label="Default" className="w-full h-64">
+					<GameMockCard selectedMode="ranked" />
+				</Variant>
+			</SubSection>
+		</Section>
       </div>
     </div>
+	</Layout>
   );
 };
 

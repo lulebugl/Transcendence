@@ -3,6 +3,7 @@ import { User } from "@/types/user";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { DottedBadge } from "@/components/ui/Badge";
+import { SystemIndicator } from "@/components/ui/SystemIndicator";
 
 export const HeroSection = ({ user }: { user: User }) => {
   const rank = "Diamond";
@@ -12,16 +13,10 @@ export const HeroSection = ({ user }: { user: User }) => {
 
       <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-px h-32 bg-linear-to-b from-transparent to-primary/50" />
       <div className="relative z-10 flex flex-col items-center space-y-8">
-        <div
-          className="inline-flex items-center gap-3 px-4 py-2 rounded-full border border-primary/20 bg-primary/5 backdrop-blur-sm animate-fade-in-up relative overflow-hidden group ml-1.5"
-          style={{ animationDelay: "0.1s" }}
-        >
-          <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/10 to-transparent animate-shimmer" />
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_10px_#10b981] animate-pulse" />
-          <span className="text-[10px] font-mono text-primary tracking-[0.2em] uppercase">
-            {user ? "System // Connected" : "System // Live Preview"}
-          </span>
-        </div>
+        <SystemIndicator
+          className="ml-1.5"
+          text={user ? "System // Connected" : "System // Live Preview"}
+        />
 
         {user ? (
           <>
@@ -46,19 +41,19 @@ export const HeroSection = ({ user }: { user: User }) => {
               className="flex items-center gap-6 pt-4 animate-fade-in-up"
               style={{ animationDelay: "0.4s" }}
             >
-              <Button
-                asChild
-                variant="cyber"
-                size="lg"
-                className="min-w-52"
-              >
+              <Button asChild variant="cyber" size="lg" className="min-w-52">
                 <Link to="/lobby">
                   Play Now
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </Button>
 
-              <Button asChild variant="underline" size="lg" className="font-bold!">
+              <Button
+                asChild
+                variant="underline"
+                size="lg"
+                className="font-bold!"
+              >
                 <Link to="/tournaments">Tournaments</Link>
               </Button>
             </div>
@@ -96,7 +91,7 @@ export const HeroSection = ({ user }: { user: User }) => {
               </Button>
             </div>
 
-            <div
+            {/* <div
               className="flex gap-8 text-left text-sm text-muted-foreground animate-fade-in-up"
               style={{ animationDelay: "0.45s" }}
             >
@@ -112,7 +107,7 @@ export const HeroSection = ({ user }: { user: User }) => {
                   Match Stability
                 </p>
               </div>
-            </div>
+            </div> */}
           </>
         )}
       </div>
