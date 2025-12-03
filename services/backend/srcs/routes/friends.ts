@@ -15,7 +15,7 @@ export function serializeUser(user: User) {
 	return { id, username, avatar_url, last_call };
 }
 
-interface RequestQuery {
+interface RequestBody {
 	id: number;
 }
 
@@ -24,7 +24,17 @@ const requestSchema: FastifySchema = {
 		type: "object",
 		required: ["id"],
 		properties: {
-			id: { type: 'number' },
+			id: { type: "number" },
+		},
+	}
+}
+
+const paramSchema: FastifySchema = {
+	params: {
+		type: "object",
+		required: ["id"],
+		properties: {
+			id: { type: "number" },
 		},
 	}
 }
@@ -38,8 +48,8 @@ export default async function friendsRoute(fastify: FastifyInstance) {
 			schema: requestSchema,
 			preHandler: fastify.auth,
 		},
-		async (req: FastifyRequest<{ Querystring: RequestQuery}>, reply: FastifyReply) => {
-			const { id } = req.query;
+		async (req: FastifyRequest<{ Body: RequestBody}>, reply: FastifyReply) => {
+			const { id } = req.body;
 
 			const recieverUser = await db
 				.select()
@@ -64,7 +74,7 @@ export default async function friendsRoute(fastify: FastifyInstance) {
 			if (exist.length > 0) return reply.badRequest("friendship already exist");
 
 			try {
-				db.insert(friendships).values({
+				await db.insert(friendships).values({
 					receiverId: recieverUser[0].id,
 					requesterId: req.user.id,
 					status: "pending"
@@ -85,8 +95,8 @@ export default async function friendsRoute(fastify: FastifyInstance) {
 			schema: requestSchema,
 			preHandler: fastify.auth,
 		},
-		async (req: FastifyRequest<{ Querystring: RequestQuery}>, reply: FastifyReply) => {
-			const { id } = req.query;
+		async (req: FastifyRequest<{ Body: RequestBody}>, reply: FastifyReply) => {
+			const { id } = req.body;
 
 			const [request] = await db
 				.select()
@@ -114,11 +124,11 @@ export default async function friendsRoute(fastify: FastifyInstance) {
 	fastify.delete(
 		"/api/friends/:id",
 		{ 
-			schema: requestSchema,
+			schema: paramSchema,
 			preHandler: fastify.auth,
 		},
-		async (req: FastifyRequest<{ Querystring: RequestQuery}>, reply: FastifyReply) => {
-			const { id } = req.query;
+		async (req: FastifyRequest<{ Params: {id: number} }>, reply: FastifyReply) => {
+			const { id } = req.params;
 
 			const deleted = await db
 				.delete(friendships)

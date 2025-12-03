@@ -1,9 +1,82 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "21ceb5d2-2856-4fe2-855c-d6fecdd220b6",
+  "id": "04b71779-a891-47c4-97fb-710d2d66fbd3",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
+    "friendships": {
+      "name": "friendships",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "requester_id": {
+          "name": "requester_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "receiver_id": {
+          "name": "receiver_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "friendships_requester_id_users_id_fk": {
+          "name": "friendships_requester_id_users_id_fk",
+          "tableFrom": "friendships",
+          "tableTo": "users",
+          "columnsFrom": [
+            "requester_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "friendships_receiver_id_users_id_fk": {
+          "name": "friendships_receiver_id_users_id_fk",
+          "tableFrom": "friendships",
+          "tableTo": "users",
+          "columnsFrom": [
+            "receiver_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
     "games": {
       "name": "games",
       "columns": {
@@ -264,6 +337,14 @@
         },
         "updated_at": {
           "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        },
+        "last_call": {
+          "name": "last_call",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,

@@ -11,6 +11,7 @@ import {
 } from "fastify";
 import { fields } from "./schema";
 import { hashPassword, verifyPassword } from "../utils/hash";
+import { date } from "drizzle-orm/mysql-core";
 
 dotenv.config();
 
@@ -21,12 +22,12 @@ export function serializeUser(user: User) {
 	return { id, username, avatar_url, last_call };
 }
 
-interface UserQuery {
+interface UserBody {
   offset?: number;
   limit?: number;
 }
 
-interface SingleUserQuery {
+interface SingleUserBody {
 	id: number;
 }
 
@@ -84,19 +85,19 @@ export default async function userRoutes(fastify: FastifyInstance) {
   // GET - Retrieve users by pages with offset and limit
   fastify.get(
     "/api/users",
-    async (req: FastifyRequest<{ Querystring: UserQuery }>) => {
-      const { offset = 0, limit = 10 } = req.query;
+    async (req: FastifyRequest<{ Body: UserBody }>) => {
+      const { offset = 0, limit = 10 } = req.body;
       return await db.select().from(users).limit(limit).offset(offset);
     }
   );
 
-  fastify.patch<{ Body: UpdateProfileBody }>(
+  fastify.patch(
     "/api/users/update",
     {
       schema: UpdateProfileSchema,
       preHandler: fastify.auth,
     },
-    async (req: FastifyRequest, reply: FastifyReply) => {
+    async (req: FastifyRequest<{ Body: UpdateProfileBody }>, reply: FastifyReply) => {
       const userId = req.user.id;
       const { username, avatar_url } = req.body;
 
@@ -204,8 +205,8 @@ export default async function userRoutes(fastify: FastifyInstance) {
   	// GET - Retrieve single user
 	fastify.get(
 		"/api/users/:id", 
-		async (req: FastifyRequest<{ Querystring: SingleUserQuery }>, reply: FastifyReply) => {
-			const { id } = req.query;
+		async (req: FastifyRequest<{ Body: SingleUserBody }>, reply: FastifyReply) => {
+			const { id } = req.body;
 
 			const [user] = await db.select().from(users).where(eq(users.id, id));
 			if (!user) return reply.unauthorized("User not found");
@@ -217,7 +218,7 @@ export default async function userRoutes(fastify: FastifyInstance) {
 	fastify.patch(
 		"/api/users/lastCall",
 		async (req : FastifyRequest, reply : FastifyReply) => {
-			await db.update(users).set({last_call: Date.now()}).where(eq(users.id, req.user.id));
+			await db.update(users).set({ last_call: new Date() }).where(eq(users.id, req.user.id));
 			return reply.status(200).send({ success: true });
 		}
 	);

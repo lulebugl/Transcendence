@@ -1,3 +1,13 @@
+CREATE TABLE `friendships` (
+	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+	`requester_id` integer NOT NULL,
+	`receiver_id` integer NOT NULL,
+	`status` text NOT NULL,
+	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
+	FOREIGN KEY (`requester_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE no action,
+	FOREIGN KEY (`receiver_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE no action
+);
+--> statement-breakpoint
 CREATE TABLE `games` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`player1_id` integer NOT NULL,
@@ -34,6 +44,7 @@ CREATE TABLE `users` (
 	`avatar_url` text,
 	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
 	`updated_at` integer DEFAULT (unixepoch()) NOT NULL,
+	`last_call` integer DEFAULT (unixepoch()) NOT NULL,
 	`password_hash` text NOT NULL,
 	`refresh_token` text,
 	`secret_key` text
