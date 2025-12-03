@@ -34,5 +34,5 @@ export async function login(username: string, password: string, totp?: string) {
 
 export async function logout() {
   clearAccessToken();
-  await api("/api/users/logout", { method: "POST", credentials: "include" });
+  await api("/api/users/refresh/logout", { method: "POST", credentials: "include" });
 }

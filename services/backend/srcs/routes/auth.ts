@@ -244,7 +244,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
   );
 
   fastify.post(
-    "/api/users/logout",
+    "/api/users/refresh/logout",
     async (req: FastifyRequest, reply: FastifyReply) => {
       const refreshToken = req.cookies?.refreshToken;
 
