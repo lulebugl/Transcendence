@@ -1,23 +1,57 @@
 # HIGH priority
-- [ ] refactor button and make better styles for the variants
-- [ ] faire les small fix in change password 
-- [ ] regarder la complexite de reproduire le functionnement basic de convex pour l'api
+
+- merge partie hugo:
+	* auto-login apres le signup
+	* retrieve user by id
+	* friends api
+	* better logout avec la modification de la route
+	* lastcall pour les status friends
+- merge julie pour tester le jeu
+
+## GAME
+
+- separate the logic of the game from babylon and create a version without 3D for better testing
+- faire une petite interface pour voir si le match-making fonctionne bien
+- regarder comment preload les assets et le jeu pendant le matchmaking
+
+## Users
+
+-  Implementer les friends and think about the flow and different states (pending, accepted, declined)
+   * add friend button
+   * remove friends
+   * accept friend request
+   * decline friend request
+   * see friend requests
+   * see friends and their status
+   * pending?
+
+- implementer les routes dynamic pour voir les pages des autres utilisateurs
+
+## STATS
+
+- Faire le premier jet de "useUserStats" pour simuler la vrai recuperation des stats
+
+## TOURNAMENTS
+
+- [ ] design tournament page
+   * tournament list
+   * tournament details
+   * tournament registration (and unregistration?)
+   * tournament creation and deletion
 
 # MEDIUM priority
-- [ ] create a display page in dev for ui components to have references (especially the buttons)
-- [ ] create delete account component 
-		* without ai would be even better to see what i still lack in understanding 
-- [ ] fix register flow (not logging the user after registering)
-- [ ] move the more "skeleton" like sections of settings into pages.
-- [ ] Implement avatar remove and change on frontend
-- [ ] improve navbar, maybe just keep user profile and make a dropdown
+
+-  create a display page in dev for ui components to have references (especially the buttons)
+-  move the more "skeleton" like sections of settings into pages.
+-  Implement avatar remove and change on frontend
 
 # LOW priority
-- [ ] also remove overview and add leaderboard in nav
-- [ ] add loading state for button in login, signup and otp
+
+-  also remove overview and add leaderboard in nav
+-  add loading state for button in login, signup and otp
 
 # BONUS
-- [ ] add skeletons
-- [ ] ajouter statut declined for friendship
-
+-  add skeletons
+-  ajouter statut declined for friendship
+-  maybe add tournament to lobby also
 
