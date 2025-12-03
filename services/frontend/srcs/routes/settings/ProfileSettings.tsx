@@ -7,6 +7,7 @@ import { userApi } from "@/api/user";
 import { SUCCESS_NOTIFICATION_DURATION } from "@/lib/constants";
 import { Button } from "@/components/ui";
 import { SettingsSection } from "@/components/ui/SettingsSection";
+import { toast } from "@/components/ui/toast";
 
 export const ProfileSettings = ({ user }: { user: UserType }) => {
   const [successField, setSuccessField] = useState<string | null>(null);
@@ -84,6 +85,9 @@ export const ProfileSettings = ({ user }: { user: UserType }) => {
               variant="outline"
               size="sm"
               className="text-xs px-4 py-2 hover:bg-accent"
+			  onClick={() => {
+				toast.error("Not implemented");
+			  }}
             >
               Remove
             </Button>

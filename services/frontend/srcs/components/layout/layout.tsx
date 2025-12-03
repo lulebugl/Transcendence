@@ -4,11 +4,13 @@ import { LogIn, LogOut, Settings, Menu, X } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { MobileMenu } from "./mobile-menu";
 import { UserAvatar } from "@/components/UserAvatar";
+import { Toaster } from "@/components/ui/Sonner";
 
 export const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="min-h-screen w-full bg-background text-foreground flex flex-col overflow-x-hidden">
       <Navbar />
+	  <Toaster />
       <main className="flex-1 relative pt-20 md:px-12 px-4 w-full">
         {children}
       </main>
