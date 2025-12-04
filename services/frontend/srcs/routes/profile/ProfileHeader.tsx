@@ -102,7 +102,7 @@ const FriendsButtons = ({ user }: { user: typeof MOCK_USER }) => {
       </Button>
       <Button
         variant="cyber"
-        className="bg-destructive text-destructive-foreground"
+        className="bg-black/80 text-white hover:bg-black/70 hover:shadow-none before:bg-transparent hover:before:bg-transparent"
         aria-label={`Remove ${user.username} as friend`}
         onClick={() => removeFriend(user.id)}
       >
