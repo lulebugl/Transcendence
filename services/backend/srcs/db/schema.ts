@@ -1,5 +1,6 @@
 import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
 import { sql } from 'drizzle-orm';
+import { timeStamp } from 'console';
 
 // Users table
 export const users = sqliteTable('users', {
@@ -10,6 +11,9 @@ export const users = sqliteTable('users', {
     .notNull()
     .default(sql`(unixepoch())`),
   updated_at: integer('updated_at', { mode: 'timestamp' })
+    .notNull()
+    .default(sql`(unixepoch())`),
+  last_call: integer('last_call', { mode: 'timestamp' })
     .notNull()
     .default(sql`(unixepoch())`),
   password_hash: text("password_hash").notNull(),
@@ -53,6 +57,16 @@ export const userStats = sqliteTable('user_stats', {
   highest_score: integer('highest_score').notNull().default(0),
   win_streak: integer('win_streak').notNull().default(0),
   updated_at: integer('updated_at', { mode: 'timestamp' })
+    .notNull()
+    .default(sql`(unixepoch())`),
+});
+
+export const friendships = sqliteTable('friendships', {
+	id: integer('id').primaryKey({ autoIncrement: true }),
+	requesterId: integer('requester_id').references(() => users.id).notNull(),
+	receiverId: integer('receiver_id').references(() => users.id).notNull(),
+	status: text('status').notNull(), // "pending", "accepted", "blocked"
+	createdAt: integer('created_at', { mode: 'timestamp' })
     .notNull()
     .default(sql`(unixepoch())`),
 });

@@ -20,7 +20,7 @@ export const OtpDisableFlow = ({
 
   const { mutate: disableOtp, isLoading } = useMutation(userApi.disableOtp, {
     onSuccess: onComplete,
-    onError: (err) => setError((err as Error).message),
+    onError: (err) => setError(err.message),
   });
 
   const handleSubmit = (e: React.FormEvent) => {

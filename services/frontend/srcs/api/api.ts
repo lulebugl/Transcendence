@@ -87,6 +87,12 @@ export async function api(
     headers["Content-Type"] = "application/json";
   }
 
+  // this is to update the "online" status of a user
+  await fetch("/api/users/lastCall", {
+    ...options,
+    headers,
+  });
+
   let response: Response = await fetch(path, {
     ...options,
     headers,

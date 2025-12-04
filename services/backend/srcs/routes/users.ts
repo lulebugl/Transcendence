@@ -1,6 +1,6 @@
 import { db } from "../db/client";
 import { users } from "../db/schema";
-import { eq, and, ne } from "drizzle-orm";
+import { eq, and, ne, InferSelectModel } from "drizzle-orm";
 import "dotenv/config";
 import dotenv from "dotenv";
 import {
@@ -11,13 +11,24 @@ import {
 } from "fastify";
 import { fields } from "./schema";
 import { hashPassword, verifyPassword } from "../utils/hash";
-import twoFactorRoutes from "./users/2fa";
+import { date } from "drizzle-orm/mysql-core";
 
 dotenv.config();
 
-interface UserQuery {
+// Help to return user without sensible datas
+type User = InferSelectModel<typeof users>;
+export function serializeUser(user: User) {
+	const { id, username, avatar_url, last_call } = user;
+	return { id, username, avatar_url, last_call };
+}
+
+interface UserBody {
   offset?: number;
   limit?: number;
+}
+
+interface SingleUserBody {
+	id: number;
 }
 
 interface UpdateProfileBody {
@@ -48,8 +59,6 @@ const ChangePasswordSchema: FastifySchema = {
 };
 
 export default async function userRoutes(fastify: FastifyInstance) {
-  fastify.register(twoFactorRoutes);
-
   // GET - Retrieve current user
   fastify.get(
     "/api/users/me",
@@ -76,22 +85,24 @@ export default async function userRoutes(fastify: FastifyInstance) {
   // GET - Retrieve users by pages with offset and limit
   fastify.get(
     "/api/users",
-    async (req: FastifyRequest<{ Querystring: UserQuery }>) => {
-      const { offset = 0, limit = 10 } = req.query;
+    async (req: FastifyRequest<{ Body: UserBody }>) => {
+      const { offset = 0, limit = 10 } = req.body;
       return await db.select().from(users).limit(limit).offset(offset);
     }
   );
 
-  fastify.patch<{ Body: UpdateProfileBody }>(
+  fastify.patch(
     "/api/users/update",
     {
       schema: UpdateProfileSchema,
       preHandler: fastify.auth,
     },
-    async (req, reply) => {
+    async (req: FastifyRequest<{ Body: UpdateProfileBody }>, reply: FastifyReply) => {
       const userId = req.user.id;
       const { username, avatar_url } = req.body;
 
+      // can this happen? i don't think so based on schema
+	  // Yes, as none of them are required so it allow the user to update them independently
       if (!username && !avatar_url) {
         return reply.badRequest("No fields to update");
       }
@@ -190,4 +201,25 @@ export default async function userRoutes(fastify: FastifyInstance) {
       reply.code(204).send();
     }
   );
+
+  	// GET - Retrieve single user
+	fastify.get(
+		"/api/users/:id", 
+		async (req: FastifyRequest<{ Body: SingleUserBody }>, reply: FastifyReply) => {
+			const { id } = req.body;
+
+			const [user] = await db.select().from(users).where(eq(users.id, id));
+			if (!user) return reply.unauthorized("User not found");
+
+			return serializeUser(user);
+		}
+	);
+
+	fastify.patch(
+		"/api/users/lastCall",
+		async (req : FastifyRequest, reply : FastifyReply) => {
+			await db.update(users).set({ last_call: new Date() }).where(eq(users.id, req.user.id));
+			return reply.status(200).send({ success: true });
+		}
+	);
 }

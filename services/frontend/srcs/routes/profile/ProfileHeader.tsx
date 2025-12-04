@@ -1,5 +1,7 @@
+import { friendsApi } from "@/api/friends";
 import { Button } from "@/components/ui";
 import { UserAvatar } from "@/components/UserAvatar";
+import { useMutation } from "@/hooks/useMutation";
 import {
   Crown,
   Zap,
@@ -8,9 +10,12 @@ import {
   Swords,
   UserPlus,
 } from "lucide-react";
+import { toast } from "sonner";
+import { useEffect } from "react";
+import { useAuth } from "@/hooks/useAuth";
 
 export const MOCK_USER = {
-  id: 1,
+  id: 3,
   username: "CyberPilot_42",
   email: "cyberpilot@transcendence.io",
   avatar_url: "https://api.dicebear.com/9.x/avataaars/svg?seed=tryHarsdfsf",
@@ -51,6 +56,62 @@ interface ProfileHeaderProps {
   user: typeof MOCK_USER;
   isOwnProfile?: boolean;
 }
+
+const FriendsButtons = ({ user }: { user: typeof MOCK_USER }) => {
+  const { mutate: getFriends } = useMutation(friendsApi.getFriends, {
+    onSuccess: (data) => {
+      console.log(data);
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to get friends");
+    },
+  });
+
+  useEffect(() => {
+    getFriends();
+  }, [getFriends]);
+
+  const { mutate: addFriend } = useMutation(friendsApi.addFriend, {
+    onSuccess: () => {
+      getFriends();
+      toast.success(`Added ${user.username} as friend`);
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to add friend");
+    },
+  });
+  const { mutate: removeFriend } = useMutation(friendsApi.removeFriend, {
+    onSuccess: () => {
+      toast.success(`Removed ${user.username} as friend`);
+      getFriends();
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  return (
+    <div className="flex items-center justify-center lg:justify-start gap-3 lg:pt-2 pt-4">
+      <Button
+        variant="cyber"
+        aria-label={`Add ${user.username} as friend`}
+        onClick={() => addFriend(user.id)}
+      >
+        <UserPlus className="w-4 h-4" />
+        <span className="text-xs uppercase tracking-widest">Add Friend</span>
+      </Button>
+      <Button
+        variant="cyber"
+        className="bg-destructive text-destructive-foreground"
+        aria-label={`Remove ${user.username} as friend`}
+        onClick={() => removeFriend(user.id)}
+      >
+        <UserPlus className="w-4 h-4" />
+        <span className="text-xs uppercase tracking-widest">Remove Friend</span>
+      </Button>
+    </div>
+  );
+};
 
 export const ProfileHeader = ({
   user,
@@ -104,20 +165,7 @@ export const ProfileHeader = ({
           {/* User Info */}
           <div className="flex-1 text-center lg:text-left space-y-6 pb-2">
             {/* Username + Rank */}
-            {!isOwnProfile && (
-              <div className="flex items-center justify-center lg:justify-start gap-3 pt-2">
-                <Button
-                  variant="cyber"
-                  className="prim"
-                  aria-label={`Add ${user.username} as friend`}
-                >
-                  <UserPlus className="w-4 h-4" />
-                  <span className="text-xs uppercase tracking-widest">
-                    Add Friend
-                  </span>
-                </Button>
-              </div>
-            )}
+            {!isOwnProfile && <FriendsButtons user={user} />}
             <div className="space-y-3">
               <div className="flex flex-col lg:flex-row lg:items-baseline gap-3">
                 <h1 className="text-4xl lg:text-5xl font-display font-medium tracking-tight text-white">

@@ -23,7 +23,7 @@ export const OtpSetupFlow = ({ onComplete, onCancel }: OtpSetupFlowProps) => {
     userApi.setupOtp,
     {
       onSuccess: (data: OtpSetupData) => setSetupData(data),
-      onError: (err) => setError((err as Error).message),
+      onError: (err) => setError(err.message),
     }
   );
 
@@ -31,7 +31,7 @@ export const OtpSetupFlow = ({ onComplete, onCancel }: OtpSetupFlowProps) => {
     userApi.confirmOtp,
     {
       onSuccess: onComplete,
-      onError: (err) => setError((err as Error).message),
+      onError: (err) => setError(err.message),
     }
   );
 

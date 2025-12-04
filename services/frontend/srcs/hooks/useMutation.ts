@@ -4,7 +4,7 @@ type Mutation<T, A> = (args: A) => Promise<T>;
 
 interface UseMutationOptions<T> {
   onSuccess?: (data: T) => void;
-  onError?: (data: T | Error) => void;
+  onError?: (error: Error) => void;
 }
 
 export function useMutation<T, A = void>(
@@ -26,11 +26,13 @@ export function useMutation<T, A = void>(
 		optionRef.current.onSuccess?.(res);
 		return res;
 	} catch (err) {
-		console.log("Failed mutation: ", err);
 		const error = err instanceof Error ? err : new Error(String(err));
 		setError(error);
-		optionRef.current.onError?.(error);
-		throw error;
+		if (optionRef.current.onError) {
+			optionRef.current.onError(error);
+		} else {
+			throw error;
+		}
 	} finally {
 		setIsLoading(false);
 	}

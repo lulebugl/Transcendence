@@ -37,12 +37,12 @@ export default async function authRoutes(fastify: FastifyInstance) {
           properties: {
             username: { ...fields.username },
             password: { ...fields.password },
-            avatarUrl: { type: "string" },
+            avatarUrl: { ...fields.url },
           },
         },
       },
     },
-    async (req: FastifyRequest<{ Body: UserBody }>) => {
+    async (req: FastifyRequest<{ Body: UserBody }>, reply: FastifyReply) => {
       const { username, avatarUrl, password, totp_enabled } = req.body;
       const DEFAULT_AVATAR_BASE_URL =
         "https://api.dicebear.com/7.x/avataaars/svg";
@@ -84,11 +84,39 @@ export default async function authRoutes(fastify: FastifyInstance) {
           password_hash: password_hash,
           totp_secret_key: secret_hash,
         });
+
+		const [user] = await db
+			.select()
+			.from(users)
+			.where(eq(users.username, username));
+
+      	if (!user) return reply.unauthorized("Invalid credentials");
+
+		const accessToken: string = fastify.jwt.sign(
+			{ id: user.id, username: user.username },
+			{ expiresIn: "15m" }
+		);
+
+		const refreshToken: string = randomBytes(64).toString("hex");
+
+		await db
+			.update(users)
+			.set({ refresh_token: refreshToken })
+			.where(eq(users.id, user.id));
+
+		reply.setCookie("refreshToken", refreshToken, {
+			httpOnly: true,
+			secure: true,
+			sameSite: "strict",
+			path: "/api/users/refresh",
+			maxAge: 60 * 60 * 24 * 30,
+		});
 		
         return {
           success: true,
           secret: secretBase32,
           otpauth_url: otpauth,
+		  token: accessToken,
         };
       } catch (err) {
         fastify.log.error(err);
@@ -108,7 +136,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
           required: ["username", "password"],
           properties: {
             username: { ...fields.username },
-            password: { ...fields.password },
+            password: { type: "string" },
             totp: { type: "string" },
           },
         },
@@ -216,7 +244,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
   );
 
   fastify.post(
-    "/api/users/logout",
+    "/api/users/refresh/logout",
     async (req: FastifyRequest, reply: FastifyReply) => {
       const refreshToken = req.cookies?.refreshToken;
 
