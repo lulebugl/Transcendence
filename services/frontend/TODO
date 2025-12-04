@@ -41,8 +41,6 @@
 
 # MEDIUM priority
 
--  create a display page in dev for ui components to have references (especially the buttons)
--  move the more "skeleton" like sections of settings into pages.
 -  Implement avatar remove and change on frontend
 
 # LOW priority
