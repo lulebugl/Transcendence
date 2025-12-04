@@ -1,18 +1,22 @@
 # HIGH priority
 
+- change navbar offset to hard value not percentage 
+ 
 - merge partie hugo:
 	* auto-login apres le signup
 	* retrieve user by id
 	* friends api
 	* better logout avec la modification de la route
 	* lastcall pour les status friends
-- merge julie pour tester le jeu
 
 ## GAME
 
-- separate the logic of the game from babylon and create a version without 3D for better testing
-- faire une petite interface pour voir si le match-making fonctionne bien
+- separate the logic of the game from babylonjs
+- and create a version without 3D for better testing
 - regarder comment preload les assets et le jeu pendant le matchmaking
+
+- ameliorer les handler des match-making ( regarder example in 2fa.ts si besoin)
+- creer une route separe pour jouer contre l'ia
 
 ## Users
 

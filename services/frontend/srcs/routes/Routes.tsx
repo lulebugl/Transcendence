@@ -11,10 +11,8 @@ import { UserProfile, Achievements } from "@/routes/profile";
 import { Lobby } from "@/routes/lobby";
 import { NotFound } from "@/routes/NotFound";
 import { Tournaments } from "@/routes/tournaments";
-
-const Pong = lazy(() =>
-  import("@/routes/pong/pong").then((m) => ({ default: m.Pong }))
-);
+import { Pong, PongLobby } from "@/routes/pong";
+import { TestPongDev } from "@/routes/pong/testPongDev";
 
 interface RouteConfig {
   path: string;
@@ -24,6 +22,10 @@ interface RouteConfig {
 export const publicRoutes: RouteConfig[] = [
   { path: "/", element: <Home /> },
   { path: "/lobby", element: <Lobby /> },
+  { path: "/lobby-test", element: <PongLobby /> },
+
+  
+  { path: "/pong-test", element: <TestPongDev /> },
   { path: "/tournaments", element: <Tournaments /> },
   {
     path: "/pong",

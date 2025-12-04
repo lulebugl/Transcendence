@@ -8,7 +8,7 @@ import fp from "fastify-plugin";
 import cors from "@fastify/cors";
 import cookie from "@fastify/cookie";
 import type { FastifyCookieOptions } from '@fastify/cookie';
-import { startWebSocketServer } from './miniBackendPong';
+import { startWebSocketServer } from './pong/miniBackendPong';
 import rateLimit from "@fastify/rate-limit";
 import { envToLogger, prettifyLogger } from './utils/logger-config';
 
