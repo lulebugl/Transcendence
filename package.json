@@ -1,0 +1,6 @@
+{
+	"dependencies": {
+	  "@app/backend": "file:services/backend",
+	  "@app/frontend": "file:services/frontend"
+	}
+  }
