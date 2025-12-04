@@ -60,7 +60,7 @@ const isTimerMessage = (message: BackendMessage): message is TimerMessage =>
     message?.type === "timer";
 
 export const TestPongDev = () => {
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const engineRef = useRef<Engine | null>(null);
     const sceneRef = useRef<Scene | null>(null);
@@ -118,7 +118,8 @@ export const TestPongDev = () => {
             if (!disposed) {
                 sceneReadyRef.current = true;
                 freezeStaticMeshes(meshesRef.current);
-                setIsLoading(false);
+                sendMessage({ type: "ready" }, websocketRef.current);
+                ////               setIsLoading(false);
             }
         });
         const uiGame = GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
@@ -176,9 +177,10 @@ export const TestPongDev = () => {
         // Auto-start connection if matchId is present
         const params = new URLSearchParams(window.location.search);
         const matchId = params.get("matchId");
+        const playerId = params.get("playerId");
 
-        if (matchId && sceneReadyRef.current === true) {
-            websocketRef.current = initWebSocket(`/ws?matchId=${matchId}`, (data) => {
+        if (matchId && playerId) {
+            websocketRef.current = initWebSocket(`/ws?matchId=${matchId}&playerId=${playerId}`, (data) => {
                 const msg = data as BackendMessage;
                 if (isStartMessage((msg))) {
                     paddlePlayerRef.current = msg.player === 1 ? paddleRight : paddleLeft;
@@ -199,8 +201,9 @@ export const TestPongDev = () => {
                     }
                 }
                 backendMessageRef.current = msg;
+                console.log(msg);
             });
-            setIsLoading(false);
+            //            setIsLoading(false);
         }
 
 
@@ -236,6 +239,7 @@ export const TestPongDev = () => {
 
         return () => {
             disposed = true;
+            console.log("funzione di uscita chiamata");
             window.removeEventListener("keydown", handleKeyDown);
             window.removeEventListener("resize", handleResize);
             cleanupGame();

@@ -1,5 +1,4 @@
 import React from "react";
-import { lazy, Suspense } from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter as Router, Routes, Route } from "react-router";
 import "./styles.css";
@@ -32,9 +31,7 @@ if (!root) {
   );
 }
 
-const PongPage = lazy(() =>
-  import("./pages/pong/pong").then((module) => ({ default: module.Pong }))
-);
+import { Pong } from "./pages/pong/pong";
 
 ReactDOM.createRoot(root).render(
   <React.StrictMode>
@@ -42,18 +39,15 @@ ReactDOM.createRoot(root).render(
       <AuthProvider>
         <ErrorBoundary>
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/lobby" element={<Lobby />} />
             <Route
               path="/pong"
               element={
                 <ErrorBoundary fallback={<PongErrorFallback />}>
-                  <Suspense fallback={<Loading />}>
-                    <PongPage />
-                  </Suspense>
+                  <Pong />
                 </ErrorBoundary>
               }
             />
+
             {/* Just to demonstrate the loading state */}
             <Route path="/loading" element={<Loading />} />
             {/* AUTH PAGES */}
@@ -73,6 +67,7 @@ ReactDOM.createRoot(root).render(
             </Route>
             {/* Test Page and dev below */}
             <Route path="/dev-hub" element={<DevHub />} />
+            <Route path="/lobby" element={<Lobby />} />
             <Route path="/pong-test" element={<TestPongDev />} />
             {/* NOT FOUND PAGE */}
             <Route path="*" element={<NotFound />} />
@@ -80,5 +75,5 @@ ReactDOM.createRoot(root).render(
         </ErrorBoundary>
       </AuthProvider>
     </Router>
-  </React.StrictMode>
+  </React.StrictMode >
 );

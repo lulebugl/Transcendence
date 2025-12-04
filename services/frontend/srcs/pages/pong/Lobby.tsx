@@ -35,7 +35,7 @@ export const Lobby = () => {
           const data = await res.json();
           if (data.status === "matched") {
             setStatus("matched");
-            navigate(`/pong-test?matchId=${data.matchId}`);
+            navigate(`/pong-test?matchId=${data.matchId}&playerId=${playerIdRef.current}`);
           } else if (data.status === "waiting") {
             setQueueSize(data.queueSize);
           }

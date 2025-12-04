@@ -15,30 +15,6 @@ import {
 	startPaddleLeftZ,
 } from './ConstVarGameLogic';
 
-function InfoInJson(
-	id = "player1",
-	ballx = startBallX, bally = startBallY, ballz = startBallZ,
-	p1x = startPaddleRightX, p1y = startPaddleRightY, p1z = startPaddleRightZ,
-	p2x = startPaddleLeftX, p2y = startPaddleLeftY, p2z = startPaddleLeftZ,
-	messageType = "Game Update"
-) {
-	const message = {
-		message: messageType,
-		player: id,
-		ball: {
-			position: { x: ballx, y: bally, z: ballz }
-		},
-		player1: {
-			position: { x: p1x, y: p1y, z: p1z }
-		},
-		player2: {
-			position: { x: p2x, y: p2y, z: p2z }
-		}
-	};
-
-	return JSON.stringify(message);
-}
-
 
 
 export function startWebSocketServer(port = 9000) {
@@ -51,7 +27,6 @@ export function startWebSocketServer(port = 9000) {
 	function setupHeartbeat(ws) {
 		ws.isAlive = true;
 		ws.on('pong', () => {
-			// console.log("pong ricevuto");
 			ws.isAlive = true;
 		});
 	}
@@ -79,54 +54,104 @@ export function startWebSocketServer(port = 9000) {
 	});
 
 	wss.on('connection', (ws, req) => {
-		setupHeartbeat(ws);
 		console.log('Nuovo client connesso!');
 
-		// Extract matchId from URL
 		const url = new URL(req.url, `http://${req.headers.host}`);
 		const matchId = url.searchParams.get('matchId');
+		const playerId = url.searchParams.get('playerId');
 
-		if (!matchId) {
-			console.log("No matchId provided, closing connection");
+		if (!matchId || !playerId) {
+			console.log("No matchId or playerId provided, closing connection");
 			ws.close();
 			return;
 		}
 
 		let session = games.get(matchId);
+
 		if (!session) {
-			session = { player1: null, player2: null, game: null };
-			games.set(matchId, session);
+			const newSession = { player1: null, player2: null, game: null, p1Id: null, p2Id: null };
+			games.set(matchId, newSession);
+			session = games.get(matchId);
 		}
 
-		if (!session.player1) {
+		// Handle reconnection or new connection
+		if (session.p1Id === playerId) {
+			console.log(`Player 1 reconnected to match ${matchId}`);
+			if (session.player1 && session.player1 !== ws) {
+				session.player1.terminate();
+			}
 			session.player1 = ws;
+			(ws as any).playerSlot = 1;
+			(ws as any).matchId = matchId;
+			(ws as any).playerId = playerId;
+			setupHeartbeat(ws);
+			if (session.game) {
+				session.game.updatePlayerSocket(0, ws);
+			}
+		} else if (session.p2Id === playerId) {
+			console.log(`Player 2 reconnected to match ${matchId}`);
+			if (session.player2 && session.player2 !== ws) {
+				session.player2.terminate();
+			}
+			session.player2 = ws;
+			(ws as any).playerSlot = 2;
+			(ws as any).matchId = matchId;
+			(ws as any).playerId = playerId;
+			setupHeartbeat(ws);
+			if (session.game) {
+				session.game.updatePlayerSocket(1, ws);
+			}
+		} else if (!session.player1) {
+			session.player1 = ws;
+			session.p1Id = playerId;
+			(ws as any).playerSlot = 1;
+			(ws as any).matchId = matchId;
+			(ws as any).playerId = playerId;
 			ws.send(JSON.stringify({ type: "waiting", message: "Waiting for opponent..." }));
-			console.log(`Player 1 connected to match ${matchId}`);
+			console.log(`Player 1 connected to match ${matchId} (ID: ${playerId})`);
+			setupHeartbeat(ws);
 		} else if (!session.player2) {
 			session.player2 = ws;
-			console.log(`Player 2 connected to match ${matchId}`);
-
-			// Notify players
-			session.player1.send(JSON.stringify({ type: "start", player: 1 }));
-			session.player2.send(JSON.stringify({ type: "start", player: 2 }));
-
-			// Start Game
+			session.p2Id = playerId;
+			(ws as any).playerSlot = 2;
+			(ws as any).matchId = matchId;
+			(ws as any).playerId = playerId;
+			console.log(`Player 2 connected to match ${matchId} (ID: ${playerId})`);
 			session.game = new Game(matchId, session.player1, session.player2);
+			setupHeartbeat(ws);
 		} else {
-			console.log(`Match ${matchId} is full`);
+			console.log(`Match ${matchId} is full. Rejecting ${playerId}`);
 			ws.send(JSON.stringify({ type: "error", message: "Match full" }));
 			ws.close();
+			return;
 		}
 
 		ws.on('close', () => {
-			console.log(`Client disconnected from match ${matchId}`);
-			// Handle disconnection logic - maybe end game?
-			if (session) {
-				if (session.game) {
-					session.game.stop();
+			const wsMatchId = (ws as any).matchId;
+			const wsPlayerId = (ws as any).playerId;
+
+			console.log(`Client disconnected from match ${wsMatchId} (ID: ${wsPlayerId})`);
+
+			const wsSession = games.get(wsMatchId);
+			if (!wsSession) return;
+
+			if (wsSession.player1 === ws) {
+				wsSession.player1 = null;
+			}
+
+			if (wsSession.player2 === ws) {
+				wsSession.player2 = null;
+			}
+
+			if (!wsSession.player1 && !wsSession.player2) {
+				if (wsSession.game) {
+					wsSession.game.stop();
+					wsSession.game = null;
 				}
-				games.delete(matchId);
+				console.log(`Both players disconnected, removing match ${wsMatchId}`);
+				games.delete(wsMatchId);
 			}
 		});
+
 	});
 }

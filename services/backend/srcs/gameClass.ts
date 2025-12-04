@@ -56,15 +56,19 @@ function InfoInGame(
 }
 
 export class Game {
-  private id: any;
-  private players: any;
+  private id: string;
+  private players: WebSocket[];
   private state: any;
   private loop: any;
+  private sceneIsReadyLeft: boolean;
+  private sceneIsReadyRight: boolean;
 
   constructor(id, player1, player2) {
     this.id = id;
     this.players = [player1, player2];
     this.state = InfoInGame(id);
+    this.sceneIsReadyLeft = false;
+    this.sceneIsReadyRight = false;
     // ascolta i messaggi dei due client
     //TODO: setto la camera per i player
 
@@ -79,17 +83,20 @@ export class Game {
   }
 
   startTimer() {
-    let countdown = 3;
+    let countdown = 10;
     // Send initial 3
-    this.broadcast({ type: 'timer', count: countdown });
 
     const interval = setInterval(() => {
       countdown--;
-      if (countdown < 0) {
-        clearInterval(interval);
-        this.loop = setInterval(() => this.update(), 16);
-      } else {
-        this.broadcast({ type: 'timer', count: countdown });
+      if (this.sceneIsReadyLeft && this.sceneIsReadyRight) {
+
+        if (countdown < 0) {
+          clearInterval(interval);
+          this.loop = setInterval(() => this.update(), 32);
+        } else {
+
+          this.broadcast({ type: 'timer', count: countdown });
+        }
       }
     }, 1000);
   }
@@ -104,14 +111,27 @@ export class Game {
       paddle.position.x += 0.5;
     else if (info.type === "playerMove" && info.key === keyRight && paddle.position.x - 0.5 > TERRAIN_LIMIT_X_MIN)
       paddle.position.x -= 0.5;
-    else if (info.type === "Not ready")
-      this.setCamera(this.players)
+    else if (info.type === "ready") {
+      if (playerIndex === 0) {
+        this.sceneIsReadyLeft = true;
+        this.sendToClient({ type: "start", player: playerIndex + 1 }, playerIndex);
+      }
+      else {
+        this.sceneIsReadyRight = true;
+        this.sendToClient({ type: "start", player: playerIndex + 1 }, playerIndex);
+      }
+    }
     console.log(this.state, paddle);
   }
   // if (this.state.ball.position.x ==== START_BALL_X && this.state.ball.position.y === START_BALL_Y && this.state.ball.position.z === START_BALL_Z)
   // {
   //   this.state.ball.position.z = START_BALL_Z;
   // }
+  sendToClient(message: any, playerIndex: number) {
+    if (this.players[playerIndex]) {
+      this.players[playerIndex].send(JSON.stringify(message));
+    }
+  }
 
   update() {
     // Ball movement
@@ -190,6 +210,18 @@ export class Game {
     });
   }
 
+
+  updatePlayerSocket(playerIndex: number, newSocket: WebSocket) {
+    this.players[playerIndex] = newSocket;
+    newSocket.on('message', (msg) => {
+      try {
+        const data = JSON.parse(msg as any);
+        this.updateKey(data, playerIndex);
+      } catch (e) {
+        console.error("Error parsing message:", e);
+      }
+    });
+  }
 
   stop() {
     clearInterval(this.loop);

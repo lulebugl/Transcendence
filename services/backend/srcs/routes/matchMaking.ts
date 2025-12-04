@@ -41,8 +41,8 @@ export default function matchMaking(fastify: FastifyInstance) {
         reply.send({ status: "left" });
     });
 
-    // STATUS
-    const playerMatches = new Map<string, string>(); // playerId -> matchId
+    const playerMatches = new Map<string, string>();
+    let matchCreationInProgress = false;
 
     fastify.get('/api/matchmaking/status', {
         schema: {
@@ -57,7 +57,6 @@ export default function matchMaking(fastify: FastifyInstance) {
     }, async (request, reply) => {
         const { playerId } = request.query as { playerId: string };
 
-        // Check if player already has a match
         if (playerMatches.has(playerId)) {
             reply.send({
                 status: "matched",
@@ -66,44 +65,47 @@ export default function matchMaking(fastify: FastifyInstance) {
             return;
         }
 
-        // Try to match if enough players
+        if (matchCreationInProgress) {
+            reply.send({
+                status: "waiting",
+                queueSize: queue.size
+            });
+            return;
+        }
+
         if (queue.size >= 2) {
-            // Check if current player is in queue
             if (!queue.has(playerId)) {
                 reply.send({ status: "error", message: "Player not in queue" });
                 return;
             }
 
-            // Get players
-            const players = Array.from(queue.values());
-            const p1 = players[0];
-            const p2 = players[1];
+            matchCreationInProgress = true;
 
-            // Only create match if the requesting player is one of the first two
-            // Actually, just create the match regardless of who asks, as long as we have 2.
-            // But we need to make sure we don't create multiple matches for same people.
+            try {
+                const players = Array.from(queue.values());
+                const p1 = players[0];
+                const p2 = players[1];
+                const matchId = crypto.randomUUID();
 
-            const matchId = crypto.randomUUID();
+                queue.delete(p1.id);
+                queue.delete(p2.id);
 
-            queue.delete(p1.id);
-            queue.delete(p2.id);
+                playerMatches.set(p1.id, matchId);
+                playerMatches.set(p2.id, matchId);
 
-            playerMatches.set(p1.id, matchId);
-            playerMatches.set(p2.id, matchId);
-
-            // Clean up match assignment after some time? 
-            // For now, let's just keep it simple.
-
-            if (p1.id === playerId || p2.id === playerId) {
-                reply.send({
-                    status: "matched",
-                    matchId: matchId
-                });
-            } else {
-                reply.send({
-                    status: "waiting",
-                    queueSize: queue.size
-                });
+                if (p1.id === playerId || p2.id === playerId) {
+                    reply.send({
+                        status: "matched",
+                        matchId: matchId
+                    });
+                } else {
+                    reply.send({
+                        status: "waiting",
+                        queueSize: queue.size
+                    });
+                }
+            } finally {
+                matchCreationInProgress = false;
             }
         } else {
             reply.send({
