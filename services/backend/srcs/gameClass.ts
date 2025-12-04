@@ -87,8 +87,8 @@ export class Game {
     // Send initial 3
 
     const interval = setInterval(() => {
-      countdown--;
       if (this.sceneIsReadyLeft && this.sceneIsReadyRight) {
+        countdown--;
 
         if (countdown < 0) {
           clearInterval(interval);
