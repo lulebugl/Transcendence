@@ -56,7 +56,12 @@ export class Game {
   private players: any;
   private state: any;
   private loop: any;
-
+  private ballFrozen: boolean = false;
+  
+  // 🔹 value of sensitivity, to take from setting's player, here is jsut to test
+  private paddleSensitivityPlayer1: number = 2.1;
+  private paddleSensitivityPlayer2: number = 0.9;
+  
   constructor(id, player1, player2) {
     this.id = id;
     this.players = [player1, player2];
@@ -70,34 +75,63 @@ export class Game {
         this.updateKey(data, i);
       });
     });
-
+    
     this.loop = setInterval(() => this.update(), 16);
   }
+
   updateKey(msg, playerIndex) {
     console.log(msg);
     const info = msg;
-    let paddle = playerIndex === 0 ? this.state.paddleRight : this.state.paddleLeft;
-    const keyRight = playerIndex === 0 ? 'a' : 'd';
-    const keyLeft = playerIndex === 0 ? 'd' : 'a';
+    
+    // Which paddle
+    let paddle = playerIndex === 0
+    ? this.state.paddleRight
+    : this.state.paddleLeft;
+    
+    // Key set up
+    const LEFT_KEY  = 'a';
+    const RIGHT_KEY = 'd';
+    
+    // apply sensitivity
+    const sensitivity = this.clampSensitivity(
+      playerIndex === 0 
+        ? this.paddleSensitivityPlayer1 
+        : this.paddleSensitivityPlayer2
+      );
 
-    if (info.type === "playerMove" && info.key === keyLeft && paddle.position.x > TERRAIN_LIMIT_X_MIN)
-      paddle.position.x += 0.5;
-    else if (info.type === "playerMove" && info.key === keyRight && paddle.position.x < TERRAIN_LIMIT_X_MAX)
-      paddle.position.x -= 0.5;
-    else if (info.type === "Not ready")
+    const step = 0.5 * sensitivity; // base step(can be modify if we want) * sensitivity
+    
+    if (info.type === "playerMove") {
+      // Player 1 : normal
+      if (playerIndex === 0) {
+        if (info.key === LEFT_KEY) {
+          paddle.position.x = Math.max(TERRAIN_LIMIT_X_MIN, paddle.position.x - step);
+        } else if (info.key === RIGHT_KEY) {
+          paddle.position.x = Math.min(TERRAIN_LIMIT_X_MAX, paddle.position.x + step);
+        }
+      }
+      // Player 2 : switch
+      else {
+        if (info.key === LEFT_KEY) {
+          paddle.position.x = Math.min(TERRAIN_LIMIT_X_MAX, paddle.position.x + step);
+        } else if (info.key === RIGHT_KEY) {
+          paddle.position.x = Math.max(TERRAIN_LIMIT_X_MIN, paddle.position.x - step);
+        }
+      }
+    }
+
+    if (info.type === "Not ready")
       this.setCamera(this.players)
     console.log(this.state, paddle);
   }
-  // if (this.state.ball.position.x ==== START_BALL_X && this.state.ball.position.y === START_BALL_Y && this.state.ball.position.z === START_BALL_Z)
-  // {
-  //   this.state.ball.position.z = START_BALL_Z;
-  // }
-
+  
   update() {
     // Ball movement
-    this.state.ball.position.x += Math.cos(this.state.ball.angle) * this.state.ball.speed;
-    this.state.ball.position.z += Math.sin(this.state.ball.angle) * this.state.ball.speed;
-
+    if (!this.ballFrozen) {
+      this.state.ball.position.x += Math.cos(this.state.ball.angle) * this.state.ball.speed;
+      this.state.ball.position.z += Math.sin(this.state.ball.angle) * this.state.ball.speed;
+    }
+    
     // Wall collision (X axis)
     if (this.state.ball.position.x <= TERRAIN_LIMIT_X_MIN || this.state.ball.position.x >= TERRAIN_LIMIT_X_MAX) {
       this.state.ball.angle = Math.PI - this.state.ball.angle;
@@ -108,36 +142,52 @@ export class Game {
     if (this.state.ball.position.z >= this.state.paddleRight.position.z - 0.5 && // Check depth
       this.state.ball.position.x >= this.state.paddleRight.position.x - PADDLE_WIDTH / 2 &&
       this.state.ball.position.x <= this.state.paddleRight.position.x + PADDLE_WIDTH / 2) {
-
-      let relativeIntersectX = this.state.paddleRight.position.x - this.state.ball.position.x;
-      let normalizedRelativeIntersectionX = (relativeIntersectX / (PADDLE_WIDTH / 2));
-      let bounceAngle = normalizedRelativeIntersectionX * (Math.PI / 3); // Max bounce angle 60 degrees
-      this.state.ball.angle = Math.PI + bounceAngle; // Reflect back towards negative Z
+        
+        let relativeIntersectX = this.state.paddleRight.position.x - this.state.ball.position.x;
+        let normalizedRelativeIntersectionX = (relativeIntersectX / (PADDLE_WIDTH / 2));
+        let bounceAngle = normalizedRelativeIntersectionX * (Math.PI / 3); // Max bounce angle 60 degrees
+        this.state.ball.angle = Math.PI + bounceAngle; // Reflect back towards negative Z
       this.state.ball.speed += 0.01; // Increase speed
     }
-
+    
     // Paddle Left (Negative Z)
     if (this.state.ball.position.z <= this.state.paddleLeft.position.z + 0.5 && // Check depth
       this.state.ball.position.x >= this.state.paddleLeft.position.x - PADDLE_WIDTH / 2 &&
       this.state.ball.position.x <= this.state.paddleLeft.position.x + PADDLE_WIDTH / 2) {
-
+        
       let relativeIntersectX = this.state.paddleLeft.position.x - this.state.ball.position.x;
       let normalizedRelativeIntersectionX = (relativeIntersectX / (PADDLE_WIDTH / 2));
       let bounceAngle = normalizedRelativeIntersectionX * (Math.PI / 3);
       this.state.ball.angle = -bounceAngle; // Reflect back towards positive Z
       this.state.ball.speed += 0.01; // Increase speed
     }
-
+    
     // Scoring
     if (this.state.ball.position.z > TERRAIN_LIMIT_Z_MAX) {
       this.state.paddleLeft.point++;
-      this.resetBall();
+      this.freezeBallAndReset();
     } else if (this.state.ball.position.z < TERRAIN_LIMIT_Z_MIN) {
       this.state.paddleRight.point++;
-      this.resetBall();
+      this.freezeBallAndReset();
     }
-
+    
     this.broadcast({ type: 'update', state: this.state });
+  }
+
+  freezeBallAndReset() {
+    // Gèle la balle
+    this.ballFrozen = true;
+    this.state.ball.speed = 0;
+
+    // Replace au centre
+    this.state.ball.position.x = startBallX;
+    this.state.ball.position.z = startBallZ;
+    
+    // Attend 1 seconde et relance
+    setTimeout(() => {
+      this.resetBall();
+      this.ballFrozen = false;
+    }, 1000);
   }
 
   resetBall() {
@@ -146,7 +196,7 @@ export class Game {
     this.state.ball.speed = BALL_SPEED;
     this.state.ball.angle = Math.random() < 0.5 ? Math.PI / 4 : 5 * Math.PI / 4; // Random direction
   }
-
+  
   broadcast(data) {
     const msg = JSON.stringify(data);
     this.players.forEach(p => {
@@ -164,10 +214,14 @@ export class Game {
       }
     });
   }
-
-
+  
   stop() {
     clearInterval(this.loop);
+  }
+
+  // To set up sensitivity between 0 and 1
+  private clampSensitivity(value: number): number {
+    return Math.max(0, Math.min(1, value));
   }
 }
 
