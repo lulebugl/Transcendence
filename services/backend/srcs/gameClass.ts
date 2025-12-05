@@ -30,13 +30,15 @@ function InfoInGame(
   ballx = startBallX, bally = startBallY, ballz = startBallZ,
   p1x = startPaddleRightX, p1y = startPaddleRightY, p1z = startPaddleRightZ,
   p2x = startPaddleLeftX, p2y = startPaddleLeftY, p2z = startPaddleLeftZ,
-  point2 = 0, point1 = 0,
+  point2 = 0, point1 = 0, 
   messageType = "Update",
-  ballAngle = Math.PI / 4 // Initial angle
+  ballAngle = Math.PI / 4, // Initial angle
+  stateGames = false,
 ) {
   const message = {
     message: messageType,
     GamesID: id,
+	break:	stateGames,
     ball: {
       position: { x: ballx, y: bally, z: ballz },
       angle: ballAngle,
@@ -57,18 +59,22 @@ function InfoInGame(
 
 export class Game {
   private id: string;
+  private PauseFlag: boolean
   private players: WebSocket[];
   private state: any;
   private loop: any;
   private sceneIsReadyLeft: boolean;
   private sceneIsReadyRight: boolean;
+  private speedMemory: number;
 
-  constructor(id, player1, player2) {
+  constructor(id: any, player1: WebSocket, player2: WebSocket) {
     this.id = id;
+    this.PauseFlag = false;
     this.players = [player1, player2];
     this.state = InfoInGame(id);
     this.sceneIsReadyLeft = false;
     this.sceneIsReadyRight = false;
+    this.speedMemory = 0;
     // ascolta i messaggi dei due client
     //TODO: setto la camera per i player
 
@@ -177,6 +183,28 @@ export class Game {
       this.resetBall();
     }
 
+    // Pause Logic
+    if (this.PauseFlag) {
+		this.state.break = true;
+      if (this.state.ball.speed !== 0) {
+        this.speedMemory = this.state.ball.speed;
+        this.state.ball.speed = 0;
+      }
+
+      if (this.areAllPlayersConnected()) {
+        this.PauseFlag = false;
+		this.state.break = false;
+        // Resume speed
+        if (this.speedMemory !== 0) {
+          this.state.ball.speed = this.speedMemory;
+          this.speedMemory = 0;
+        } else {
+          // Fallback if speedMemory was 0 (shouldn't happen if logic is correct, but safe default)
+          this.state.ball.speed = BALL_SPEED;
+        }
+      }
+    }
+
     this.broadcast({ type: 'update', state: this.state });
   }
 
@@ -186,9 +214,16 @@ export class Game {
     this.state.ball.speed = 0; // Stop the ball
     this.state.ball.angle = Math.PI / 2; // Point it straight up (or any fixed direction)
 
-    await sleep(1000); // Wait for 2 seconds
+    await sleep(1000); // Wait for 1 second
 
-    this.state.ball.speed = BALL_SPEED; // Restart the ball
+    // Check if game is paused before resuming
+    if (this.PauseFlag) {
+      this.speedMemory = BALL_SPEED; // Store the speed to resume later
+      this.state.ball.speed = 0;
+    } else {
+      this.state.ball.speed = BALL_SPEED; // Restart the ball
+    }
+
     this.state.ball.angle = Math.random() < 0.5 ? Math.PI / 4 : 5 * Math.PI / 4; // Random direction
   }
 
@@ -199,6 +234,10 @@ export class Game {
         p.send(msg);
     });
   }
+  areAllPlayersConnected(): boolean {
+    return this.players.every(p => p && p.readyState === WebSocket.OPEN);
+  }
+
   setCamera(players) {
     let id = 0;
     this.players.forEach(p => {
@@ -221,6 +260,12 @@ export class Game {
         console.error("Error parsing message:", e);
       }
     });
+  }
+  setPauseFlags(flag: boolean) {
+    this.PauseFlag = flag;
+	this.state.break = flag;
+    this.broadcast({ type: 'update', state: this.state });
+    // sbatti
   }
 
   stop() {

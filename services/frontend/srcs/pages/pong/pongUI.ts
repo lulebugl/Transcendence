@@ -27,7 +27,14 @@ export function addText(scoreBox: any, color: string, size: number): any {
   scoreBox.addControl(scoreText);
   return scoreText;
 }
-
+export function pauseControl(flags: boolean, buttonImage: any) {
+  if (flags === true) {
+    buttonImage.text = "PAUSE";
+    buttonImage.isVisible = true;
+  }
+  else
+    buttonImage.isVisible = false;
+}
 export function updatePoint(score: any, point: number): any {
   score.text = String(point);
 }
