@@ -31,6 +31,9 @@ clean:
 reload-nginx:
 	@docker compose -f infra/docker-compose.yml exec nginx nginx -s reload
 
+seed-db:
+	@docker compose -f infra/docker-compose.yml exec backend sh -c "cd /app/services/backend && pnpm db:seed"
+	
 prune:
 	docker system prune -a
 

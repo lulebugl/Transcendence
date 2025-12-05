@@ -87,11 +87,13 @@ export async function api(
     headers["Content-Type"] = "application/json";
   }
 
+  // NOT WORKING
   // this is to update the "online" status of a user
-  await fetch("/api/users/lastCall", {
-    ...options,
-    headers,
-  });
+  //   await fetch("/api/users/lastCall", {
+  //     ...options,
+  //     headers,
+  // 	credentials: "include",
+  //   });
 
   let response: Response = await fetch(path, {
     ...options,

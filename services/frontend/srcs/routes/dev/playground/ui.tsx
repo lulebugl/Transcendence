@@ -1,7 +1,6 @@
 import {
   Button,
   DottedBadge,
-  colorSchemes,
   type BadgeColor,
   StatusDot,
   LiveIndicator,
@@ -65,11 +64,30 @@ export const PrimitivesPlayground = () => {
 
       <Section title="Badge">
         <div className="flex flex-wrap gap-4">
-          {Object.keys(colorSchemes).map((color) => (
-            <Variant key={color} label={color}>
-              <DottedBadge color={color as BadgeColor}>{color}</DottedBadge>
-            </Variant>
-          ))}
+          <Variant label="Primary">
+            <DottedBadge color="primary">Primary</DottedBadge>
+          </Variant>
+          <Variant label="Silver">
+            <DottedBadge color="silver">Silver</DottedBadge>
+          </Variant>
+          <Variant label="Blue">
+            <DottedBadge color="blue">Blue</DottedBadge>
+          </Variant>
+          <Variant label="Emerald">
+            <DottedBadge color="emerald">Emerald</DottedBadge>
+          </Variant>
+          <Variant label="Red">
+            <DottedBadge color="red">Red</DottedBadge>
+          </Variant>
+          <Variant label="Yellow">
+            <DottedBadge color="yellow">Yellow</DottedBadge>
+          </Variant>
+          <Variant label="Purple">
+            <DottedBadge color="purple">Purple</DottedBadge>
+          </Variant>
+          <Variant label="Cyan">
+            <DottedBadge color="cyan">Cyan</DottedBadge>
+          </Variant>
         </div>
       </Section>
 

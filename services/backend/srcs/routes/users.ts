@@ -217,8 +217,10 @@ export default async function userRoutes(fastify: FastifyInstance) {
 
 	fastify.patch(
 		"/api/users/lastCall",
+		{ preHandler: fastify.auth },
 		async (req : FastifyRequest, reply : FastifyReply) => {
-			await db.update(users).set({ last_call: new Date() }).where(eq(users.id, req.user.id));
+			const userId = req.user.id;
+			await db.update(users).set({ last_call: new Date() }).where(eq(users.id, userId));
 			return reply.status(200).send({ success: true });
 		}
 	);

@@ -7,8 +7,8 @@ export interface OtpSetupData {
 export type LoginResponse = { require2fa: true } | { token: string };
 
 export type Friends = {
-	id: number;
-	username: string;
-	avatar_url: string;
-	last_call: number;
+  id: number;
+  username: string;
+  avatar_url: string;
+  last_call: number;
 };

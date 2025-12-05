@@ -1,6 +1,6 @@
 import { apiRequest } from "./api";
-import { User } from "@/types/user";
-import { OtpSetupData } from "@/api/types";
+import { User } from "@/types";
+import { OtpSetupData } from "./types";
 
 export const userApi = {
   updateProfile: async (data: Partial<User>): Promise<User> => {

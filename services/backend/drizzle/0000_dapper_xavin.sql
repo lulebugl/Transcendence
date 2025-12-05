@@ -26,15 +26,16 @@ CREATE TABLE `games` (
 --> statement-breakpoint
 CREATE TABLE `user_stats` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+	`level` integer DEFAULT 1 NOT NULL,
 	`user_id` integer NOT NULL,
 	`games_played` integer DEFAULT 0 NOT NULL,
 	`games_won` integer DEFAULT 0 NOT NULL,
 	`games_lost` integer DEFAULT 0 NOT NULL,
-	`total_score` integer DEFAULT 0 NOT NULL,
-	`highest_score` integer DEFAULT 0 NOT NULL,
-	`win_streak` integer DEFAULT 0 NOT NULL,
+	`current_win_streak` integer DEFAULT 0 NOT NULL,
+	`best_win_streak` integer DEFAULT 0 NOT NULL,
+	`xp` integer DEFAULT 0 NOT NULL,
 	`updated_at` integer DEFAULT (unixepoch()) NOT NULL,
-	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE no action
+	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `user_stats_user_id_unique` ON `user_stats` (`user_id`);--> statement-breakpoint

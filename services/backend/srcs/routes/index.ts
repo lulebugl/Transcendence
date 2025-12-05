@@ -3,6 +3,7 @@ import healthRoutes from "./health";
 import pingRoutes from "./ping";
 import authRoutes from "./auth";
 import matchMakingRoutes from "./matchMaking";
+import statsRoutes from "./users/stats";
 
 //types
 import { FastifyInstance } from "fastify";
@@ -15,4 +16,5 @@ export default async function routes(fastify: FastifyInstance) {
 	fastify.register(authRoutes);
 	fastify.register(friendsRoute);
 	fastify.register(matchMakingRoutes);
+	fastify.register(statsRoutes);
 }

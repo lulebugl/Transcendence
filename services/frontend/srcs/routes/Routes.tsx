@@ -13,6 +13,7 @@ import { NotFound } from "@/routes/NotFound";
 import { Tournaments } from "@/routes/tournaments";
 import { Pong, PongLobby } from "@/routes/pong";
 import { TestPongDev } from "@/routes/pong/testPongDev";
+import { Leaderboard } from "@/routes/leaderboard";
 
 interface RouteConfig {
   path: string;
@@ -23,7 +24,7 @@ export const publicRoutes: RouteConfig[] = [
   { path: "/", element: <Home /> },
   { path: "/lobby", element: <Lobby /> },
   { path: "/lobby-test", element: <PongLobby /> },
-
+  { path: "/leaderboard", element: <Leaderboard /> },
   
   { path: "/pong-test", element: <TestPongDev /> },
   { path: "/tournaments", element: <Tournaments /> },
