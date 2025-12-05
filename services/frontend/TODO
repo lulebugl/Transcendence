@@ -1,13 +1,6 @@
 # HIGH priority
 
-- change navbar offset to hard value not percentage 
- 
-- merge partie hugo:
-	* auto-login apres le signup
-	* retrieve user by id
-	* friends api
-	* better logout avec la modification de la route
-	* lastcall pour les status friends
+- useFriends hook
 
 ## GAME
 

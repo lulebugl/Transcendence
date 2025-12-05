@@ -20,7 +20,7 @@ export const Home = () => {
             <StatsBar user={user} />
             {/* <StatsBar user={user} recentMatches={RECENT_MATCHES} /> */}
 			<div className="container mx-auto max-w-3xl">
-            <MatchHistory matches={MOCK_MATCHES} />
+            	<MatchHistory matches={MOCK_MATCHES} />
             </div>
 
             {/* <div
