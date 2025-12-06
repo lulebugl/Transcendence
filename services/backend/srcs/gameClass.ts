@@ -18,7 +18,13 @@ import {
   TERRAIN_LIMIT_Z_MIN,
   TERRAIN_LIMIT_Z_MAX,
   PADDLE_WIDTH,
-  BALL_SPEED
+  BALL_START_SPEED,
+  BALL_RADIUS,
+  BALL_MAX_SPEED,
+  PADDLE_START_STEP,
+  PADDLE_MIN_STEP,
+  PADDLE_MAX_STEP,
+  BALL_MIN_SPEED
 } from './ConstVarGameLogic';
 
 function InfoInGame(
@@ -28,7 +34,7 @@ function InfoInGame(
   p2x = startPaddleLeftX, p2y = startPaddleLeftY, p2z = startPaddleLeftZ,
   point2 = 0, point1 = 0,
   messageType = "Update",
-  ballAngle = Math.PI / 4 // Initial angle
+  ballAngle = 3 * Math.PI / 2  // Initial angle
 ) {
   const message = {
     message: messageType,
@@ -36,7 +42,7 @@ function InfoInGame(
     ball: {
       position: { x: ballx, y: bally, z: ballz },
       angle: ballAngle,
-      speed: BALL_SPEED
+      speed: BALL_START_SPEED
     },
     paddleRight: {
       position: { x: p1x, y: p1y, z: p1z },
@@ -59,7 +65,7 @@ export class Game {
   private ballFrozen: boolean = false;
   
   // 🔹 value of sensitivity, to take from setting's player, here is jsut to test
-  private paddleSensitivityPlayer1: number = 2.1;
+  private paddleSensitivityPlayer1: number = 0.1;
   private paddleSensitivityPlayer2: number = 0.9;
   
   constructor(id, player1, player2) {
@@ -99,7 +105,7 @@ export class Game {
         : this.paddleSensitivityPlayer2
       );
 
-    const step = 0.5 * sensitivity; // base step(can be modify if we want) * sensitivity
+    const step = PADDLE_START_STEP * sensitivity; // base step(can be modify if we want) * sensitivity
     
     if (info.type === "playerMove") {
       // Player 1 : normal
@@ -133,33 +139,27 @@ export class Game {
     }
     
     // Wall collision (X axis)
-    if (this.state.ball.position.x <= TERRAIN_LIMIT_X_MIN || this.state.ball.position.x >= TERRAIN_LIMIT_X_MAX) {
+    if (this.state.ball.position.x - BALL_RADIUS <= TERRAIN_LIMIT_X_MIN || this.state.ball.position.x + BALL_RADIUS >= TERRAIN_LIMIT_X_MAX) {
       this.state.ball.angle = Math.PI - this.state.ball.angle;
     }
 
     // Paddle collision (Z axis)
     // Paddle Right (Positive Z)
-    if (this.state.ball.position.z >= this.state.paddleRight.position.z - 0.5 && // Check depth
+    if (this.state.ball.position.z + BALL_RADIUS >= this.state.paddleRight.position.z && // Check depth
       this.state.ball.position.x >= this.state.paddleRight.position.x - PADDLE_WIDTH / 2 &&
       this.state.ball.position.x <= this.state.paddleRight.position.x + PADDLE_WIDTH / 2) {
         
-        let relativeIntersectX = this.state.paddleRight.position.x - this.state.ball.position.x;
-        let normalizedRelativeIntersectionX = (relativeIntersectX / (PADDLE_WIDTH / 2));
-        let bounceAngle = normalizedRelativeIntersectionX * (Math.PI / 3); // Max bounce angle 60 degrees
-        this.state.ball.angle = Math.PI + bounceAngle; // Reflect back towards negative Z
-      this.state.ball.speed += 0.01; // Increase speed
+      this.reflectBall(this.state.paddleRight, true);
+      console.log(this.state, this.state.paddleRight);
     }
     
     // Paddle Left (Negative Z)
-    if (this.state.ball.position.z <= this.state.paddleLeft.position.z + 0.5 && // Check depth
+    if (this.state.ball.position.z - BALL_RADIUS <= this.state.paddleLeft.position.z && // Check depth
       this.state.ball.position.x >= this.state.paddleLeft.position.x - PADDLE_WIDTH / 2 &&
       this.state.ball.position.x <= this.state.paddleLeft.position.x + PADDLE_WIDTH / 2) {
-        
-      let relativeIntersectX = this.state.paddleLeft.position.x - this.state.ball.position.x;
-      let normalizedRelativeIntersectionX = (relativeIntersectX / (PADDLE_WIDTH / 2));
-      let bounceAngle = normalizedRelativeIntersectionX * (Math.PI / 3);
-      this.state.ball.angle = -bounceAngle; // Reflect back towards positive Z
-      this.state.ball.speed += 0.01; // Increase speed
+
+      this.reflectBall(this.state.paddleLeft, false);
+      console.log(this.state, this.state.paddleLeft);
     }
     
     // Scoring
@@ -174,16 +174,16 @@ export class Game {
     this.broadcast({ type: 'update', state: this.state });
   }
 
-  freezeBallAndReset() {
-    // Gèle la balle
+  private freezeBallAndReset() {
+    // Freeze ball
     this.ballFrozen = true;
     this.state.ball.speed = 0;
 
-    // Replace au centre
+    // Place ball in center
     this.state.ball.position.x = startBallX;
     this.state.ball.position.z = startBallZ;
     
-    // Attend 1 seconde et relance
+    // Wait 1 sencond then unfreeze ball so it restart moving
     setTimeout(() => {
       this.resetBall();
       this.ballFrozen = false;
@@ -193,8 +193,8 @@ export class Game {
   resetBall() {
     this.state.ball.position.x = startBallX;
     this.state.ball.position.z = startBallZ;
-    this.state.ball.speed = BALL_SPEED;
-    this.state.ball.angle = Math.random() < 0.5 ? Math.PI / 4 : 5 * Math.PI / 4; // Random direction
+    this.state.ball.speed = BALL_START_SPEED;
+    this.state.ball.angle = 3 * Math.PI / 2; // Random direction
   }
   
   broadcast(data) {
@@ -218,10 +218,36 @@ export class Game {
   stop() {
     clearInterval(this.loop);
   }
+  // reflect form paddles
+  private reflectBall(paddle, isRightPaddle: boolean) {
+  
+    let relativeX = (this.state.ball.position.x - paddle.position.x) / (PADDLE_WIDTH / 2);
+    relativeX = Math.max(-1, Math.min(1, relativeX));
+  
+    const maxBounceAngle = Math.PI / 3; // 60°
+  
+    let baseAngle: number;
+  
+    if (isRightPaddle) {
+      baseAngle = 3 * Math.PI / 2;
+      this.state.ball.angle = baseAngle + relativeX * maxBounceAngle;
+    } else {
+      baseAngle = Math.PI / 2;
+      this.state.ball.angle = baseAngle - relativeX * maxBounceAngle;
+    }
+  
+    this.state.ball.speed = this.clampBallSpeed(this.state.ball.speed * 1.2);
+
+  }
 
   // To set up sensitivity between 0 and 1
   private clampSensitivity(value: number): number {
-    return Math.max(0, Math.min(1, value));
+    return Math.max(PADDLE_MIN_STEP, Math.min(PADDLE_MAX_STEP, value));
   }
-}
 
+  // To cap ball speed between 0 and 1
+  private clampBallSpeed(value: number): number {
+    return Math.max(BALL_MIN_SPEED, Math.min(BALL_MAX_SPEED, value));
+  }
+
+}
