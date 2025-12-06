@@ -2,7 +2,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { HeroSection } from "./HeroSection";
 import { Layout } from "@/components/layout/Layout";
 import { StatsBar } from "./StatsBar";
-import { MatchHistory } from "@/routes/profile/MatchHistory";
+import { MatchHistory } from "@/routes/profiles/MatchHistory";
 import { MOCK_MATCHES } from "@/lib/mock-data";
 
 export const Home = () => {

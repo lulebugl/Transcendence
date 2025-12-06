@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Camera } from "lucide-react";
 import { useMutation } from "@/hooks/useMutation";
 import { userApi } from "@/api/user";
-import { SUCCESS_NOTIFICATION_DURATION } from "@/lib/constants";
+import { SUCCESS_NOTIFICATION_DURATION } from "@/lib/constants/constants";
 import { Button } from "@/components/ui";
 import { SettingsSection } from "@/components/ui/SettingsSection";
 import { toast } from "@/components/ui/toast";

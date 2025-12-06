@@ -2,32 +2,10 @@ import { friendsApi } from "@/api/friends";
 import { Button } from "@/components/ui";
 import { UserAvatar } from "@/components/UserAvatar";
 import { useMutation } from "@/hooks/useMutation";
-import {
-  Crown,
-  Zap,
-  Calendar,
-  TrendingUp,
-  Swords,
-  UserPlus,
-} from "lucide-react";
+import { Crown, Zap, Calendar, TrendingUp, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 import { useEffect } from "react";
-import { useAuth } from "@/hooks/useAuth";
-
-export const MOCK_USER = {
-  id: 3,
-  username: "CyberPilot_42",
-  email: "cyberpilot@transcendence.io",
-  avatar_url: "https://api.dicebear.com/9.x/avataaars/svg?seed=tryHarsdfsf",
-  level: 42,
-  xp: 8500,
-  nextLevelXp: 10000,
-  rank: "Diamond",
-  rankPosition: 127,
-  totalPlayers: 4823,
-  memberSince: "Jan 2024",
-  status: "online" as const,
-};
+import { MOCK_USER, MockUser } from "./mockUser";
 
 type UserStatus = "online" | "offline" | "away";
 
@@ -53,7 +31,7 @@ const statusConfig: Record<
 };
 
 interface ProfileHeaderProps {
-  user: typeof MOCK_USER;
+  user: MockUser;
   isOwnProfile?: boolean;
 }
 
@@ -118,7 +96,6 @@ export const ProfileHeader = ({
   isOwnProfile = false,
 }: ProfileHeaderProps) => {
   const xpProgress = (user.xp / user.nextLevelXp) * 100;
-  const percentile = ((user.rankPosition / user.totalPlayers) * 100).toFixed(1);
   const status = statusConfig[user.status];
 
   return (
@@ -164,69 +141,57 @@ export const ProfileHeader = ({
 
           {/* User Info */}
           <div className="flex-1 text-center lg:text-left space-y-6 pb-2">
-            {/* Username + Rank */}
             {!isOwnProfile && <FriendsButtons user={user} />}
-            <div className="space-y-3">
-              <div className="flex flex-col lg:flex-row lg:items-baseline gap-3">
-                <h1 className="text-4xl lg:text-5xl font-display font-medium tracking-tight text-white">
-                  {user.username}
-                </h1>
-                <div className="flex items-center justify-center lg:justify-start gap-2 text-primary">
-                  <Crown className="w-4 h-4" />
-                  <span className="font-mono text-sm uppercase tracking-widest">
-                    {user.rank}
-                  </span>
+            <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 lg:gap-10">
+              <div className="flex-1 space-y-3">
+                <div className="flex flex-col lg:flex-row lg:items-baseline gap-3">
+                  <h1 className="text-4xl lg:text-5xl font-display font-medium tracking-tight text-white">
+                    {user.username}
+                  </h1>
+                  <div className="flex items-center justify-center lg:justify-start gap-2 text-primary">
+                    <Crown className="w-4 h-4" />
+                    <span className="font-mono text-sm uppercase tracking-widest">
+                      {user.rank}
+                    </span>
+                  </div>
+                </div>
+
+                {/* XP Progress - minimal elegant bar */}
+                <div className="max-w-sm mx-auto lg:mx-0 space-y-1.5">
+                  <div className="flex items-baseline justify-between text-xs">
+                    <span className="text-muted-foreground uppercase tracking-wider">
+                      Experience
+                    </span>
+                    <span className="font-mono text-muted-foreground">
+                      <span className="text-white">
+                        {user.xp.toLocaleString()}
+                      </span>
+                      <span className="mx-1">/</span>
+                      {user.nextLevelXp.toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="h-1 bg-white/5 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-linear-to-r from-primary to-primary/60 rounded-full transition-all duration-1000 ease-out"
+                      style={{ width: `${xpProgress}%` }}
+                    />
+                  </div>
                 </div>
               </div>
 
-              {/* XP Progress - minimal elegant bar */}
-              <div className="max-w-sm mx-auto lg:mx-0 space-y-1.5">
-                <div className="flex items-baseline justify-between text-xs">
-                  <span className="text-muted-foreground uppercase tracking-wider">
-                    Experience
-                  </span>
-                  <span className="font-mono text-muted-foreground">
-                    <span className="text-white">
-                      {user.xp.toLocaleString()}
-                    </span>
-                    <span className="mx-1">/</span>
-                    {user.nextLevelXp.toLocaleString()}
-                  </span>
-                </div>
-                <div className="h-1 bg-white/5 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-linear-to-r from-primary to-primary/60 rounded-full transition-all duration-1000 ease-out"
-                    style={{ width: `${xpProgress}%` }}
-                  />
-                </div>
+              <div className="grid grid-cols-2 lg:grid-cols-1 gap-3 lg:gap-4 min-w-[240px] lg:min-w-[220px] relative lg:absolute lg:right-0 lg:top-0">
+                <InfoStat
+                  icon={<TrendingUp className="w-4 h-4" />}
+                  value={`#${user.rankPosition}`}
+                  label="Global Rank"
+                />
+                <InfoStat
+                  icon={<Calendar className="w-4 h-4" />}
+                  value={user.memberSince}
+                  label="Member Since"
+                />
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* Stats Grid - architectural style */}
-        <div className="mt-10 pt-8 border-t border-white/5">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-            <StatCard
-              icon={<TrendingUp className="w-4 h-4" />}
-              value={`#${user.rankPosition}`}
-              label="Global Rank"
-            />
-            <StatCard
-              icon={<Swords className="w-4 h-4" />}
-              value={`Top ${percentile}`}
-              label="Percentile"
-            />
-            <StatCard
-              icon={<Zap className="w-4 h-4" />}
-              value={user.level.toString()}
-              label="Level"
-            />
-            <StatCard
-              icon={<Calendar className="w-4 h-4" />}
-              value={user.memberSince}
-              label="Member Since"
-            />
           </div>
         </div>
       </div>
@@ -234,7 +199,7 @@ export const ProfileHeader = ({
   );
 };
 
-const StatCard = ({
+const InfoStat = ({
   icon,
   value,
   label,
@@ -243,23 +208,15 @@ const StatCard = ({
   value: string;
   label: string;
 }) => (
-  <div className="group relative p-4 lg:p-5 bg-white/2 border border-white/5 rounded-lg hover:border-white/10 hover:bg-white/4 transition-all duration-300">
-    {/* Corner accent */}
-    <div className="absolute top-0 left-0 w-6 h-px bg-linear-to-r from-primary/50 to-transparent" />
-    <div className="absolute top-0 left-0 h-6 w-px bg-linear-to-b from-primary/50 to-transparent" />
-
-    <div className="flex items-start gap-3">
-      <div className="text-primary/60 group-hover:text-primary transition-colors">
-        {icon}
-      </div>
-      <div className="space-y-0.5">
-        <p className="font-mono text-lg lg:text-xl font-medium text-white tracking-tight">
-          {value}
-        </p>
-        <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-          {label}
-        </p>
-      </div>
+  <div className="flex items-center gap-3 rounded-lg px-4 py-3">
+    <div className="text-primary/70">{icon}</div>
+    <div className="space-y-0.5">
+      <p className="font-mono text-lg lg:text-xl font-medium text-white tracking-tight">
+        {value}
+      </p>
+      <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+        {label}
+      </p>
     </div>
   </div>
 );

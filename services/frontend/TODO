@@ -1,5 +1,11 @@
 # HIGH priority
 
+- check achievements: 
+```
+i'm currently thinking about data architecture and want some recommendation, each player will have achievements and i see several possibilities to architect that. you can find some example in @services/frontend/srcs/routes/profile/achievements/Achievements.tsx 
+I want you opinion and recommendation on each.
+The two main ways i see is compute them with the UserStats on the frontend or store them in the db. if the db is better should i create a table for it or add an array for it in userStats. I want a good balance of simplicity and easy to update later
+```
 - useFriends hook
 
 ## GAME

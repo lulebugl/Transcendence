@@ -7,6 +7,7 @@ import { useQuery } from "@/hooks/useQuery";
 import { Link } from "react-router";
 import { useAuth } from "@/hooks/useAuth";
 import { DottedBadge } from "@/components/ui/Badge";
+import { getRankTextColor } from "@/lib/constants/";
 
 export const Leaderboard = () => {
   const {
@@ -80,7 +81,7 @@ const LeaderboardRow = ({
   const { user } = useAuth();
   const isCurrentUser = user?.id === player.id;
   const winrate = player.winrate?.toFixed(1) ?? undefined;
-  
+
   return (
     <div
       className="grid grid-cols-[2.5rem_1fr_5rem_5rem_4rem] md:grid-cols-[3rem_1fr_7rem_4rem_5rem] gap-4 items-center px-5 py-4 border-b border-white/5 last:border-b-0 hover:bg-white/2 transition-colors group cursor-pointer animate-fade-in-up"
@@ -94,7 +95,7 @@ const LeaderboardRow = ({
       </span>
 
       <Link
-        to={ isCurrentUser ? "/profile" : `/players/${player.username}`}
+        to={isCurrentUser ? "/profile" : `/players/${player.username}`}
         className="flex items-center gap-3 min-w-0"
       >
         <img
@@ -105,15 +106,13 @@ const LeaderboardRow = ({
         <span className="font-medium truncate group-hover:text-primary transition-colors">
           {player.username}
         </span>
-		{ isCurrentUser && (
-			<DottedBadge color="primary">You</DottedBadge>
-		)}
+        {isCurrentUser && <DottedBadge color="primary">You</DottedBadge>}
       </Link>
 
       <span
         className={cn(
           "text-center text-sm font-mono",
-          getRankColor(player.rank)
+          getRankTextColor(player.rank)
         )}
       >
         {player.rank ?? "-"}
@@ -129,29 +128,3 @@ const LeaderboardRow = ({
     </div>
   );
 };
-
-const getRankColor = (rank: Rank): string => {
-  switch (rank) {
-    case "Diamond":
-      return "text-cyan-500";
-    case "Platinum":
-      return "text-primary";
-    case "Gold":
-      return "text-yellow-300/70";
-    case "Silver":
-      return "text-white";
-  }
-};
-
-// const getBadgeColor = (rank: Rank): BadgeColor => {
-//   switch (rank) {
-//     case "Diamond":
-//       return "cyan";
-//     case "Platinum":
-//       return "primary";
-//     case "Gold":
-//       return "yellow";
-//     case "Silver":
-//       return "silver";
-//   }
-// };

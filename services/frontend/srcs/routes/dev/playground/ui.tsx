@@ -70,8 +70,8 @@ export const PrimitivesPlayground = () => {
           <Variant label="Silver">
             <DottedBadge color="silver">Silver</DottedBadge>
           </Variant>
-          <Variant label="Blue">
-            <DottedBadge color="blue">Blue</DottedBadge>
+          <Variant label="Diamond">
+            <DottedBadge color="diamond">Diamond</DottedBadge>
           </Variant>
           <Variant label="Emerald">
             <DottedBadge color="emerald">Emerald</DottedBadge>

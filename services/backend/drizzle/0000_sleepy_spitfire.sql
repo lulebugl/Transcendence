@@ -31,6 +31,7 @@ CREATE TABLE `user_stats` (
 	`games_played` integer DEFAULT 0 NOT NULL,
 	`games_won` integer DEFAULT 0 NOT NULL,
 	`games_lost` integer DEFAULT 0 NOT NULL,
+	`tournaments_won` integer DEFAULT 0 NOT NULL,
 	`current_win_streak` integer DEFAULT 0 NOT NULL,
 	`best_win_streak` integer DEFAULT 0 NOT NULL,
 	`xp` integer DEFAULT 0 NOT NULL,

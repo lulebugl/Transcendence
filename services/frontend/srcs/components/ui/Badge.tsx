@@ -1,63 +1,6 @@
-const colorSchemes = {
-  primary: {
-    border: "border-primary/40",
-    bg: "bg-primary/5",
-    text: "text-primary",
-    hoverBg: "group-hover:bg-primary/10",
-    hoverBorder: "group-hover:border-primary/60",
-  },
-  silver: {
-    border: "border-white/40",
-    bg: "bg-white/5",
-    text: "text-white",
-    hoverBg: "group-hover:bg-white/10",
-    hoverBorder: "group-hover:border-white/60",
-  },
-  blue: {
-    border: "border-blue-500/40",
-    bg: "bg-blue-500/5",
-    text: "text-blue-500",
-    hoverBg: "group-hover:bg-blue-500/10",
-    hoverBorder: "group-hover:border-blue-500/60",
-  },
-  emerald: {
-    border: "border-emerald-500/40",
-    bg: "bg-emerald-500/5",
-    text: "text-emerald-500",
-    hoverBg: "group-hover:bg-emerald-500/10",
-    hoverBorder: "group-hover:border-emerald-500/60",
-  },
-  red: {
-    border: "border-red-500/40",
-    bg: "bg-red-500/5",
-    text: "text-red-500",
-    hoverBg: "group-hover:bg-red-500/10",
-    hoverBorder: "group-hover:border-red-500/60",
-  },
-  yellow: {
-    border: "border-yellow-300/40",
-    bg: "bg-yellow-300/5",
-    text: "text-yellow-300",
-    hoverBg: "group-hover:bg-yellow-300/10",
-    hoverBorder: "group-hover:border-yellow-300/60",
-  },
-  purple: {
-    border: "border-purple-500/40",
-    bg: "bg-purple-500/5",
-    text: "text-purple-500",
-    hoverBg: "group-hover:bg-purple-500/10",
-    hoverBorder: "group-hover:border-purple-500/60",
-  },
-  cyan: {
-    border: "border-cyan-500/40",
-    bg: "bg-cyan-500/5",
-    text: "text-cyan-500",
-    hoverBg: "group-hover:bg-cyan-500/10",
-    hoverBorder: "group-hover:border-cyan-500/60",
-  },
-} as const;
+import { colorSchemes, type ColorScheme } from "@/lib/constants/colors";
 
-export type BadgeColor = keyof typeof colorSchemes;
+export type BadgeColor = ColorScheme;
 
 export const DottedBadge = ({
   children,

@@ -11,182 +11,218 @@ import {
 // Help to return user without sensible datas
 type User = InferSelectModel<typeof users>;
 export function serializeUser(user: User) {
-	const { id, username, avatar_url, last_call } = user;
-	return { id, username, avatar_url, last_call };
+  const { id, username, avatar_url, last_call } = user;
+  return { id, username, avatar_url, last_call };
 }
 
 interface RequestBody {
-	id: number;
+  id: number;
 }
 
 const requestSchema: FastifySchema = {
-	body: {
-		type: "object",
-		required: ["id"],
-		properties: {
-			id: { type: "number" },
-		},
-	}
-}
+  body: {
+    type: "object",
+    required: ["id"],
+    properties: {
+      id: { type: "number" },
+    },
+  },
+};
 
 const paramSchema: FastifySchema = {
-	params: {
-		type: "object",
-		required: ["id"],
-		properties: {
-			id: { type: "number" },
-		},
-	}
-}
+  params: {
+    type: "object",
+    required: ["id"],
+    properties: {
+      id: { type: "number" },
+    },
+  },
+};
 
 export default async function friendsRoute(fastify: FastifyInstance) {
-	
-	// create friendship request
-	fastify.post(
-		"/api/friends/request", 
-		{ 
-			schema: requestSchema,
-			preHandler: fastify.auth,
-		},
-		async (req: FastifyRequest<{ Body: RequestBody}>, reply: FastifyReply) => {
-			const { id } = req.body;
+  // create friendship request
+  fastify.post(
+    "/api/friends/request",
+    {
+      schema: requestSchema,
+      preHandler: fastify.auth,
+    },
+    async (req: FastifyRequest<{ Body: RequestBody }>, reply: FastifyReply) => {
+      const { id } = req.body;
 
-			const recieverUser = await db
-				.select()
-				.from(users)
-				.where(eq(users.id, id));
+      const recieverUser = await db
+        .select()
+        .from(users)
+        .where(eq(users.id, id));
 
-			if (!recieverUser[0]) return reply.badRequest("request user doesn't exist");
-			if (recieverUser[0].id === req.user.id) return reply.badRequest("you cannot friend yourself");
-			
-			const exist = await db
-				.select()
-				.from(friendships)
-				.where(
-					and(
-						or (
-							and(eq(friendships.requesterId, req.user.id), eq(friendships.receiverId, id)),
-							and(eq(friendships.requesterId, id), eq(friendships.receiverId, req.user.id))
-						)
-					)
-				);
+      if (!recieverUser[0])
+        return reply.badRequest("request user doesn't exist");
+      if (recieverUser[0].id === req.user.id)
+        return reply.badRequest("you cannot friend yourself");
 
-			if (exist.length > 0) return reply.badRequest("friendship already exist");
+      const exist = await db
+        .select()
+        .from(friendships)
+        .where(
+          and(
+            or(
+              and(
+                eq(friendships.requesterId, req.user.id),
+                eq(friendships.receiverId, id)
+              ),
+              and(
+                eq(friendships.requesterId, id),
+                eq(friendships.receiverId, req.user.id)
+              )
+            )
+          )
+        );
 
-			try {
-				await db.insert(friendships).values({
-					receiverId: recieverUser[0].id,
-					requesterId: req.user.id,
-					status: "pending"
-				});
+      if (exist.length > 0) return reply.badRequest("friendship already exist");
 
-				return { success: true };
-			} catch (err) {
-				fastify.log.error(err);
-        		return fastify.httpErrors.badRequest("Failed to create friendship.");
-			}
-		}
-	);
+      try {
+        await db.insert(friendships).values({
+          receiverId: recieverUser[0].id,
+          requesterId: req.user.id,
+          status: "pending",
+        });
 
-	// accept friendship
-	fastify.post(
-		"/api/friends/accept",
-		{ 
-			schema: requestSchema,
-			preHandler: fastify.auth,
-		},
-		async (req: FastifyRequest<{ Body: RequestBody}>, reply: FastifyReply) => {
-			const { id } = req.body;
+        return { success: true };
+      } catch (err) {
+        fastify.log.error(err);
+        return fastify.httpErrors.badRequest("Failed to create friendship.");
+      }
+    }
+  );
 
-			const [request] = await db
-				.select()
-				.from(friendships)
-				.where(and(
-					eq(friendships.receiverId, req.user.id), 
-					eq(friendships.requesterId, id),
-					eq(friendships.status, "pending"))
-				);
-			
-			if (!request) return reply.badRequest("no friendship request from the specified user");
+  // accept friendship
+  fastify.post(
+    "/api/friends/accept",
+    {
+      schema: requestSchema,
+      preHandler: fastify.auth,
+    },
+    async (req: FastifyRequest<{ Body: RequestBody }>, reply: FastifyReply) => {
+      const { id } = req.body;
 
-			await db.update(friendships)
-				.set({ status: "accepted" })
-				.where(and(
-					eq(friendships.receiverId, req.user.id), 
-					eq(friendships.requesterId, id),
-					eq(friendships.status, "pending"))
-				);
-			return { success: true };
-		}
-	)
+      const [request] = await db
+        .select()
+        .from(friendships)
+        .where(
+          and(
+            eq(friendships.receiverId, req.user.id),
+            eq(friendships.requesterId, id),
+            eq(friendships.status, "pending")
+          )
+        );
 
-	// delete a friend or pending request
-	fastify.delete(
-		"/api/friends/:id",
-		{ 
-			schema: paramSchema,
-			preHandler: fastify.auth,
-		},
-		async (req: FastifyRequest<{ Params: {id: number} }>, reply: FastifyReply) => {
-			const { id } = req.params;
+      if (!request)
+        return reply.badRequest(
+          "no friendship request from the specified user"
+        );
 
-			const deleted = await db
-				.delete(friendships)
-				.where(
-					or(
-						and(eq(friendships.receiverId, id), eq(friendships.requesterId, req.user.id)),
-						and(eq(friendships.receiverId, req.user.id), eq(friendships.requesterId, id)),
-					)
-				).returning();
-			
-			if (deleted.length === 0) return reply.internalServerError("Failed to delete friendship");
-				
-			return { success: true };
-		}
-	);
+      await db
+        .update(friendships)
+        .set({ status: "accepted" })
+        .where(
+          and(
+            eq(friendships.receiverId, req.user.id),
+            eq(friendships.requesterId, id),
+            eq(friendships.status, "pending")
+          )
+        );
+      return { success: true };
+    }
+  );
 
-	// get list of accepted friends
-	fastify.get(
-		"/api/friends",
-		{ preHandler: fastify.auth },
-		async (req: FastifyRequest, reply: FastifyReply) => {
-			const friends = await db
-				.select()
-				.from(friendships)
-				.where(
-					and(
-						or(eq(friendships.receiverId, req.user.id), eq(friendships.requesterId, req.user.id)),
-						eq(friendships.status, "accepted")
-					)
-				);
+  // delete a friend or pending request
+  fastify.delete(
+    "/api/friends/:id",
+    {
+      schema: paramSchema,
+      preHandler: fastify.auth,
+    },
+    async (
+      req: FastifyRequest<{ Params: { id: number } }>,
+      reply: FastifyReply
+    ) => {
+      const { id } = req.params;
 
-			const friendsList: any[] = [];
+      const deleted = await db
+        .delete(friendships)
+        .where(
+          or(
+            and(
+              eq(friendships.receiverId, id),
+              eq(friendships.requesterId, req.user.id)
+            ),
+            and(
+              eq(friendships.receiverId, req.user.id),
+              eq(friendships.requesterId, id)
+            )
+          )
+        )
+        .returning();
 
-			for (let i = 0; i < friends.length; i++) {
-				const [user] = await db.select().from(users).where(eq(users.id, friends[i].id));
-				friendsList.push(serializeUser(user));
-			}
+      if (deleted.length === 0)
+        return reply.internalServerError("Failed to delete friendship");
 
-			return friendsList;
-		}
-	);
+      return { success: true };
+    }
+  );
 
-	// get list of pending friends
-	fastify.get(
-		"/api/friends/pending",
-		{ preHandler: fastify.auth },
-		async (req: FastifyRequest, reply: FastifyReply) => {
-			const friends = await db
-				.select()
-				.from(friendships)
-				.where(
-					and(
-						or(eq(friendships.receiverId, req.user.id), eq(friendships.requesterId, req.user.id)),
-						eq(friendships.status, "pending")
-					)
-				);
+  // get list of accepted friends
+  // TODO: it would be better to use a join with the users table to avoid a new query for each friend
+  fastify.get(
+    "/api/friends",
+    { preHandler: fastify.auth },
+    async (req: FastifyRequest, reply: FastifyReply) => {
+      const friends = await db
+        .select()
+        .from(friendships)
+        .where(
+          and(
+            or(
+              eq(friendships.receiverId, req.user.id),
+              eq(friendships.requesterId, req.user.id)
+            ),
+            eq(friendships.status, "accepted")
+          )
+        );
 
-			return friends;
-		}
-	);
+      const friendsList: any[] = [];
+
+      for (let i = 0; i < friends.length; i++) {
+        const [user] = await db
+          .select()
+          .from(users)
+          .where(eq(users.id, friends[i].id));
+        friendsList.push(serializeUser(user));
+      }
+
+      return friendsList;
+    }
+  );
+
+  // get list of pending friends
+  fastify.get(
+    "/api/friends/pending",
+    { preHandler: fastify.auth },
+    async (req: FastifyRequest, reply: FastifyReply) => {
+      const friends = await db
+        .select()
+        .from(friendships)
+        .where(
+          and(
+            or(
+              eq(friendships.receiverId, req.user.id),
+              eq(friendships.requesterId, req.user.id)
+            ),
+            eq(friendships.status, "pending")
+          )
+        );
+
+      return friends;
+    }
+  );
 }

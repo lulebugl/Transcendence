@@ -1,9 +1,10 @@
 import { Link } from "react-router";
-import { User } from "@/types/user";
+import { User } from "@/types";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { DottedBadge } from "@/components/ui/Badge";
 import { SystemIndicator } from "@/components/ui/SystemIndicator";
+import { getRankColor } from "@/lib/constants";
 
 export const HeroSection = ({ user }: { user: User }) => {
   const rank = "Diamond";
@@ -32,7 +33,7 @@ export const HeroSection = ({ user }: { user: User }) => {
               style={{ animationDelay: "0.3s" }}
             >
               Your current Rank is
-              <DottedBadge color="blue">{rank}</DottedBadge>
+              <DottedBadge color={getRankColor(rank)}>{rank}</DottedBadge>
               <span className="text-muted-foreground/60">•</span>
               <span>Top 5% Global</span>
             </p>

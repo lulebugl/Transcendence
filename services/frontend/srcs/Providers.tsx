@@ -6,7 +6,7 @@ import {
   ReactNode,
   createContext,
 } from "react";
-import { User } from "@/types/user";
+import { User } from "@/types/users";
 import { api } from "@/api";
 import * as authApi from "@/api/auth";
 import { useNavigate } from "react-router";

@@ -54,6 +54,7 @@ export const userStats = sqliteTable("user_stats", {
   games_played: integer("games_played").notNull().default(0),
   games_won: integer("games_won").notNull().default(0),
   games_lost: integer("games_lost").notNull().default(0),
+  tournaments_won: integer("tournaments_won").notNull().default(0),
   current_win_streak: integer("current_win_streak").notNull().default(0),
   best_win_streak: integer("best_win_streak").notNull().default(0),
   xp: integer("xp").notNull().default(0),
@@ -65,10 +66,10 @@ export const userStats = sqliteTable("user_stats", {
 export const friendships = sqliteTable("friendships", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   requesterId: integer("requester_id")
-    .references(() => users.id)
+    .references(() => users.id, { onDelete: "cascade" })
     .notNull(),
   receiverId: integer("receiver_id")
-    .references(() => users.id)
+    .references(() => users.id, { onDelete: "cascade" })
     .notNull(),
   status: text("status").notNull(), // "pending", "accepted", "blocked"
   createdAt: integer("created_at", { mode: "timestamp" })
