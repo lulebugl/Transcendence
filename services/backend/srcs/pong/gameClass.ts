@@ -62,6 +62,8 @@ export class Game {
   private loop: any;
   private sceneIsReadyLeft: boolean;
   private sceneIsReadyRight: boolean;
+  private PauseFlag: boolean = false;
+  private speedMemory: number = 0;
 
   constructor(id, player1, player2) {
     this.id = id;
@@ -134,6 +136,17 @@ export class Game {
   }
 
   update() {
+    if (this.PauseFlag) {
+      if (this.speedMemory === 0)
+        this.speedMemory = this.state.ball.speed;
+      this.state.ball.speed = 0;
+      if (this.areAllPlayersConnected()) {
+        this.PauseFlag = false;
+        this.state.ball.speed = this.speedMemory;
+        this.speedMemory = 0;
+        this.state.break = false;
+      }
+    }
     // Ball movement
     this.state.ball.position.x += Math.cos(this.state.ball.angle) * this.state.ball.speed;
     this.state.ball.position.z += Math.sin(this.state.ball.angle) * this.state.ball.speed;
@@ -188,26 +201,40 @@ export class Game {
 
     await sleep(1000); // Wait for 2 seconds
 
-    this.state.ball.speed = BALL_SPEED; // Restart the ball
+    if (this.PauseFlag) {
+      this.speedMemory = BALL_SPEED; // Store the speed to resume later
+      this.state.ball.speed = 0;
+    } else {
+      this.state.ball.speed = BALL_SPEED; // Restart the ball
+    }
     this.state.ball.angle = Math.random() < 0.5 ? Math.PI / 4 : 5 * Math.PI / 4; // Random direction
   }
 
   broadcast(data) {
     const msg = JSON.stringify(data);
     this.players.forEach(p => {
-      if (p.readyState === WebSocket.OPEN)
+      if (p && p.readyState === WebSocket.OPEN)
         p.send(msg);
     });
+  }
+  areAllPlayersConnected(): boolean {
+    return this.players.every(p => p && p.readyState === WebSocket.OPEN);
   }
   setCamera(players) {
     let id = 0;
     this.players.forEach(p => {
-      if (p.readyState === WebSocket.OPEN) {
+      if (p && p.readyState === WebSocket.OPEN) {
         ++id;
         const msg = JSON.stringify({ type: "start", player: id });
         p.send(msg);
       }
     });
+  }
+  setPauseFlags(flag: boolean) {
+    this.PauseFlag = flag;
+    this.state.break = flag;
+    this.broadcast({ type: 'update', state: this.state });
+    // sbatti
   }
 
 

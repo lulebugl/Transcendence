@@ -122,10 +122,12 @@ export function startWebSocketServer(port = 9000) {
 
 			if (wsSession.player1 === ws) {
 				wsSession.player1 = null;
+				wsSession.game.setPauseFlags(true);
 			}
 
 			if (wsSession.player2 === ws) {
 				wsSession.player2 = null;
+				wsSession.game.setPauseFlags(true);
 			}
 
 			if (!wsSession.player1 && !wsSession.player2) {
