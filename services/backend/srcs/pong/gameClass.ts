@@ -32,11 +32,13 @@ function InfoInGame(
   p2x = startPaddleLeftX, p2y = startPaddleLeftY, p2z = startPaddleLeftZ,
   point2 = 0, point1 = 0,
   messageType = "Update",
-  ballAngle = Math.PI / 4 // Initial angle
+  ballAngle = Math.PI / 4, // Initial angle
+  gamesPause = false
 ) {
   const message = {
     message: messageType,
     GamesID: id,
+    break: gamesPause,
     ball: {
       position: { x: ballx, y: bally, z: ballz },
       angle: ballAngle,
@@ -136,17 +138,7 @@ export class Game {
   }
 
   update() {
-    if (this.PauseFlag) {
-      if (this.speedMemory === 0)
-        this.speedMemory = this.state.ball.speed;
-      this.state.ball.speed = 0;
-      if (this.areAllPlayersConnected()) {
-        this.PauseFlag = false;
-        this.state.ball.speed = this.speedMemory;
-        this.speedMemory = 0;
-        this.state.break = false;
-      }
-    }
+
     // Ball movement
     this.state.ball.position.x += Math.cos(this.state.ball.angle) * this.state.ball.speed;
     this.state.ball.position.z += Math.sin(this.state.ball.angle) * this.state.ball.speed;
@@ -189,6 +181,28 @@ export class Game {
       this.state.paddleRight.point++;
       this.resetBall();
     }
+    // Pause Logic
+    if (this.PauseFlag) {
+      console.log("PAUSE");
+      this.state.break = true;
+      if (this.state.ball.speed !== 0) {
+        this.speedMemory = this.state.ball.speed;
+        this.state.ball.speed = 0;
+      }
+
+      if (this.areAllPlayersConnected()) {
+        this.PauseFlag = false;
+        this.state.break = false;
+        // Resume speed
+        if (this.speedMemory !== 0) {
+          this.state.ball.speed = this.speedMemory;
+          this.speedMemory = 0;
+        } else {
+          // Fallback if speedMemory was 0 (shouldn't happen if logic is correct, but safe default)
+          this.state.ball.speed = BALL_SPEED;
+        }
+      }
+    }
 
     this.broadcast({ type: 'update', state: this.state });
   }
@@ -201,12 +215,7 @@ export class Game {
 
     await sleep(1000); // Wait for 2 seconds
 
-    if (this.PauseFlag) {
-      this.speedMemory = BALL_SPEED; // Store the speed to resume later
-      this.state.ball.speed = 0;
-    } else {
-      this.state.ball.speed = BALL_SPEED; // Restart the ball
-    }
+    this.state.ball.speed = BALL_SPEED; // Restart the ball
     this.state.ball.angle = Math.random() < 0.5 ? Math.PI / 4 : 5 * Math.PI / 4; // Random direction
   }
 

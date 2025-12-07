@@ -32,7 +32,7 @@ type VectorPayload = { x: number; y: number; z: number };
 type UpdateMessage = {
     type: "update";
     state: {
-        break?: boolean;
+        break: boolean;
         ball: { position: VectorPayload };
         paddleLeft: { position: VectorPayload, point: number };
         paddleRight: { position: VectorPayload, point: number };
@@ -225,8 +225,7 @@ export const TestPongDev = () => {
                     applyStateUpdate(backendMessage);
                     updatePoint(pintTextLeft, backendMessage.state.paddleLeft.point);
                     updatePoint(pintTextRight, backendMessage.state.paddleRight.point);
-                    if (backendMessage.state.break !== undefined)
-                        pauseControl(backendMessage.state.break, timerBlock);
+                    pauseControl(backendMessage.state.break, timerBlock);
                 }
             }
             if (!CameraFlag && meshesRef.current.length > 0) {
