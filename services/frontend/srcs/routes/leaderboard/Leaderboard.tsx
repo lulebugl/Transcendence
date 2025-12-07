@@ -1,20 +1,22 @@
 import { Layout } from "@/components/layout/Layout";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { cn } from "@/lib/utils";
-import { UserStatsApi } from "@/api/stats";
-import { Rank } from "@/types";
 import { useQuery } from "@/hooks/useQuery";
 import { Link } from "react-router";
 import { useAuth } from "@/hooks/useAuth";
 import { DottedBadge } from "@/components/ui/Badge";
 import { getRankTextColor } from "@/lib/constants/";
+import { playersApi } from "@/api/players";
+import { UserAvatar } from "@/components/UserAvatar";
+import { LeaderboardEntry } from "@/api/players";
 
+// maybe add a button to refresh the leaderboard
 export const Leaderboard = () => {
   const {
     data: players,
     isLoading,
     error,
-  } = useQuery(() => UserStatsApi.getLeaderboard());
+  } = useQuery(() => playersApi.getLeaderboard());
 
   return (
     <Layout>
@@ -61,14 +63,7 @@ export const Leaderboard = () => {
 };
 
 interface LeaderboardRowProps {
-  player: {
-    id: number;
-    username: string;
-    avatar_url: string;
-    rank: Rank;
-    winrate: number;
-    level: number;
-  };
+  player: LeaderboardEntry;
   position: number;
   animationDelay: number;
 }
@@ -80,7 +75,7 @@ const LeaderboardRow = ({
 }: LeaderboardRowProps) => {
   const { user } = useAuth();
   const isCurrentUser = user?.id === player.id;
-  const winrate = player.winrate?.toFixed(1) ?? undefined;
+  const winrate = player.winRate?.toFixed(1) ?? undefined;
 
   return (
     <div
@@ -98,9 +93,9 @@ const LeaderboardRow = ({
         to={isCurrentUser ? "/profile" : `/players/${player.username}`}
         className="flex items-center gap-3 min-w-0"
       >
-        <img
-          src={player.avatar_url}
-          alt={player.username}
+        <UserAvatar
+          username={player.username}
+          avatarUrl={player.avatarUrl}
           className="w-9 h-9 rounded-full border border-white/10 grayscale-25 group-hover:grayscale-0 transition-all"
         />
         <span className="font-medium truncate group-hover:text-primary transition-colors">

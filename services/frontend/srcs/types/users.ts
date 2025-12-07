@@ -1,7 +1,7 @@
-export type Rank = "Diamond" | "Platinum" | "Gold" | "Silver";
-
-export type User = {
+export type BaseUserType = {
   id: number;
   username: string;
   avatar_url: string;
+  /** @description last_call is the last time the user was active in ms */
+  last_call: number;
 };

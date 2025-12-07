@@ -22,7 +22,7 @@ export const UserAvatar = ({ username, avatarUrl, className }: UserAvatarProps) 
           className={`w-10 h-10 rounded-full transition-all duration-500 object-cover ${className}`}
         />
       ) : (
-        <div className={`w-10 h-10 rounded-full bg-linear-to-br from-primary via-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-sm shadow-lg group-hover:shadow-primary/25 transition-all duration-500 ${className}`}>
+        <div className={`w-10 h-10 rounded-full bg-transparent flex items-center justify-center text-[oklch(0.1 0 0)] font-bold text-sm shadow group-hover:shadow-lg group-hover:shadow-[oklch(0.85 0.05 85)]/40 transition-all duration-500 border border-[oklch(0.6 0.05 85)] ${className}`}>
           {firstLetter}
         </div>
       )}

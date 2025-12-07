@@ -4,9 +4,6 @@ import { useMutation, type UseMutationOptions } from "@/hooks/useMutation";
 import { useCallback, useMemo } from "react";
 import { useAuth } from "@/hooks/useAuth.ts";
 
-// there is currently a problem with the friends system
-// 1: missing cascadion delete for friendships creating orphaned data
-
 export function useFriendsList() {
   return useQuery(() => friendsApi.getFriends());
 }

@@ -1,5 +1,4 @@
-export { UserProfile } from "./UserProfile";
-export { ProfileHeader } from "./ProfileHeader";
-export { MatchHistory } from "./MatchHistory";
+export { UserProfile } from "./MyProfile";
+export { MatchHistory } from "./components/MatchHistory";
 export { Achievements } from "./achievements";
 export { PlayerProfile } from "./PlayerProfile";

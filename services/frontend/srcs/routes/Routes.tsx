@@ -25,6 +25,7 @@ export const publicRoutes: RouteConfig[] = [
   { path: "/lobby", element: <Lobby /> },
   { path: "/lobby-test", element: <PongLobby /> },
   { path: "/leaderboard", element: <Leaderboard /> },
+  
 //   { path: "/profile/:id", element: <PlayerProfile PlayerId={id} /> },
   { path: "/pong-test", element: <TestPongDev /> },
   { path: "/tournaments", element: <Tournaments /> },

@@ -1,0 +1,102 @@
+// routes/players.ts
+import { FastifyInstance, FastifySchema } from "fastify";
+import { users, userStats } from "../db/schema";
+import { db } from "../db/client";
+import { eq, desc, count, gt } from "drizzle-orm";
+
+const MAX_LIMIT_LEADERBOARD = 100;
+
+// ─── Schemas ───────────────────────────────────────────
+const profileParamsSchema: FastifySchema = {
+  params: {
+    type: "object",
+    required: ["id"],
+    properties: {
+      id: { type: "integer", minimum: 1 },
+    },
+  },
+};
+
+const leaderboardQuerySchema: FastifySchema = {
+  querystring: {
+    type: "object",
+    properties: {
+      offset: { type: "integer", minimum: 0, default: 0 },
+      limit: {
+        type: "integer",
+        minimum: 1,
+        maximum: MAX_LIMIT_LEADERBOARD,
+        default: 10,
+      },
+    },
+  },
+};
+
+// ─── Helpers ───────────────────────────────────────────
+async function fetchPlayerProfile(id: number) {
+  const [row] = await db
+    .select({
+      userId: userStats.user_id,
+      username: users.username,
+      avatarUrl: users.avatar_url,
+      lastCall: users.last_call,
+      level: userStats.level,
+      xp: userStats.xp,
+      gamesWon: userStats.games_won,
+      gamesLost: userStats.games_lost,
+      bestWinStreak: userStats.best_win_streak,
+      tournamentsWon: userStats.tournaments_won,
+      memberSince: users.created_at,
+    })
+    .from(userStats)
+    .innerJoin(users, eq(userStats.user_id, users.id))
+    .where(eq(userStats.user_id, id));
+
+  if (!row) return null;
+
+  const [rankResult] = await db
+    .select({ count: count() })
+    .from(userStats)
+    .where(gt(userStats.xp, row.xp));
+  return { ...row, globalRank: rankResult.count + 1 };
+}
+
+// ─── Routes ────────────────────────────────────────────
+export default async function playersRoutes(fastify: FastifyInstance) {
+  // Get a player's profile
+  fastify.get<{ Params: { id: number } }>(
+    "/api/users/:id/profile",
+    { schema: profileParamsSchema },
+    async (req, reply) => {
+      const profile = await fetchPlayerProfile(req.params.id);
+      if (!profile) return reply.notFound("User not found.");
+      return profile;
+    }
+  );
+
+  // Get leaderboard
+  fastify.get<{ Querystring: { offset?: number; limit?: number } }>(
+    "/api/leaderboard",
+    { schema: leaderboardQuerySchema },
+    async (req) => {
+      const offset = req.query.offset ?? 0;
+      const limit = Math.min(req.query.limit ?? 10, MAX_LIMIT_LEADERBOARD);
+
+      return db
+        .select({
+          id: userStats.id,
+          username: users.username,
+          avatarUrl: users.avatar_url,
+          level: userStats.level,
+          xp: userStats.xp,
+          gamesWon: userStats.games_won,
+          gamesLost: userStats.games_lost,
+        })
+        .from(userStats)
+        .innerJoin(users, eq(userStats.user_id, users.id))
+        .orderBy(desc(userStats.xp))
+        .limit(limit)
+        .offset(offset);
+    }
+  );
+}

@@ -6,7 +6,7 @@ import {
   useAcceptFriend,
   useFriendsList,
   usePendingFriends,
-} from "@/hooks/useFriends";
+} from "@/routes/profiles/hooks/useFriends";
 import { UserPlus, UserMinus, UserCheck, Clock, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";

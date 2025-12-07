@@ -1,37 +1,37 @@
-import { type UserStats } from "@/api/stats";
+import { type ProfileData } from "@/types";
 import { TrendingUp, Swords, Crown, Flame, Trophy } from "lucide-react";
 
-export const StatsGrid = ({ stats }: { stats: UserStats }) => {
-  if (!stats) return null;
+export const StatsGrid = ({ data }: { data: ProfileData }) => {
+  if (!data) return null;
 
   const statItems = [
     {
       label: "Win Rate",
-      value: `${stats.winrate}%`,
+      value: `${data.winRate}%`,
       icon: TrendingUp,
       color: "text-emerald-400",
     },
     {
       label: "Total Games",
-      value: `${stats.games_lost + stats.games_won}`,
+      value: `${data.gamesLost + data.gamesWon}`,
       icon: Swords,
       color: "text-blue-400",
     },
     {
       label: "Wins",
-      value: `${stats.games_won}`,
+      value: `${data.gamesWon}`,
       icon: Crown,
       color: "text-purple-400",
     },
     {
       label: "Best Win Streak",
-      value: `${stats.best_win_streak}`,
+      value: `${data.bestWinStreak}`,
       icon: Flame,
       color: "text-orange-400",
     },
     {
       label: "Tournament Wins",
-      value: `${stats.tournaments_won}`,
+      value: `${data.tournamentsWon}`,
       icon: Trophy,
       color: "text-yellow-400",
     },

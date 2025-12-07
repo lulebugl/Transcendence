@@ -1,10 +1,10 @@
 import { apiRequest } from "./api";
-import { User } from "@/types";
+import { BaseUserType } from "@/types/users";
 import { OtpSetupData } from "./types";
 
 export const userApi = {
-  updateProfile: async (data: Partial<User>): Promise<User> => {
-    return apiRequest<User>("/api/users/update", {
+  updateProfile: async (data: Partial<BaseUserType>): Promise<BaseUserType> => {
+    return apiRequest<BaseUserType>("/api/users/update", {
       method: "PATCH",
       body: JSON.stringify(data),
     });

@@ -1,2 +1,5 @@
 # Drizzle meta files 
 drizzle/meta/
+
+# Shouldn't be ignored but too annoying rn
+drizzle/*.sql
