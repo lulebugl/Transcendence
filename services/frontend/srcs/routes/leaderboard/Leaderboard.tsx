@@ -51,7 +51,6 @@ export const Leaderboard = () => {
                   key={player.id}
                   player={player}
                   position={index + 1}
-                  animationDelay={index * 0.05}
                 />
               ))}
             </div>
@@ -65,14 +64,9 @@ export const Leaderboard = () => {
 interface LeaderboardRowProps {
   player: LeaderboardEntry;
   position: number;
-  animationDelay: number;
 }
 
-const LeaderboardRow = ({
-  player,
-  position,
-  animationDelay,
-}: LeaderboardRowProps) => {
+const LeaderboardRow = ({ player, position }: LeaderboardRowProps) => {
   const { user } = useAuth();
   const isCurrentUser = user?.id === player.id;
   const winrate = player.winRate?.toFixed(1) ?? undefined;
@@ -80,7 +74,6 @@ const LeaderboardRow = ({
   return (
     <div
       className="grid grid-cols-[2.5rem_1fr_5rem_5rem_4rem] md:grid-cols-[3rem_1fr_7rem_4rem_5rem] gap-4 items-center px-5 py-4 border-b border-white/5 last:border-b-0 hover:bg-white/2 transition-colors group cursor-pointer animate-fade-in-up"
-      style={{ animationDelay: `${animationDelay}s` }}
       tabIndex={0}
       role="row"
       aria-label={`Position ${position}: ${player.username}`}
@@ -90,7 +83,7 @@ const LeaderboardRow = ({
       </span>
 
       <Link
-        to={isCurrentUser ? "/profile" : `/players/${player.username}`}
+        to={isCurrentUser ? "/profile" : `/profile/${player.username}`}
         className="flex items-center gap-3 min-w-0"
       >
         <UserAvatar

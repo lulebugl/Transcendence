@@ -4,20 +4,22 @@ import { Layout } from "@/components/layout/Layout";
 import { StatsBar } from "./StatsBar";
 import { MatchHistory } from "@/routes/profiles/components/MatchHistory";
 import { MOCK_MATCHES } from "@/lib/mock-data";
+import { useProfileData } from "../profiles/hooks/useProfileData";
 
 export const Home = () => {
   const { user } = useAuth();
+  const { profileData } = useProfileData(user?.username);
 
   return (
     <Layout>
       <div
         className="max-w-7xl mx-auto px-6 py-12 md:py-20 space-y-24 animate-fade-in"
       >
-        <HeroSection user={user} />
+        <HeroSection user={user} rank={profileData?.rank} rankPosition={profileData?.rankPosition} />
 
         {user ? (
           <>
-            <StatsBar user={user} />
+            <StatsBar profileData={profileData} />
             {/* <StatsBar user={user} recentMatches={RECENT_MATCHES} /> */}
 			<div className="container mx-auto max-w-3xl">
             	<MatchHistory matches={MOCK_MATCHES} />

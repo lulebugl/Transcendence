@@ -1,13 +1,20 @@
 import { Link } from "react-router";
-import { User } from "@/types";
+import { BaseUserType } from "@/types/users";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { DottedBadge } from "@/components/ui/Badge";
 import { SystemIndicator } from "@/components/ui/SystemIndicator";
 import { getRankColor } from "@/lib/constants";
+import { useProfileData } from "@/routes/profiles/hooks/useProfileData";
+import { Rank } from "@/types/players";
 
-export const HeroSection = ({ user }: { user: User }) => {
-  const rank = "Diamond";
+interface HeroSectionProps {
+  user: BaseUserType;
+  rank?: Rank;
+  rankPosition?: number;
+}
+
+export const HeroSection = ({ user, rank, rankPosition }: HeroSectionProps) => {
   return (
     <section className="mt-4 relative flex flex-col items-center text-center space-y-8">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-primary/5 rounded-full blur-[120px] animate-pulse-slow pointer-events-none" />
@@ -35,7 +42,7 @@ export const HeroSection = ({ user }: { user: User }) => {
               Your current Rank is
               <DottedBadge color={getRankColor(rank)}>{rank}</DottedBadge>
               <span className="text-muted-foreground/60">•</span>
-              <span>Top 5% Global</span>
+              <span>Top #{rankPosition}</span>
             </p>
 
             <div

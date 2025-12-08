@@ -1,4 +1,4 @@
-import { User } from "@/types";
+import { ProfileData, User } from "@/types";
 import { cn } from "@/lib/utils";
 
 interface StatsBarProps {
@@ -42,10 +42,8 @@ const StatContainer = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-export const StatsBar = ({ user }: StatsBarProps) => {
-  const xp = 8500;
-  const nextLevelXp = 10000;
-  const winRate = 43;
+export const StatsBar = ({ profileData }: { profileData: ProfileData }) => {
+  if (!profileData) return null;
 
   return (
     <section
@@ -57,7 +55,7 @@ export const StatsBar = ({ user }: StatsBarProps) => {
             Progress
           </div>
           <div className="text-3xl font-light tabular-nums">
-            {Math.round((xp / nextLevelXp) * 100)}%
+            {Math.round((profileData.xp / profileData.nextLevelXp) * 100)}%
           </div>
           <div className="w-24 h-0.5 bg-white/10 rounded-full mt-2 overflow-hidden">
             <div className="h-full bg-primary w-full origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-700 ease-out" />
@@ -69,7 +67,7 @@ export const StatsBar = ({ user }: StatsBarProps) => {
             Win Rate
           </div>
           <div className="text-3xl font-light tabular-nums group-hover:scale-110 transition-transform duration-300">
-            {winRate}%
+            {profileData.winRate}%
           </div>
 		  <div className="w-24 h-0.5 mt-2 overflow-hidden">
           </div>

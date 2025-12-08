@@ -28,10 +28,10 @@ const getNextLevelXp = (level: number): number => {
 };
 
 // ─── Hook ──────────────────────────────────────────────
-export function useProfileData(userId?: number) {
+export function useProfileData(username?: string) {
   const { user: authUser, isLoading: isAuthLoading } = useAuth();
 
-  const targetId = userId ?? authUser?.id;
+  const targetUsername = username ?? authUser?.username;
 
   const {
     data: playerData,
@@ -39,16 +39,16 @@ export function useProfileData(userId?: number) {
 	refetch: refetchProfile,
     error,
   } = useQuery(
-    () => (targetId ? playersApi.getProfile(targetId) : Promise.resolve(null)),
+    () => (targetUsername ? playersApi.getProfile(targetUsername) : Promise.resolve(null)),
   );
 
   useEffect(() => {
-    if (targetId) {
+    if (targetUsername) {
       refetchProfile();
     }
-  }, [targetId, refetchProfile]);
+  }, [targetUsername, refetchProfile]);
 
-  const isOwnProfile = authUser?.id === targetId;
+  const isOwnProfile = authUser?.username === targetUsername;
 
   const profileData = useMemo((): ProfileData | null => {
     if (!playerData) return null;

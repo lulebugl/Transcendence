@@ -3,6 +3,7 @@ import { FastifyInstance, FastifySchema } from "fastify";
 import { users, userStats } from "../db/schema";
 import { db } from "../db/client";
 import { eq, desc, count, gt } from "drizzle-orm";
+import { fields } from "./schema";
 
 const MAX_LIMIT_LEADERBOARD = 100;
 
@@ -10,9 +11,9 @@ const MAX_LIMIT_LEADERBOARD = 100;
 const profileParamsSchema: FastifySchema = {
   params: {
     type: "object",
-    required: ["id"],
+    required: ["username"],
     properties: {
-      id: { type: "integer", minimum: 1 },
+      username: { ...fields.username },
     },
   },
 };
@@ -33,7 +34,7 @@ const leaderboardQuerySchema: FastifySchema = {
 };
 
 // ─── Helpers ───────────────────────────────────────────
-async function fetchPlayerProfile(id: number) {
+async function fetchPlayerProfile(username: string) {
   const [row] = await db
     .select({
       userId: userStats.user_id,
@@ -50,7 +51,7 @@ async function fetchPlayerProfile(id: number) {
     })
     .from(userStats)
     .innerJoin(users, eq(userStats.user_id, users.id))
-    .where(eq(userStats.user_id, id));
+    .where(eq(users.username, username));
 
   if (!row) return null;
 
@@ -64,11 +65,11 @@ async function fetchPlayerProfile(id: number) {
 // ─── Routes ────────────────────────────────────────────
 export default async function playersRoutes(fastify: FastifyInstance) {
   // Get a player's profile
-  fastify.get<{ Params: { id: number } }>(
-    "/api/users/:id/profile",
+  fastify.get<{ Params: { username: string } }>(
+    "/api/users/:username/profile",
     { schema: profileParamsSchema },
     async (req, reply) => {
-      const profile = await fetchPlayerProfile(req.params.id);
+      const profile = await fetchPlayerProfile(req.params.username);
       if (!profile) return reply.notFound("User not found.");
       return profile;
     }

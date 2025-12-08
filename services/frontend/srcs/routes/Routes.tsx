@@ -7,7 +7,8 @@ import { PongErrorFallback } from "@/components/errors/ErrorFallback";
 import { Home } from "@/routes/home";
 import { Login, Signup } from "@/routes/auth";
 import { Settings } from "@/routes/settings";
-import { UserProfile, Achievements, PlayerProfile } from "@/routes/profiles";
+import { Achievements } from "@/routes/profiles";
+import { PlayerProfile } from "@/routes/profiles/";
 import { Lobby } from "@/routes/lobby";
 import { NotFound } from "@/routes/NotFound";
 import { Tournaments } from "@/routes/tournaments";
@@ -25,8 +26,7 @@ export const publicRoutes: RouteConfig[] = [
   { path: "/lobby", element: <Lobby /> },
   { path: "/lobby-test", element: <PongLobby /> },
   { path: "/leaderboard", element: <Leaderboard /> },
-  
-//   { path: "/profile/:id", element: <PlayerProfile PlayerId={id} /> },
+  { path: "/profile/:username", element: <PlayerProfile /> },
   { path: "/pong-test", element: <TestPongDev /> },
   { path: "/tournaments", element: <Tournaments /> },
   {
@@ -47,7 +47,7 @@ export const publicRoutes: RouteConfig[] = [
 // redirects to login if not authenticated
 export const protectedRoutes: RouteConfig[] = [
   { path: "/settings", element: <Settings /> },
-  { path: "/profile", element: <UserProfile /> },
+  { path: "/profile", element: <PlayerProfile /> },
   { path: "/profile/achievements", element: <Achievements /> },
 ];
 

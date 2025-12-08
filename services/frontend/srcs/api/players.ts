@@ -48,8 +48,8 @@ const getWinrate = (won: number, lost: number): number => {
 
 // ─── API ───────────────────────────────────────────────
 export const playersApi = {
-  getProfile: async (id: number) => {
-    const data = await apiRequest<ProfileResponse>(`/api/users/${id}/profile`, {
+  getProfile: async (username: string) => {
+    const data = await apiRequest<ProfileResponse>(`/api/users/${username}/profile`, {
       method: "GET",
     });
     return {
