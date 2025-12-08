@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/Button";
 import { DottedBadge } from "@/components/ui/Badge";
 import { SystemIndicator } from "@/components/ui/SystemIndicator";
 import { getRankColor } from "@/lib/constants";
-import { useProfileData } from "@/routes/profiles/hooks/useProfileData";
 import { Rank } from "@/types/players";
 
 interface HeroSectionProps {

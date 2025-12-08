@@ -1,17 +1,21 @@
+import { STATUS_STYLE_CONFIG } from "@/lib/constants/colors";
+import { OnlineStatus } from "@/types";
 import { useState } from "react";
 
 interface UserAvatarProps {
   username: string;
   avatarUrl?: string;
   className?: string;
+  status?: OnlineStatus;
 }
 
-export const UserAvatar = ({ username, avatarUrl, className }: UserAvatarProps) => {
+export const UserAvatar = ({ username, avatarUrl, className, status }: UserAvatarProps) => {
   const [hasImageError, setHasImageError] = useState(false);
   const firstLetter = username.charAt(0).toUpperCase();
-
   const showImage = avatarUrl && !hasImageError;
+  const currentStatus = STATUS_STYLE_CONFIG[status];
 
+  console.log(status);
   return (
     <div className="relative group cursor-pointer">
       {showImage ? (
@@ -26,7 +30,7 @@ export const UserAvatar = ({ username, avatarUrl, className }: UserAvatarProps) 
           {firstLetter}
         </div>
       )}
-      <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-emerald-500/80 rounded-full border-2 border-background shadow-[0_0_10px_#10b981]" />
+      { status && status !== "offline" && <div className={`absolute -bottom-1 -right-1 w-3 h-3 ${currentStatus.color} ${currentStatus.glow} rounded-full border-2 border-background`} /> }
     </div>
   );
 };

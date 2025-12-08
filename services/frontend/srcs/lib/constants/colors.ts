@@ -5,6 +5,26 @@
 
 import { Rank } from "@/types";
 
+export const STATUS_STYLE_CONFIG = {
+	online: {
+	  color: "bg-emerald-500",
+	  glow: "shadow-[0_0_10px_#10b981]",
+	  label: "Online",
+	},
+	offline: {
+	  color: "bg-gray-600",
+	  glow: "shadow-[0_0_10px_#6b7280]",
+	  label: "Offline",
+	},
+	away: {
+	  color: "bg-amber-500",
+	  glow: "shadow-[0_0_10px_#f59e0b]",
+	  label: "Away",
+	},
+  };
+
+export type StatusStyleConfig = typeof STATUS_STYLE_CONFIG;
+
 export type ColorScheme = keyof typeof colorSchemes;
 export type ColorSchemeStyles = (typeof colorSchemes)[ColorScheme];
 

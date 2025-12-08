@@ -9,12 +9,12 @@ const FIFTEEN_MINUTES = 1000 * 60 * 15;
 const TEN_MINUTES = 1000 * 60 * 10;
 const XP_PER_LEVEL = 1000;
 
-const getOnlineStatus = (lastCall: number): OnlineStatus => {
-  const now = Date.now();
-  if (lastCall <= now - FIFTEEN_MINUTES) return "offline";
-  if (lastCall <= now - TEN_MINUTES) return "away";
-  return "online";
-};
+export const getOnlineStatus = (lastCall: number): OnlineStatus => {
+	const now = Date.now();
+	if (lastCall >= now - TEN_MINUTES) return "online";
+	if (lastCall >= now - FIFTEEN_MINUTES) return "away";
+	return "offline";
+  };
 
 const formatMemberSince = (timestamp: number): string => {
   return new Date(timestamp).toLocaleDateString(undefined, {

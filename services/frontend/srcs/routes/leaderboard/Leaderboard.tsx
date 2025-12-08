@@ -9,6 +9,7 @@ import { getRankTextColor } from "@/lib/constants/";
 import { playersApi } from "@/api/players";
 import { UserAvatar } from "@/components/UserAvatar";
 import { LeaderboardEntry } from "@/api/players";
+import { getOnlineStatus } from "../profiles/hooks/useProfileData";
 
 // maybe add a button to refresh the leaderboard
 export const Leaderboard = () => {
@@ -48,7 +49,7 @@ export const Leaderboard = () => {
 
               {players.map((player, index) => (
                 <LeaderboardRow
-                  key={player.id}
+                  key={player.userId}
                   player={player}
                   position={index + 1}
                 />
@@ -68,7 +69,7 @@ interface LeaderboardRowProps {
 
 const LeaderboardRow = ({ player, position }: LeaderboardRowProps) => {
   const { user } = useAuth();
-  const isCurrentUser = user?.id === player.id;
+  const isCurrentUser = user?.id === player.userId;
   const winrate = player.winRate?.toFixed(1) ?? undefined;
 
   return (
@@ -89,6 +90,7 @@ const LeaderboardRow = ({ player, position }: LeaderboardRowProps) => {
         <UserAvatar
           username={player.username}
           avatarUrl={player.avatarUrl}
+          status={getOnlineStatus(player.lastCall)}
           className="w-9 h-9 rounded-full border border-white/10 grayscale-25 group-hover:grayscale-0 transition-all"
         />
         <span className="font-medium truncate group-hover:text-primary transition-colors">

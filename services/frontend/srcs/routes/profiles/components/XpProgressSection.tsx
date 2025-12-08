@@ -3,7 +3,7 @@ interface XpProgressProps {
   nextLevelXp: number;
 }
 
-export const XpProgress = ({ xp, nextLevelXp }: XpProgressProps) => {
+export const XpProgressSection = ({ xp, nextLevelXp }: XpProgressProps) => {
   const xpProgress = nextLevelXp > 0 ? Math.round((xp / nextLevelXp) * 100) : 0;
 
   return (

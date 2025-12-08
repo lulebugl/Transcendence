@@ -85,9 +85,10 @@ export default async function playersRoutes(fastify: FastifyInstance) {
 
       return db
         .select({
-          id: userStats.id,
+          user_id: users.id,
           username: users.username,
           avatarUrl: users.avatar_url,
+		  lastCall: users.last_call,
           level: userStats.level,
           xp: userStats.xp,
           gamesWon: userStats.games_won,

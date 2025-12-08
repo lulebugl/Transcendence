@@ -2,7 +2,7 @@ import { Crown, Calendar, TrendingUp } from "lucide-react";
 import { FriendButton } from "@/components/features/FriendButton";
 import { ProfileHeaderIdentity } from "./ProfileHeaderIdentity";
 import { ProfileData } from "@/types";
-import { XpProgress } from "./XpProgress";
+import { XpProgressSection } from "./XpProgressSection";
 
 interface ProfileHeaderProps {
   player: ProfileData;
@@ -15,6 +15,7 @@ export const ProfileHeader = ({
   isOwnProfile = false,
   isLoggedIn = false,
 }: ProfileHeaderProps) => {
+  console.log(player.onlineStatus);
   return (
     <section className="relative">
       <div className="absolute -top-32 left-1/4 w-96 h-96 bg-primary/8 rounded-full blur-3xl pointer-events-none" />
@@ -30,16 +31,22 @@ export const ProfileHeader = ({
           />
 
           <div className="flex-1 text-center lg:text-left space-y-6 pb-2">
-			{/* actions buttons: only friends for now */}
+            {/* actions buttons: only friends for now */}
             {!isOwnProfile && isLoggedIn && (
               <FriendButton playerId={3} playerName={"John Doe"} />
             )}
-			
-			{/* profile name, rank, xp progress */}
+
+            {/* profile name, rank, xp progress */}
             <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 lg:gap-10">
               <div className="flex-1 space-y-3">
-				<ProfileNameAndRank username={player.username} rank={player.rank} />
-                <XpProgress xp={player.xp} nextLevelXp={player.nextLevelXp} />
+                <ProfileNameAndRank
+                  username={player.username}
+                  rank={player.rank}
+                />
+                <XpProgressSection
+                  xp={player.xp}
+                  nextLevelXp={player.nextLevelXp}
+                />
               </div>
 
               <div className="grid grid-cols-2 lg:grid-cols-1 gap-3 lg:gap-4 min-w-[240px] lg:min-w-[220px] relative md:absolute md:right-0 md:top-0">
@@ -62,6 +69,26 @@ export const ProfileHeader = ({
   );
 };
 
+const ProfileNameAndRank = ({
+  username,
+  rank,
+}: {
+  username: string;
+  rank: string;
+}) => (
+  <div className="flex flex-col lg:flex-row lg:items-baseline gap-3">
+    <h1 className="text-4xl lg:text-5xl font-display font-medium tracking-tight text-white">
+      {username}
+    </h1>
+    <div className="flex items-center justify-center lg:justify-start gap-2 text-primary">
+      <Crown className="w-4 h-4" />
+      <span className="font-mono text-sm uppercase tracking-widest">
+        {rank}
+      </span>
+    </div>
+  </div>
+);
+
 const InfoStat = ({
   icon,
   value,
@@ -80,20 +107,6 @@ const InfoStat = ({
       <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
         {label}
       </p>
-    </div>
-  </div>
-);
-
-const ProfileNameAndRank = ({ username, rank }: { username: string, rank: string }) => (
-  <div className="flex flex-col lg:flex-row lg:items-baseline gap-3">
-    <h1 className="text-4xl lg:text-5xl font-display font-medium tracking-tight text-white">
-      {username}
-    </h1>
-    <div className="flex items-center justify-center lg:justify-start gap-2 text-primary">
-      <Crown className="w-4 h-4" />
-      <span className="font-mono text-sm uppercase tracking-widest">
-        {rank}
-      </span>
     </div>
   </div>
 );

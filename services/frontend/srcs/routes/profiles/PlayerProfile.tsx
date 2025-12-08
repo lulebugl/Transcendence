@@ -1,5 +1,5 @@
 import { Layout } from "@/components/layout/Layout";
-import { AchievementsCard } from "./achievements/AchievementsCard";
+import { AchievementsCard } from "./achievements";
 import { MOCK_MATCHES } from "@/lib/mock-data";
 import { MatchHistory } from "./components/MatchHistory";
 import { ProfileHeader } from "./components/ProfileHeader";
@@ -34,7 +34,7 @@ export const PlayerProfile = () => {
 
   return (
     <Layout>
-      <div className="max-w-5xl mx-auto py-8 md:py-20 space-y-16">
+      <div className="max-w-5xl mx-auto py-8 md:py-20 space-y-16 lg:space-y-20">
         <ProfileHeader player={profileData} isOwnProfile={isOwnProfile} isLoggedIn={!!user} />
         <StatsGrid data={profileData} />
 
