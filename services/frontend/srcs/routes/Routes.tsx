@@ -29,8 +29,9 @@ export const publicRoutes: RouteConfig[] = [
   { path: "/profile/:username", element: <PlayerProfile /> },
   { path: "/pong-test", element: <TestPongDev /> },
   { path: "/tournaments", element: <Tournaments /> },
+  { path: "/profile/:username/achievements", element: <Achievements /> },
   {
-    path: "/pong",
+	  path: "/pong",
     element: (
       <ErrorBoundary fallback={<PongErrorFallback />}>
         <Suspense fallback={<Loading />}>

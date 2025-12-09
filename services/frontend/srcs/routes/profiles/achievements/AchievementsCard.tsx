@@ -32,9 +32,9 @@ export const AchievementsCard = ({
     <section className="space-y-4">
       <SectionHeader
         title="Achievements"
-        rightType="link"
-        linkText="See all achievements"
-        linkTo="/profile/achievements"
+        // rightType="link"
+        // linkText="See all achievements"
+        // linkTo="/profile/achievements"
       />
 
       {/* Achievement List */}

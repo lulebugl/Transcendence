@@ -1,5 +1,4 @@
 import { SectionHeader } from "@/components/ui";
-import { cn } from "@/lib/utils";
 import { type ProfileData } from "@/types";
 import {
   TrendingUp,
@@ -7,9 +6,7 @@ import {
   Crown,
   Flame,
   Trophy,
-  ChevronRight,
 } from "lucide-react";
-import { Link } from "react-router";
 
 export const StatsGrid = ({ data }: { data: ProfileData }) => {
   if (!data) return null;
@@ -49,19 +46,13 @@ export const StatsGrid = ({ data }: { data: ProfileData }) => {
 
   return (
     <div className="space-y-4">
-      {/* <Link
-        to="/profile/achievements"
-        className="pl-8 text-xs text-primary hover:underline transition-all hover:tracking-wider flex items-center gap-1"
-        aria-label="View achievements"
-      >
-        View achievements
-        <ChevronRight className="w-3 h-3" />
-      </Link> */}
-      <div className="flex items-center justify-between">
-        <h2 className="text-xs tracking-[0.2em] uppercase text-muted-foreground">
-          Statistics
-        </h2>
-      </div>
+      <SectionHeader
+        title="Statistics"
+        rightType="link"
+        linkText="View achievements"
+        linkTo={`/profile/${data.username}/achievements`}
+        linkClassName="text-xs opacity-70 hover:opacity-100"
+      />
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-px overflow-hidden">
         {statItems.map((stat, index) => (

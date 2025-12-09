@@ -26,9 +26,6 @@ export function usePlayerAchievements(playerId: number) {
     error: unlockError,
   } = useQuery(() => playersApi.getPlayerAchievements(playerId));
 
-  console.log("allAchievements", allAchievements);
-  console.log("unlockedIds", unlockedIds);
-
   const unlocked = useMemo(
     () => (unlockedIds && unlockedIds.length !== 0 ? unlockedIds : []),
     [unlockedIds]

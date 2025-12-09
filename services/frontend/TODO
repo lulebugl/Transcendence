@@ -1,24 +1,19 @@
 # HIGH priority
 
-- check achievements: 
-```
-i'm currently thinking about data architecture and want some recommendation, each player will have achievements and i see several possibilities to architect that. you can find some example in @services/frontend/srcs/routes/profile/achievements/Achievements.tsx 
-I want you opinion and recommendation on each.
-The two main ways i see is compute them with the UserStats on the frontend or store them in the db. if the db is better should i create a table for it or add an array for it in userStats. I want a good balance of simplicity and easy to update later
-```
-- useFriends hook
+* currently in progress: Friends and Achievements to double check
+* most urgent is to refacor the friend panel
 
 ## GAME
 
 - separate the logic of the game from babylonjs
-- and create a version without 3D for better testing
 - regarder comment preload les assets et le jeu pendant le matchmaking
 
 - ameliorer les handler des match-making ( regarder example in 2fa.ts si besoin)
 - creer une route separe pour jouer contre l'ia
 
-## Users
+## Friends (in progress)
 
+- useFriends hook (in progress)
 -  Implementer les friends and think about the flow and different states (pending, accepted, declined)
    * add friend button
    * remove friends
@@ -27,12 +22,6 @@ The two main ways i see is compute them with the UserStats on the frontend or st
    * see friend requests
    * see friends and their status
    * pending?
-
-- implementer les routes dynamic pour voir les pages des autres utilisateurs
-
-## STATS
-
-- Faire le premier jet de "useUserStats" pour simuler la vrai recuperation des stats
 
 ## TOURNAMENTS
 
@@ -47,9 +36,6 @@ The two main ways i see is compute them with the UserStats on the frontend or st
 -  Implement avatar remove and change on frontend
 
 # LOW priority
-
--  also remove overview and add leaderboard in nav
--  add loading state for button in login, signup and otp
 
 # BONUS
 -  add skeletons

@@ -306,7 +306,6 @@ const RequestsList = ({
                   <Check className="w-4 h-4" />
                 </Button>
                 <Button
-                  size="icon"
                   variant="ghost"
                   className="h-8 w-8 text-muted-foreground hover:text-red-400 hover:bg-red-400/10"
                   onClick={() => onDecline(req.requesterId)}

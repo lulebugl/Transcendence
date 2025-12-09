@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { Link, useParams } from "react-router";
 import { Layout } from "@/components/layout/Layout";
 import { ChevronLeft } from "lucide-react";
 import {
@@ -11,13 +11,14 @@ import { Lock } from "lucide-react";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { usePlayerAchievements } from "./useAchievements";
 import { ErrorPage } from "@/components/errors/ErrorPage";
-import { useAuth } from "@/hooks/useAuth";
 import { useProfileData } from "../hooks/useProfileData";
 import { Loading } from "@/components/Loading";
 
 export const Achievements = () => {
-  const { user } = useAuth();
-  const { profileData, isLoading, error } = useProfileData(user?.username);
+  const { username } = useParams();
+  console.log("username in achievements", username);
+  const { profileData, isLoading, error } = useProfileData(username);
+  console.log("profileData in achievements", profileData);
 
   if (isLoading) return <Loading />;
 
@@ -28,16 +29,16 @@ export const Achievements = () => {
           Profile not found
         </h1>
         <p className="text-muted-foreground">
-          Unable to load your profile data.
+          Unable to load the requested profile data.
         </p>
       </ErrorPage>
     );
   }
   return (
     <Layout>
-      <div className="max-w-4xl mx-auto py-8 md:py-12 space-y-6 animate-fade-in">
+      <div className="max-w-4xl mx-auto py-8 md:py-12 space-y-8 animate-fade-in">
         <Link
-          to="/profile"
+          to={`/profile/${username}`}
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors group"
           aria-label="Back to profile"
         >
