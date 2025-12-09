@@ -16,7 +16,6 @@ const app = Fastify({
   logger: envToLogger[process.env.NODE_ENV as keyof typeof envToLogger],
 });
 
-// Log 4xx and 5xx responses as WARN and ERROR respectively
 prettifyLogger(app);
 
 app.register(fp(authPlugin));

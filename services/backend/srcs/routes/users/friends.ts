@@ -171,36 +171,48 @@ export default async function friendsRoute(fastify: FastifyInstance) {
     }
   );
 
-  // get list of accepted friends
-  // TODO: it would be better to use a join with the users table to avoid a new query for each friend
   fastify.get(
     "/api/friends",
     { preHandler: fastify.auth },
     async (req: FastifyRequest, reply: FastifyReply) => {
-      const friends = await db
-        .select()
+      const userId = req.user.id;
+
+      // user initiated the friendship
+      const friendsAsRequester = await db
+        .select({
+          id: users.id,
+          username: users.username,
+          avatar_url: users.avatar_url,
+          last_call: users.last_call,
+        })
         .from(friendships)
+        .innerJoin(users, eq(friendships.receiverId, users.id))
         .where(
           and(
-            or(
-              eq(friendships.receiverId, req.user.id),
-              eq(friendships.requesterId, req.user.id)
-            ),
+            eq(friendships.requesterId, userId),
             eq(friendships.status, "accepted")
           )
         );
 
-      const friendsList: any[] = [];
+      // user received the request
+      const friendsAsReceiver = await db
+        .select({
+          id: users.id,
+          username: users.username,
+          avatar_url: users.avatar_url,
+          last_call: users.last_call,
+        })
+        .from(friendships)
+        .innerJoin(users, eq(friendships.requesterId, users.id))
+        .where(
+          and(
+            eq(friendships.receiverId, userId),
+            eq(friendships.status, "accepted")
+          )
+        );
 
-      for (let i = 0; i < friends.length; i++) {
-        const [user] = await db
-          .select()
-          .from(users)
-          .where(eq(users.id, friends[i].id));
-        friendsList.push(serializeUser(user));
-      }
-
-      return friendsList;
+      // Combine both results
+      return [...friendsAsRequester, ...friendsAsReceiver];
     }
   );
 

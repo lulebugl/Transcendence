@@ -77,6 +77,28 @@ export const friendships = sqliteTable("friendships", {
     .default(sql`(unixepoch())`),
 });
 
+export const achievements = sqliteTable("achievements", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  rarity: text("rarity", {
+    enum: ["common", "rare", "epic", "legendary"],
+  }).notNull(),
+});
+
+export const userAchievements = sqliteTable("user_achievements", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  user_id: integer("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  achievement_id: text("achievement_id")
+    .notNull()
+    .references(() => achievements.id, { onDelete: "cascade" }),
+  unlocked_at: integer("unlocked_at", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
+});
+
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 

@@ -9,6 +9,9 @@ const FIFTEEN_MINUTES = 1000 * 60 * 15;
 const TEN_MINUTES = 1000 * 60 * 10;
 const XP_PER_LEVEL = 1000;
 
+// TODO: check the bug where when the app starts everyone is online
+// TODO: check the bug where when the app starts everyone is online
+// TODO: check the bug where when the app starts everyone is online
 export const getOnlineStatus = (lastCall: number): OnlineStatus => {
 	const now = Date.now();
 	if (lastCall >= now - TEN_MINUTES) return "online";

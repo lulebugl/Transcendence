@@ -35,7 +35,9 @@ const determineStatus = (
   }
 
   const pending = pendings?.find(
-    (p) => p.requesterId === playerId || p.receiverId === playerId
+    (p) =>
+      (p.requesterId === currentUserId && p.receiverId === playerId) ||
+      (p.requesterId === playerId && p.receiverId === currentUserId)
   );
 
   if (!pending) return "none";
@@ -50,8 +52,16 @@ const determineStatus = (
  */
 export function useFriendshipStatus(playerId: number) {
   const { user } = useAuth();
-  const { data: friends, isLoading: friendsLoading, refetch: refetchFriends } = useFriendsList();
-  const { data: pending, isLoading: pendingLoading, refetch: refetchPending } = usePendingFriends();
+  const {
+    data: friends,
+    isLoading: friendsLoading,
+    refetch: refetchFriends,
+  } = useFriendsList();
+  const {
+    data: pending,
+    isLoading: pendingLoading,
+    refetch: refetchPending,
+  } = usePendingFriends();
 
   const status = useMemo(
     () => determineStatus(friends, pending, playerId, user?.id),
@@ -62,12 +72,12 @@ export function useFriendshipStatus(playerId: number) {
     refetchFriends();
     refetchPending();
   }, [refetchFriends, refetchPending]);
-  
+
   return {
     status,
     isLoading: friendsLoading || pendingLoading,
     isFriend: status === "friend",
     isPending: status.startsWith("invitation"),
-	refetch,
+    refetch,
   };
 }

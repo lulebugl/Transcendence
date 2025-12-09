@@ -1,7 +1,7 @@
 // api/players.ts
 import { apiRequest } from "./api";
 import { Rank } from "@/types";
-import { ProfileData } from "@/types";
+import { AchievementMetadata } from "@/routes/profiles/achievements";
 
 interface ProfileResponse {
   userId: number;
@@ -28,17 +28,19 @@ interface LeaderboardEntryResponse {
   gamesLost: number;
   lastCall: number;
 }
-
+  
 export type LeaderboardEntry = LeaderboardEntryResponse & {
   rank: Rank;
   winRate: number;
 };
 
 // ─── Helpers ───────────────────────────────────────────
-const toEpochMs = (value: number | string | Date | null | undefined): number => {
-	if (!value) return 0;
-	const ms = new Date(value).getTime();
-	return Number.isNaN(ms) ? 0 : ms;
+const toEpochMs = (
+  value: number | string | Date | null | undefined
+): number => {
+  if (!value) return 0;
+  const ms = new Date(value).getTime();
+  return Number.isNaN(ms) ? 0 : ms;
 };
 
 const getRank = (level: number): Rank => {
@@ -56,12 +58,15 @@ const getWinrate = (won: number, lost: number): number => {
 // ─── API ───────────────────────────────────────────────
 export const playersApi = {
   getProfile: async (username: string) => {
-    const data = await apiRequest<ProfileResponse>(`/api/users/${username}/profile`, {
-      method: "GET",
-    });
+    const data = await apiRequest<ProfileResponse>(
+      `/api/users/${username}/profile`,
+      {
+        method: "GET",
+      }
+    );
     return {
       ...data,
-	  lastCall: toEpochMs(data.lastCall),
+      lastCall: toEpochMs(data.lastCall),
       rank: getRank(data.level),
       winRate: getWinrate(data.gamesWon, data.gamesLost),
     };
@@ -75,8 +80,18 @@ export const playersApi = {
     return data.map((entry) => ({
       ...entry,
       rank: getRank(entry.level),
-	  lastCall: toEpochMs(entry.lastCall),
+      lastCall: toEpochMs(entry.lastCall),
       winRate: getWinrate(entry.gamesWon, entry.gamesLost),
     }));
+  },
+  getAchievements: async () => {
+    return apiRequest<AchievementMetadata[]>(`/api/achievements`, {
+      method: "GET",
+    });
+  },
+  getPlayerAchievements: async (playerId: number) => {
+    return apiRequest<string[]>(`/api/users/${playerId}/achievements`, {
+      method: "GET",
+    });
   },
 };

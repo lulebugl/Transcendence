@@ -9,6 +9,7 @@ import { useProfileData } from "./hooks/useProfileData";
 import { useParams } from "react-router";
 import { ErrorPage } from "@/components/errors/ErrorPage";
 import { useAuth } from "@/hooks/useAuth";
+import { FriendsPanel } from "./components/FriendsPanel";
 
 export const PlayerProfile = () => {
   const { username } = useParams();
@@ -32,6 +33,7 @@ export const PlayerProfile = () => {
 
   if (isProfileLoading) return <Loading />;
 
+  console.log("profileData id", profileData.id);
   return (
     <Layout>
       <div className="max-w-5xl mx-auto py-8 md:py-20 space-y-16 lg:space-y-20">
@@ -40,7 +42,11 @@ export const PlayerProfile = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
           <div className="lg:col-span-2">
-            <AchievementsCard maxDisplay={8} showLocked={true} />
+            {isOwnProfile ? (
+              <FriendsPanel isOwnProfile={isOwnProfile} />
+            ) : (
+              <AchievementsCard playerId={profileData.id} maxDisplay={8} showLocked={true} />
+            )}
           </div>
           <div className="lg:col-span-3">
             <MatchHistory matches={MOCK_MATCHES} />

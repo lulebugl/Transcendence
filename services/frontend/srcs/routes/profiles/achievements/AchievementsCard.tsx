@@ -1,28 +1,26 @@
 import { useMemo } from "react";
 import { Lock } from "lucide-react";
-import {
-  ACHIEVEMENTS_DATA,
-  rarityColors,
-  rarityIconBg,
-  type Rarity,
-} from "./achievementsData";
+import { rarityColors, rarityIconBg, type Rarity } from "./achievements-config";
 import { SectionHeader } from "@/components/ui/SectionHeader";
+import { usePlayerAchievements } from "./useAchievements";
 
 interface AchievementsCardProps {
   maxDisplay?: number;
   showLocked?: boolean;
+  playerId: number;
 }
 
 export const AchievementsCard = ({
   maxDisplay = 5,
   showLocked = true,
+  playerId,
 }: AchievementsCardProps) => {
-  const achievements = useMemo(() => ACHIEVEMENTS_DATA, []);
+  const achievements = usePlayerAchievements(playerId);
 
   // Show unlocked achievements first, then optionally locked ones
   const displayAchievements = useMemo(() => {
-    const unlocked = achievements.filter((a) => a.unlocked);
-    const locked = achievements.filter((a) => !a.unlocked);
+    const unlocked = achievements.achievements.filter((a) => a.unlocked);
+    const locked = achievements.achievements.filter((a) => !a.unlocked);
 
     if (showLocked) {
       return [...unlocked, ...locked].slice(0, maxDisplay);
@@ -32,10 +30,19 @@ export const AchievementsCard = ({
 
   return (
     <section className="space-y-4">
-	  <SectionHeader title="Achievements" rightType="link" linkText="See all achievements" linkTo="/profile/achievements" />
+      <SectionHeader
+        title="Achievements"
+        rightType="link"
+        linkText="See all achievements"
+        linkTo="/profile/achievements"
+      />
 
       {/* Achievement List */}
-      <ul className="glass-panel rounded-xl p-2 space-y-2" role="list" aria-label="Recent achievements">
+      <ul
+        className="glass-panel rounded-xl p-2 space-y-2"
+        role="list"
+        aria-label="Recent achievements"
+      >
         {displayAchievements.map((achievement, index) => (
           <li
             key={achievement.id}
@@ -75,13 +82,15 @@ export const AchievementsCard = ({
 
             {/* Rarity Badge */}
             {/* {achievement.unlocked && ( */}
-              <span
-                className={`text-[9px] uppercase tracking-wider font-medium ${
-                  achievement.unlocked ? rarityColors[achievement.rarity as Rarity] : "text-gray-500"
-                }`}
-              >
-                {achievement.unlocked ? achievement.rarity : "Locked"}
-              </span>
+            <span
+              className={`text-[9px] uppercase tracking-wider font-medium ${
+                achievement.unlocked
+                  ? rarityColors[achievement.rarity as Rarity]
+                  : "text-gray-500"
+              }`}
+            >
+              {achievement.unlocked ? achievement.rarity : "Locked"}
+            </span>
             {/* )} */}
           </li>
         ))}

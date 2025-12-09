@@ -47,7 +47,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const refreshUser = useCallback(async () => {
-    console.log("Refetching user");
     try {
       const res = await api("/api/users/me");
       if (res.ok) {

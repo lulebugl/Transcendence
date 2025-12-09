@@ -5,6 +5,7 @@ import authRoutes from "./auth";
 import matchMakingRoutes from "./matchMaking";
 import playersRoutes from "./players";
 import twoFactorRoutes from "./users/2fa";
+import achievementsRoutes from "./achievements/achievements";
 
 //types
 import { FastifyInstance } from "fastify";
@@ -19,4 +20,5 @@ export default async function routes(fastify: FastifyInstance) {
 	fastify.register(matchMakingRoutes);
 	fastify.register(playersRoutes);
 	fastify.register(twoFactorRoutes);
+	fastify.register(achievementsRoutes);
 }

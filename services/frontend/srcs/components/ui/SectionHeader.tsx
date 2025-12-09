@@ -1,8 +1,10 @@
 import { Link } from "react-router";
 import { ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 type SectionHeaderProps = {
   title: string;
+  linkClassName?: string;
 } & (
   | { rightType?: "none" }
   | { rightType: "info"; info: string }
@@ -10,7 +12,7 @@ type SectionHeaderProps = {
 );
 
 export const SectionHeader = (props: SectionHeaderProps) => {
-  const { title } = props;
+  const { title, linkClassName } = props;
 
   return (
     <div className="flex items-center justify-between">
@@ -27,7 +29,7 @@ export const SectionHeader = (props: SectionHeaderProps) => {
       {props.rightType === "link" && (
         <Link
           to={props.linkTo}
-          className="text-[10px] text-primary hover:underline transition-all hover:tracking-wider flex items-center gap-1"
+          className={cn("text-[10px] text-primary hover:underline transition-all hover:tracking-wider flex items-center gap-1", linkClassName)}
           aria-label={`${props.linkText}`}
         >
           {props.linkText}

@@ -7,7 +7,14 @@ import {
   useFriendsList,
   usePendingFriends,
 } from "@/routes/profiles/hooks/useFriends";
-import { UserPlus, UserMinus, UserCheck, Clock, Loader2 } from "lucide-react";
+import {
+  UserPlus,
+  UserMinus,
+  UserCheck,
+  Clock,
+  Loader2,
+  X,
+} from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -22,20 +29,30 @@ export const FriendButton = ({
   playerName,
   className,
 }: FriendshipButtonProps) => {
-  const { status, isLoading: statusLoading, refetch } = useFriendshipStatus(playerId);
+  const {
+    status,
+    isLoading: statusLoading,
+    refetch,
+  } = useFriendshipStatus(playerId);
 
   const { mutate: addFriend, isLoading: isAdding } = useAddFriend({
-    onSuccess: () => { refetch(); },
+    onSuccess: () => {
+      refetch();
+    },
     onError: (error) => toast.error(error.message || "Failed to send request"),
   });
 
   const { mutate: removeFriend, isLoading: isRemoving } = useRemoveFriend({
-    onSuccess: () => { refetch(); },
+    onSuccess: () => {
+      refetch();
+    },
     onError: (error) => toast.error(error.message || "Failed to remove friend"),
   });
 
   const { mutate: acceptFriend, isLoading: isAccepting } = useAcceptFriend({
-    onSuccess: () => { refetch(); },
+    onSuccess: () => {
+      refetch();
+    },
     onError: (error) =>
       toast.error(error.message || "Failed to accept request"),
   });
@@ -55,7 +72,10 @@ export const FriendButton = ({
     return (
       <Button
         variant="cyber"
-		className={cn(className, "bg-black/50 text-white hover:bg-black/60 hover:shadow-none before:bg-transparent hover:before:bg-transparent")}
+        className={cn(
+          className,
+          "bg-black/50 text-white hover:bg-black/60 hover:shadow-none before:bg-transparent hover:before:bg-transparent"
+        )}
         onClick={() => removeFriend(playerId)}
         disabled={isActionLoading}
         aria-label={`Remove ${playerName} from friends`}
@@ -100,32 +120,49 @@ export const FriendButton = ({
     );
   }
 
-  if (status === "invitation-received") {
-    return (
-      <Button
-        variant="cyber"
-        className={className}
-        // onClick={() => acceptFriend(playerId)}
-        disabled={isActionLoading}
-        aria-label={`Accept friend request from ${playerName}`}
-      >
-        <UserCheck className="w-4 h-4" />
-        <span className="text-xs uppercase tracking-widest">Accept</span>
-      </Button>
-    );
-  }
+  //   if (status === "invitation-received") {
+  //     return (
+  //       <Button
+  //         variant="cyber"
+  //         className={className}
+  //         // onClick={() => acceptFriend(playerId)}
+  //         disabled={isActionLoading}
+  //         aria-label={`Accept friend request from ${playerName}`}
+  //       >
+  //         <UserCheck className="w-4 h-4" />
+  //         <span className="text-xs uppercase tracking-widest">Accept</span>
+  //       </Button>
+  //     );
+  //   }
 
   if (status === "invitation-sent") {
     return (
-      <Button
-        variant="cyber"
-        className={cn(className, "bg-muted text-muted-foreground brightness-125 font-medium")}
-        disabled
-        aria-label="Friend request pending"
-      >
-        <Clock className="w-4 h-4" />
-        <span className="text-xs uppercase tracking-widest">Invitation Sent</span>
-      </Button>
+      <div className="flex">
+        <Button
+          variant="cyber"
+          className={cn(
+            className,
+            "bg-muted text-muted-foreground brightness-125 font-medium"
+          )}
+          disabled
+          aria-label="Friend request pending"
+        >
+          <Clock className="w-4 h-4" />
+          <span className="text-xs uppercase tracking-widest">
+            Invitation Sent
+          </span>
+        </Button>
+        <Button
+          variant="ghost"
+          onClick={() => removeFriend(playerId)}
+          disabled={isActionLoading}
+          aria-label={`Cancel friend request to ${playerName}`}
+		  className="-ml-1 hover:scale-110 transition-all duration-300 hover:bg-transparent"
+        >
+          <X className="w-4 h-4" />
+          {/* <span className="text-xs uppercase tracking-widest">Cancel</span> */}
+        </Button>
+      </div>
     );
   }
 
@@ -135,7 +172,8 @@ export const FriendButton = ({
       variant="cyber"
       className={className}
       onClick={() => addFriend(playerId)}
-      disabled={isActionLoading}
+      loading={statusLoading}
+      disabled={isActionLoading || statusLoading}
       aria-label={`Send friend request to ${playerName}`}
     >
       {isAdding ? (
@@ -146,4 +184,4 @@ export const FriendButton = ({
       <span className="text-xs uppercase tracking-widest">Add Friend</span>
     </Button>
   );
-}
+};

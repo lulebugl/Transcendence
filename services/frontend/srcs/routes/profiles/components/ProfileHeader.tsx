@@ -15,7 +15,6 @@ export const ProfileHeader = ({
   isOwnProfile = false,
   isLoggedIn = false,
 }: ProfileHeaderProps) => {
-  console.log(player.onlineStatus);
   return (
     <section className="relative">
       <div className="absolute -top-32 left-1/4 w-96 h-96 bg-primary/8 rounded-full blur-3xl pointer-events-none" />
@@ -33,7 +32,7 @@ export const ProfileHeader = ({
           <div className="flex-1 text-center lg:text-left space-y-6 pb-2">
             {/* actions buttons: only friends for now */}
             {!isOwnProfile && isLoggedIn && (
-              <FriendButton playerId={3} playerName={"John Doe"} />
+              <FriendButton playerId={player.id} playerName={player.username} />
             )}
 
             {/* profile name, rank, xp progress */}

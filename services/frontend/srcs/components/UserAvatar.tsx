@@ -15,7 +15,6 @@ export const UserAvatar = ({ username, avatarUrl, className, status }: UserAvata
   const showImage = avatarUrl && !hasImageError;
   const currentStatus = STATUS_STYLE_CONFIG[status];
 
-  console.log(status);
   return (
     <div className="relative group cursor-pointer">
       {showImage ? (

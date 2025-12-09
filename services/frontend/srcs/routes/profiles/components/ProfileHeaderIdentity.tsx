@@ -32,7 +32,7 @@ export const ProfileHeaderIdentity = ({
         <UserAvatar
           username={username}
           avatarUrl={avatarUrl}
-          className="w-36 h-36 lg:w-44 lg:h-44 rounded-full object-cover border-2 border-white/10 transition-all duration-500 group-hover:border-primary/50 group-hover:scale-[1.02]"
+          className="w-36 h-36 lg:w-44 lg:h-44 rounded-full object-cover border-2 border-white/10 transition-all duration-500 group-hover:border-primary/50 cursor-none"
         />
 
         {/* Level badge - positioned on avatar */}

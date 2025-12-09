@@ -10,6 +10,7 @@ import { playersApi } from "@/api/players";
 import { UserAvatar } from "@/components/UserAvatar";
 import { LeaderboardEntry } from "@/api/players";
 import { getOnlineStatus } from "../profiles/hooks/useProfileData";
+import { SystemIndicator } from "@/components/ui/SystemIndicator";
 
 // maybe add a button to refresh the leaderboard
 export const Leaderboard = () => {
@@ -21,12 +22,14 @@ export const Leaderboard = () => {
 
   return (
     <Layout>
-      <div className="container mx-auto max-w-3xl px-6 py-12 md:py-20 animate-fade-in">
-        <div className="space-y-6 w-full">
-          <SectionHeader title="Leaderboard" />
+      <div className="max-w-5xl mx-auto px-6 py-12 md:py-20 space-y-16 animate-fade-in">
+        <LeaderboardHeader />
+
+        <div className="space-y-6 w-full max-w-4xl mx-auto">
+          <SectionHeader title="Top Players" />
 
           {isLoading && (
-            <div className="glass-panel rounded-xl p-8 text-center text-muted-foreground">
+            <div className="glass-panel rounded-xl p-8 text-center text-muted-foreground animate-pulse">
               Loading leaderboard...
             </div>
           )}
@@ -38,22 +41,27 @@ export const Leaderboard = () => {
           )}
 
           {players && (
-            <div className="glass-panel rounded-xl overflow-hidden">
-              <div className="grid grid-cols-[2.5rem_1fr_5rem_5rem_4rem] md:grid-cols-[3rem_1fr_7rem_4rem_5rem] gap-4 px-5 py-4 border-b border-white/5 text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
+            <div 
+              className="glass-panel rounded-xl overflow-hidden animate-fade-in-up" 
+              style={{ animationDelay: "0.2s" }}
+            >
+              <div className="grid grid-cols-[2.5rem_1fr_4rem_5rem_5rem] md:grid-cols-[3rem_1fr_5rem_7rem_6rem] gap-4 px-5 py-4 border-b border-white/5 text-[10px] uppercase tracking-[0.15em] text-muted-foreground bg-white/2">
                 <span className="text-center">#</span>
                 <span>Player</span>
-                <span className="text-center">Rank</span>
-                <span className="text-right">Winrate</span>
                 <span className="text-center">Level</span>
+                <span className="text-center">Rank</span>
+                <span className="text-center">Winrate</span>
               </div>
 
-              {players.map((player, index) => (
-                <LeaderboardRow
-                  key={player.userId}
-                  player={player}
-                  position={index + 1}
-                />
-              ))}
+              <div className="divide-y divide-white/5">
+                {players.map((player, index) => (
+                  <LeaderboardRow
+                    key={`${player.userId}-${index}`}
+                    player={player}
+                    position={index + 1}
+                  />
+                ))}
+              </div>
             </div>
           )}
         </div>
@@ -62,6 +70,28 @@ export const Leaderboard = () => {
   );
 };
 
+const LeaderboardHeader = () => (
+  <section className="relative flex flex-col items-center text-center space-y-6">
+    <div className="relative z-10 flex flex-col items-center space-y-4">
+      <SystemIndicator text="Ranking // Global" />
+
+      <h1
+        className="text-5xl md:text-6xl font-bold tracking-tighter pt-2 bg-linear-to-b from-white to-white/40 bg-clip-text text-transparent pb-2 animate-fade-in-up"
+        style={{ animationDelay: "0.2s" }}
+      >
+        Leaderboard
+      </h1>
+
+      <p
+        className="text-muted-foreground max-w-md leading-relaxed font-light animate-fade-in-up"
+        style={{ animationDelay: "0.3s" }}
+      >
+        See who dominates the arena and compete for the top spot.
+      </p>
+    </div>
+  </section>
+);
+
 interface LeaderboardRowProps {
   player: LeaderboardEntry;
   position: number;
@@ -69,14 +99,15 @@ interface LeaderboardRowProps {
 
 const LeaderboardRow = ({ player, position }: LeaderboardRowProps) => {
   const { user } = useAuth();
-  const isCurrentUser = user?.id === player.userId;
+  const isCurrentUser = user && user.id === player.userId;
   const winrate = player.winRate?.toFixed(1) ?? undefined;
 
   return (
     <div
-      className="grid grid-cols-[2.5rem_1fr_5rem_5rem_4rem] md:grid-cols-[3rem_1fr_7rem_4rem_5rem] gap-4 items-center px-5 py-4 border-b border-white/5 last:border-b-0 hover:bg-white/2 transition-colors group cursor-pointer animate-fade-in-up"
+      className="grid grid-cols-[2.5rem_1fr_4rem_5rem_5rem] md:grid-cols-[3rem_1fr_5rem_7rem_6rem] gap-4 items-center px-5 py-4 hover:bg-white/2 transition-colors group cursor-pointer"
       tabIndex={0}
       role="row"
+	  key={player.userId}
       aria-label={`Position ${position}: ${player.username}`}
     >
       <span className="text-center text-sm font-mono text-muted-foreground">
@@ -99,6 +130,9 @@ const LeaderboardRow = ({ player, position }: LeaderboardRowProps) => {
         {isCurrentUser && <DottedBadge color="primary">You</DottedBadge>}
       </Link>
 
+      <span className="text-center text-sm font-mono text-muted-foreground">
+        {player.level ?? "-"}
+      </span>
       <span
         className={cn(
           "text-center text-sm font-mono",
@@ -112,9 +146,6 @@ const LeaderboardRow = ({ player, position }: LeaderboardRowProps) => {
         {winrate ? `${winrate}%` : "-"}
       </span>
 
-      <span className="text-center text-sm font-mono text-muted-foreground">
-        {player.level ?? "-"}
-      </span>
     </div>
   );
 };
