@@ -23,6 +23,7 @@ import {
   PADDLE_START_STEP,
   PADDLE_MIN_STEP,
   PADDLE_MAX_STEP,
+  LIMIT_POINT,
   BALL_MIN_SPEED
 } from './ConstVarGameLogic';
 
@@ -72,7 +73,7 @@ export class Game {
   private speedMemory: number = 0;
 
   // 🔹 value of sensitivity, to take from setting's player, here is jsut to test
-  private paddleSensitivityPlayer1: number = 0.1;
+  private paddleSensitivityPlayer1: number = 0.9;
   private paddleSensitivityPlayer2: number = 0.9;
 
   constructor(id, player1, player2) {
@@ -108,7 +109,7 @@ export class Game {
 
         if (countdown < 0) {
           clearInterval(interval);
-          this.loop = setInterval(() => this.update(), 16);
+          this.loop = setInterval(() => this.update(), 44);
         } else {
 
           this.broadcast({ type: 'timer', count: countdown });
@@ -212,7 +213,10 @@ export class Game {
       this.freezeBallAndReset();
     }
 
-    // Pause Logic
+    // Pause Logithi
+    if (this.state.paddleLeft.point === LIMIT_POINT || this.state.paddleRight.point === LIMIT_POINT) {
+      return this.broadcast({ type: 'gameOver', winner: this.state.paddleLeft.point === LIMIT_POINT ? 2 : 1 });
+    }
     if (this.PauseFlag) {
       console.log("PAUSE");
       this.state.break = true;
@@ -258,7 +262,7 @@ export class Game {
     this.state.ball.position.x = START_BALL_X;
     this.state.ball.position.z = START_BALL_Z;
     this.state.ball.speed = BALL_START_SPEED;
-    this.state.ball.angle = 3 * Math.PI / 2; // Random direction
+    this.state.ball.angle = (Math.random() < 0.5 ? Math.PI / 2 : 3 * Math.PI / 2) + (Math.random() - 0.5) * Math.PI / 2;
   }
 
   broadcast(data) {

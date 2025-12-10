@@ -56,6 +56,13 @@ type TimerMessage = {
     type: "timer";
     count: number;
 };
+type GameOverMessage = {
+    type: "gameOver";
+    winner: number;
+};
+
+const isGameOver = (message: BackendMessage): message is GameOverMessage =>
+    message?.type === "gameOver";
 
 const isTimerMessage = (message: BackendMessage): message is TimerMessage =>
     message?.type === "timer";
@@ -166,6 +173,7 @@ export const TestPongDev = () => {
             else {
                 message = "paddelRight";
             }
+            setInterval
             cleanupGame();
             sendMessage({ type: "leave", text: message }, websocketRef.current);
             window.removeEventListener("keydown", handleKeyDown);
@@ -201,10 +209,24 @@ export const TestPongDev = () => {
                         timerBlock.isVisible = false;
                     }
                 }
+                else if (isGameOver(msg)) {
+                    if (Number(msg.winner) === paddlePlayerRef.current) {
+                        timerBlock.text = "You Win!";
+                    }
+                    else {
+                        timerBlock.text = "You Lose!";
+                    }
+                    timerBlock.isVisible = true;
+                    setTimeout(() => {
+                        cleanupGame();
+                        window.removeEventListener("keydown", handleKeyDown);
+                        window.removeEventListener("resize", handleResize);
+                        window.location.href = "/";
+                    }, 5000);
+                }
                 backendMessageRef.current = msg;
                 console.log(msg);
             });
-            //            setIsLoading(false);
         }
 
 
