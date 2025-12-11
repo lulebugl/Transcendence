@@ -8,7 +8,8 @@
     // "strict": true, it should be true but.. for now let's keep it that way
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+	"typeRoots": ["./src/types", "./node_modules/@types"]
   },
   "include": ["srcs"]
 }

@@ -11,6 +11,8 @@ import type { FastifyCookieOptions } from '@fastify/cookie';
 import { startWebSocketServer } from './pong/miniBackendPong';
 import rateLimit from "@fastify/rate-limit";
 import { envToLogger, prettifyLogger } from './utils/logger-config';
+import fastifyStatic from "@fastify/static";
+import path from "path";
 
 const app = Fastify({ logger: envToLogger[process.env.NODE_ENV as keyof typeof envToLogger] });
 
@@ -33,6 +35,15 @@ app.register(cookie, {
 	secret: process.env.COOKIE_SIGN,
 	hook: "onRequest",
 } as FastifyCookieOptions)
+app.register(require("@fastify/multipart"), {
+	limits: {
+		fileSize: 1024 * 1024 * 5,
+	},
+})
+app.register(fastifyStatic, {
+	root: path.join(__dirname, "public"),
+	prefix: "/public/"
+})
 
 if (process.env.NODE_ENV !== "development") {
 	// maybe 20 is too little, not sure

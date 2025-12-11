@@ -1,5 +1,6 @@
 # Drizzle meta files 
 drizzle/meta/
+srcs/public/*
 
 # SQL shouldn't be ignored but too annoying rn
 *.sql
