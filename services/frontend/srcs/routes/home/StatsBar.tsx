@@ -1,5 +1,4 @@
-import { ProfileData, User } from "@/types";
-import { cn } from "@/lib/utils";
+import { ProfileData, BaseUserType as User } from "@/types";
 
 interface StatsBarProps {
   user: User;

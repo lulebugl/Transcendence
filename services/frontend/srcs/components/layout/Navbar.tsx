@@ -147,7 +147,7 @@ const UserSection = () => {
         <UserAvatar
           username={user.username}
           avatarUrl={user.avatar_url}
-          className="grayscale-25 group-hover:grayscale-0"
+          className="w-8 h-8 grayscale-25 group-hover:grayscale-0"
         />
       </Link>
 
@@ -197,9 +197,6 @@ const GuestSection = () => (
       </span>
     </div>
     <div className="flex items-center gap-3">
-      <div className="hidden md:flex w-10 h-10 rounded-full border border-dashed border-white/15 items-center justify-center text-[10px] uppercase tracking-widest text-muted-foreground">
-        AI
-      </div>
       <Link
         to="/auth/login"
         className="hidden md:flex text-[10px] uppercase tracking-widest px-4 py-2 border border-white/10 rounded-full hover:bg-white/10 transition-all duration-300 items-center gap-2"

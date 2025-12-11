@@ -2,6 +2,11 @@ import { apiRequest } from "./api";
 import { BaseUserType } from "@/types/users";
 import { OtpSetupData } from "./types";
 
+interface UploadAvatarResponse {
+  success: boolean;
+  avatarUrl: string;
+}
+
 export const userApi = {
   updateProfile: async (data: Partial<BaseUserType>): Promise<BaseUserType> => {
     return apiRequest<BaseUserType>("/api/users/update", {
@@ -38,6 +43,12 @@ export const userApi = {
     return apiRequest<void>("/api/users/2fa/disable", {
       method: "POST",
       body: JSON.stringify(data),
+    });
+  },
+  uploadAvatar: async (data: FormData) => {
+    return apiRequest<UploadAvatarResponse>("/api/users/avatar", {
+      method: "POST",
+      body: data,
     });
   },
 };

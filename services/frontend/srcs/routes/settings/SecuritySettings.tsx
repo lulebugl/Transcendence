@@ -1,5 +1,4 @@
 import { Lock } from "lucide-react";
-import { User } from "@/types/user";
 import { useState } from "react";
 import { ChangePassword } from "./ChangePassword";
 import { Button } from "@/components/ui";
@@ -8,7 +7,8 @@ import { SettingsSection } from "@/components/ui/SettingsSection";
 import { OtpSettings } from "./otp";
 import { DeleteAccount } from "./DeleteAccount";
 
-export const SecuritySettings = ({ user }: { user: User }) => {
+export const SecuritySettings = () => {
+  const { user } = useAuth();
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const { refreshUser } = useAuth();
 
@@ -27,8 +27,9 @@ export const SecuritySettings = ({ user }: { user: User }) => {
             {!isChangingPassword ? (
               <Button
                 variant="outline"
+				size="sm"
                 onClick={() => setIsChangingPassword(true)}
-                className="min-w-48 h-10"
+                className="text-black hover:text-black min-w-48 h-9 bg-secondary-foreground hover:bg-secondary-foreground hover:brightness-110"
               >
                 Change Password
               </Button>

@@ -27,13 +27,15 @@ type AchievementChecker = (
   gameData?: GameData
 ) => Promise<boolean>;
 
-/* those are the achievements available in the database
+/*
+ * those are the achievements available in the database
  * for new achievements, add the checker here
  * and seed or add to the db the new achievement
  */
 const ACHIEVEMENT_CHECKERS: Record<string, AchievementChecker> = {
   first_blood: async (stats) => stats.games_won >= 1,
-  hot_streak: async (stats) => stats.current_win_streak >= 5 || stats.best_win_streak >= 5,
+  hot_streak: async (stats) =>
+    stats.current_win_streak >= 5 || stats.best_win_streak >= 5,
   centurion: async (stats) => stats.games_played >= 100,
   tournament_victor: async (stats) => stats.tournaments_won >= 1,
   grinder: async (stats) => stats.level >= 30,
@@ -76,8 +78,6 @@ async function unlockAchievement(
     achievement_id: achievementId,
   });
 }
-
-
 
 /**
  * Main function - checks ALL achievements and unlocks them if they are earned

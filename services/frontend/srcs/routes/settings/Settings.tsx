@@ -43,8 +43,8 @@ export const Settings = () => {
         {/* Main Content */}
         <div className="flex-1 min-w-0 mt-12">
           <div className="bg-card border border-border rounded-xl p-6 md:p-8 animate-fade-in-up space-y-8">
-            {activeTab === "profile" && <ProfileSettings user={user} />}
-            {activeTab === "security" && <SecuritySettings user={user} />}
+            {activeTab === "profile" && <ProfileSettings />}
+            {activeTab === "security" && <SecuritySettings />}
           </div>
         </div>
       </div>

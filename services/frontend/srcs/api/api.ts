@@ -95,8 +95,14 @@ export async function api(
     });
   }
 
-  if (options.body || !options.method || options.method === "GET") {
-    headers["Content-Type"] = "application/json";
+  if (options.body && !(options.body instanceof FormData)) {
+    if (
+      !options.method ||
+      options.method === "GET" ||
+      typeof options.body === "string"
+    ) {
+      headers["Content-Type"] = "application/json";
+    }
   }
 
   let response: Response = await fetch(path, {

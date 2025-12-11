@@ -2,6 +2,8 @@ import { UserAvatar } from "@/components/UserAvatar";
 import { Zap } from "lucide-react";
 import { OnlineStatus } from "@/types";
 import { STATUS_STYLE_CONFIG } from "@/lib/constants/colors";
+import { useAuth } from "@/hooks/useAuth";
+import { useState } from "react";
 
 interface ProfileHeaderIdentityProps {
   username: string;
@@ -16,10 +18,17 @@ export const ProfileHeaderIdentity = ({
   level,
   status,
 }: ProfileHeaderIdentityProps) => {
+ const [currentAvatarUrl, setCurrentAvatarUrl] = useState<string>(avatarUrl);
   const currentStatus = STATUS_STYLE_CONFIG[status];
+  const { user, refreshUser } = useAuth();
   if (!currentStatus) {
     throw new Error(`Invalid status: ${status}`);
   }
+
+  const onAvatarUploaded = (newAvatarUrl: string) => {
+    setCurrentAvatarUrl(newAvatarUrl);
+	refreshUser();
+  };
 
   return (
     <div className="relative shrink-0">
@@ -31,8 +40,10 @@ export const ProfileHeaderIdentity = ({
       <div className="relative group cursor-pointer">
         <UserAvatar
           username={username}
-          avatarUrl={avatarUrl}
-          className="w-36 h-36 lg:w-44 lg:h-44 rounded-full object-cover border-2 border-white/10 transition-all duration-500 group-hover:border-primary/50 cursor-none"
+          avatarUrl={currentAvatarUrl}
+          className="w-36 h-36 lg:w-44 lg:h-44 rounded-full object-cover border-2 border-white/10 transition-all duration-500 group-hover:border-primary/50 cursor-auto"
+          canUpload={user?.username === username}
+		  onAvatarUploaded={onAvatarUploaded}
         />
 
         {/* Level badge - positioned on avatar */}

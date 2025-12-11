@@ -297,7 +297,6 @@ const RequestsList = ({
               </div>
               <div className="flex items-center gap-1">
                 <Button
-                  size="icon"
                   variant="ghost"
                   className="h-8 w-8 text-emerald-400 hover:text-emerald-300 hover:bg-emerald-400/10"
                   onClick={() => onAccept(req.requesterId)}
