@@ -12,6 +12,8 @@ import {
 import { fields } from "./schema";
 import { hashPassword, verifyPassword } from "../utils/hash";
 import { date } from "drizzle-orm/mysql-core";
+import fs from "fs";
+import path from "path";
 
 dotenv.config();
 
@@ -222,6 +224,60 @@ export default async function userRoutes(fastify: FastifyInstance) {
 			const userId = req.user.id;
 			await db.update(users).set({ last_call: new Date() }).where(eq(users.id, userId));
 			return reply.status(200).send({ success: true });
+		}
+	);
+
+	fastify.post( "/api/users/avatar",
+		{ preHandler: fastify.auth },
+		async (req: FastifyRequest, rep: FastifyReply) => {
+			const data = await req.file();
+
+			if (!data) return rep.badRequest("No file uploaded");
+
+			if (!["image/png", "image/jpeg", "image/jpg"].includes(data.mimetype))
+      			return rep.status(400).send({ error: "Invalid file type" });
+
+			const [user] = await db
+				.select({ avatar_url: users.avatar_url })
+				.from(users)
+				.where(eq(users.id, req.user.id));
+			
+			if (user?.avatar_url) {
+				const oldAvatarPath = path.join(
+					__dirname,
+					"..",
+					"public",
+					user.avatar_url.replace("/public/", "")
+				);
+
+				if (fs.existsSync(oldAvatarPath)) {
+					try {
+						fs.unlinkSync(oldAvatarPath);
+					} catch (err) {
+						req.log.warn(`Failed to delete old avatar: ${err}`);
+					}
+				}
+			}
+
+			const filename = `${req.user.id}_${Date.now()}_${data.filename}`;
+			const savePath = path.join(__dirname, "..", "public", "avatars", filename);
+
+			fs.mkdirSync(path.dirname(savePath), { recursive: true });
+
+			const writeStream = fs.createWriteStream(savePath);		
+			await data.file.pipe(writeStream);
+
+			await new Promise<void>((resolve, reject) => {
+				writeStream.on("finish", () => resolve());
+				writeStream.on("error", reject);
+			});
+
+			await db
+				.update(users)
+				.set({ avatar_url: `/public/avatars/${filename}` })
+				.where(eq(users.id, req.user.id));
+
+			return { success: true, avatarUrl: `/public/avatars/${filename}` };
 		}
 	);
 }
