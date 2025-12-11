@@ -7,13 +7,13 @@ import {
 } from "../../db/schema";
 import { eq, and, count, gt } from "drizzle-orm";
 
+// example of its use in seed.ts
 // After game completion
 // const unlocked = await checkAchievements(userId, {
 // 	score: playerScore,
 // 	opponentScore: opponentScore,
 // 	durationSeconds: gameDuration,
 //   });
-// then what?
 
 interface GameData {
   // will probably be the matchMakingData
@@ -28,7 +28,7 @@ type AchievementChecker = (
 ) => Promise<boolean>;
 
 /* those are the achievements available in the database
- * if you want to add a new achievement, you will need to add the checker here
+ * for new achievements, add the checker here
  * and seed or add to the db the new achievement
  */
 const ACHIEVEMENT_CHECKERS: Record<string, AchievementChecker> = {
@@ -77,7 +77,15 @@ async function unlockAchievement(
   });
 }
 
-// Main function - checks ALL achievements and unlocks them if they are earned
+
+
+/**
+ * Main function - checks ALL achievements and unlocks them if they are earned
+ * @param userId - The ID of the user to check achievements for
+ * @param gameData - Optional game data to pass to the achievement checkers
+ * @returns An array of achievement IDs that were unlocked
+ */
+
 export async function checkAchievements(
   userId: number,
   gameData?: { score: number; opponentScore: number; durationSeconds?: number }

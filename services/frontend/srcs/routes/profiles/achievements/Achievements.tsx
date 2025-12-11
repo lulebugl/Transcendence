@@ -16,9 +16,7 @@ import { Loading } from "@/components/Loading";
 
 export const Achievements = () => {
   const { username } = useParams();
-  console.log("username in achievements", username);
   const { profileData, isLoading, error } = useProfileData(username);
-  console.log("profileData in achievements", profileData);
 
   if (isLoading) return <Loading />;
 

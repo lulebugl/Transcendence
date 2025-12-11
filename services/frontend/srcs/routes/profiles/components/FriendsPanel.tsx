@@ -16,16 +16,16 @@ import { getOnlineStatus } from "../hooks/useProfileData";
 import { Friends, PendingFriendship } from "@/api/friends";
 import { cn } from "@/lib/utils";
 
-interface FriendsPanelProps {
-  isOwnProfile: boolean;
-}
-
 type ViewMode = "friends" | "requests";
 
-export const FriendsPanel = ({ isOwnProfile }: FriendsPanelProps) => {
+// need a major refactor 
+// need a major refactor 
+// need a major refactor 
+// need a major refactor 
+export const FriendsPanel = ({ isOwnProfile }: { isOwnProfile: boolean }) => {
   const { user } = useAuth();
   const [viewMode, setViewMode] = useState<ViewMode>("friends");
-
+  
   const {
     data: friends,
     isLoading: isFriendsLoading,
