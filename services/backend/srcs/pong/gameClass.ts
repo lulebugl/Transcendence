@@ -24,6 +24,7 @@ import {
   PADDLE_MIN_STEP,
   PADDLE_MAX_STEP,
   LIMIT_POINT,
+  TIMER_PAUSE,
   BALL_MIN_SPEED
 } from './ConstVarGameLogic';
 
@@ -60,13 +61,14 @@ function InfoInGame(
 }
 
 export class Game {
-  private id: any;
-  private players: any;
+  private id: string;
+  private players: WebSocket[];
   private state: any;
   private loop: any;
   private ballFrozen: boolean = false;
   private sceneIsReadyLeft: boolean = false;
   private sceneIsReadyRight: boolean = false;
+  private breakTimeStart: number = 0;
 
   // Pause logic properties
   private PauseFlag: boolean = false;
@@ -76,7 +78,7 @@ export class Game {
   private paddleSensitivityPlayer1: number = 0.9;
   private paddleSensitivityPlayer2: number = 0.9;
 
-  constructor(id, player1, player2) {
+  constructor(id: string, player1: WebSocket, player2: WebSocket) {
     this.id = id;
     this.players = [player1, player2];
     this.state = InfoInGame(id);
@@ -215,14 +217,21 @@ export class Game {
 
     // Pause Logithi
     if (this.state.paddleLeft.point === LIMIT_POINT || this.state.paddleRight.point === LIMIT_POINT) {
-      return this.broadcast({ type: 'gameOver', winner: this.state.paddleLeft.point === LIMIT_POINT ? 2 : 1 });
+      return this.broadcast({ type: 'gameOver', winner: this.state.paddleLeft.point === LIMIT_POINT ? 1 : 2 });
     }
     if (this.PauseFlag) {
       console.log("PAUSE");
       this.state.break = true;
+      let breakTime = Date.now() - this.breakTimeStart;
       if (this.state.ball.speed !== 0) {
         this.speedMemory = this.state.ball.speed;
         this.state.ball.speed = 0;
+      }
+      // verifico da quanto tempo é disconesso se è piu di TIMER_PAUSE disconetto tutti
+      if (this.state.break && breakTime > TIMER_PAUSE) {
+        this.broadcast({ type: 'gameOver', winner: 0 });
+        this.state.break = false;
+        this.stop();
       }
 
       if (this.areAllPlayersConnected()) {
@@ -319,14 +328,15 @@ export class Game {
   }
 
   // Preserved Pause Methods
-  areAllPlayersConnected(): boolean {
+  private areAllPlayersConnected(): boolean {
     return this.players.every(p => p && p.readyState === WebSocket.OPEN);
   }
 
-  setPauseFlags(flag: boolean) {
+  public setPauseFlags(flag: boolean) {
     this.PauseFlag = flag;
     this.state.break = flag;
     this.broadcast({ type: 'update', state: this.state });
+    this.breakTimeStart = Date.now();
   }
 
   updatePlayerSocket(playerIndex: number, newSocket: WebSocket) {
@@ -341,10 +351,12 @@ export class Game {
     });
   }
 
-  sendToClient(message: any, playerIndex: number) {
+  public sendToClient(message: any, playerIndex: number) {
     if (this.players[playerIndex]) {
       this.players[playerIndex].send(JSON.stringify(message));
     }
   }
-
+  public disconnectPlayer() {
+    this.broadcast({ type: 'gameOver', winner: 0 });
+  }
 }

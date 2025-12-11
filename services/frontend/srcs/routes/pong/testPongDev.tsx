@@ -136,12 +136,14 @@ export const TestPongDev = () => {
         const pintTextRight = addText(barPointRight, "white", 35);
         const pintTextLeft = addText(barPointLeft, "white", 35);
         const exit = createExitGame();
+        const drawText = createTimerBlock();
         // const start = createStartGame(); // Removed manual start
         const timerBlock = createTimerBlock();
         uiGame.addControl(barPointRight);
         uiGame.addControl(barPointLeft);
         uiGame.addControl(exit);
         uiGame.addControl(timerBlock);
+        uiGame.addControl(drawText);
         // uiGame.addControl(start);
         const handleKeyDown = (event: KeyboardEvent) => {
             if (
@@ -210,13 +212,22 @@ export const TestPongDev = () => {
                     }
                 }
                 else if (isGameOver(msg)) {
+                    if (websocketRef.current && websocketRef.current.readyState === WebSocket.OPEN) {
+                        websocketRef.current.close();
+                    }
                     if (Number(msg.winner) === paddlePlayerRef.current) {
                         timerBlock.text = "You Win!";
+                        timerBlock.isVisible = true;
+                    }
+                    else if (Number(msg.winner) === 0) {
+                        timerBlock.isVisible = false;
+                        drawText.text = "Draw!";
+                        drawText.isVisible = true;
                     }
                     else {
                         timerBlock.text = "You Lose!";
+                        timerBlock.isVisible = true;
                     }
-                    timerBlock.isVisible = true;
                     setTimeout(() => {
                         cleanupGame();
                         window.removeEventListener("keydown", handleKeyDown);
