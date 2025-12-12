@@ -166,7 +166,7 @@ const UserSection = () => {
           aria-label="Settings"
           className="p-2 border border-white/10 rounded-full hover:bg-white/10 transition-all duration-300 flex items-center justify-center group"
         >
-          <Settings className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+          <Settings className="w-4 h-4 text-secondary-foreground group-hover:text-primary transition-colors" />
         </Link>
         <button
           onClick={logout}

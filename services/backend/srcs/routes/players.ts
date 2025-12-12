@@ -34,6 +34,20 @@ const leaderboardQuerySchema: FastifySchema = {
 };
 
 // ─── Helpers ───────────────────────────────────────────
+export async function initPlayerStats(userId: number) {
+  await db
+    .insert(userStats)
+    .values({
+      user_id: userId,
+      level: 1,
+      xp: 0,
+      games_won: 0,
+      games_lost: 0,
+      best_win_streak: 0,
+    })
+    .returning();
+}
+
 async function fetchPlayerProfile(username: string) {
   const [row] = await db
     .select({
@@ -88,7 +102,7 @@ export default async function playersRoutes(fastify: FastifyInstance) {
           user_id: users.id,
           username: users.username,
           avatarUrl: users.avatar_url,
-		  lastCall: users.last_call,
+          lastCall: users.last_call,
           level: userStats.level,
           xp: userStats.xp,
           gamesWon: userStats.games_won,
