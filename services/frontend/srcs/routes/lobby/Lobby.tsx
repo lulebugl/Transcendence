@@ -38,7 +38,7 @@ export const Lobby = () => {
 
   return (
     <Layout>
-      <div className="max-w-5xl mx-auto px-6 py-12 md:py-20 space-y-16 animate-fade-in">
+      <div className="max-w-5xl mx-auto px-6 py-12 md:py-20 space-y-16">
         <LobbyHeader />
 
         <section className="space-y-6">
@@ -69,7 +69,7 @@ export const Lobby = () => {
         </section>
 
         <div
-          className="flex flex-col items-center gap-4 animate-fade-in-up"
+          className="flex flex-col items-center gap-4"
           style={{ animationDelay: "0.4s" }}
         >
           <Button
@@ -80,7 +80,7 @@ export const Lobby = () => {
             loading={isSearching}
             onClick={handlePlay}
           >
-            { selectedMode === "practice" ? "Coming soon" : getButtonText()}
+            {selectedMode === "practice" ? "Coming soon" : getButtonText()}
           </Button>
 
           {selectedMode && !isSearching && (
@@ -102,14 +102,14 @@ const LobbyHeader = () => (
       <SystemIndicator text="Arena // Ready" />
 
       <h1
-        className="text-5xl md:text-6xl font-bold tracking-tighter pt-2 bg-linear-to-b from-white to-white/40 bg-clip-text text-transparent pb-2 animate-fade-in-up"
+        className="text-5xl md:text-6xl font-bold tracking-tighter pt-2 bg-linear-to-b from-white to-white/40 bg-clip-text text-transparent pb-2"
         style={{ animationDelay: "0.2s" }}
       >
         Lobby
       </h1>
 
       <p
-        className="text-muted-foreground max-w-md leading-relaxed font-light animate-fade-in-up"
+        className="text-muted-foreground max-w-md leading-relaxed font-light"
         style={{ animationDelay: "0.3s" }}
       >
         Choose your arena. Practice your skills or climb the ranks.

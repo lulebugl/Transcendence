@@ -22,7 +22,7 @@ export const Leaderboard = () => {
 
   return (
     <Layout>
-      <div className="max-w-5xl mx-auto px-6 py-12 md:py-20 space-y-16 animate-fade-in">
+      <div className="max-w-5xl mx-auto px-6 py-12 md:py-20 space-y-16">
         <LeaderboardHeader />
 
         <div className="space-y-6 w-full max-w-4xl mx-auto">
@@ -42,7 +42,7 @@ export const Leaderboard = () => {
 
           {players && (
             <div 
-              className="glass-panel rounded-xl overflow-hidden animate-fade-in-up" 
+              className="glass-panel rounded-xl overflow-hidden" 
               style={{ animationDelay: "0.2s" }}
             >
               <div className="grid grid-cols-[2.5rem_1fr_4rem_5rem_5rem] md:grid-cols-[3rem_1fr_5rem_7rem_6rem] gap-4 px-5 py-4 border-b border-white/5 text-[10px] uppercase tracking-[0.15em] text-muted-foreground bg-white/2">
@@ -76,14 +76,14 @@ const LeaderboardHeader = () => (
       <SystemIndicator text="Ranking // Global" />
 
       <h1
-        className="text-5xl md:text-6xl font-bold tracking-tighter pt-2 bg-linear-to-b from-white to-white/40 bg-clip-text text-transparent pb-2 animate-fade-in-up"
+        className="text-5xl md:text-6xl font-bold tracking-tighter pt-2 bg-linear-to-b from-white to-white/40 bg-clip-text text-transparent pb-2"
         style={{ animationDelay: "0.2s" }}
       >
         Leaderboard
       </h1>
 
       <p
-        className="text-muted-foreground max-w-md leading-relaxed font-light animate-fade-in-up"
+        className="text-muted-foreground max-w-md leading-relaxed font-light"
         style={{ animationDelay: "0.3s" }}
       >
         See who dominates the arena and compete for the top spot.

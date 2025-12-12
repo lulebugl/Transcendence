@@ -28,14 +28,14 @@ export const HeroSection = ({ user, rank, rankPosition }: HeroSectionProps) => {
         {user ? (
           <>
             <h1
-              className="text-6xl md:text-8xl font-bold tracking-tighter text-balance max-w-4xl bg-linear-to-b from-white to-white/40 bg-clip-text text-transparent pb-4 animate-fade-in-up"
+              className="text-6xl md:text-8xl font-bold tracking-tighter text-balance max-w-4xl bg-linear-to-b from-white to-white/40 bg-clip-text text-transparent pb-4"
               style={{ animationDelay: "0.2s" }}
             >
               Welcome To Transcendence.
             </h1>
 
             <p
-              className="text-lg text-muted-foreground max-w-xl leading-relaxed font-light animate-fade-in-up flex items-center justify-center gap-3"
+              className="text-lg text-muted-foreground max-w-xl leading-relaxed font-light flex items-center justify-center gap-3"
               style={{ animationDelay: "0.3s" }}
             >
               Your current Rank is
@@ -45,7 +45,7 @@ export const HeroSection = ({ user, rank, rankPosition }: HeroSectionProps) => {
             </p>
 
             <div
-              className="flex items-center gap-6 pt-4 animate-fade-in-up"
+              className="flex items-center gap-6 pt-4"
               style={{ animationDelay: "0.4s" }}
             >
               <Button asChild variant="cyber" size="lg" className="min-w-52">
@@ -61,21 +61,21 @@ export const HeroSection = ({ user, rank, rankPosition }: HeroSectionProps) => {
                 size="lg"
                 className="font-bold!"
               >
-                <Link to="/tournaments">Tournaments</Link>
+                <Link to="/leaderboard">Leaderboard</Link>
               </Button>
             </div>
           </>
         ) : (
           <>
             <h1
-              className="text-5xl md:text-7xl font-bold tracking-tighter text-balance max-w-4xl bg-linear-to-b from-white to-white/40 bg-clip-text text-transparent pb-4 animate-fade-in-up"
+              className="text-5xl md:text-7xl font-bold tracking-tighter text-balance max-w-4xl bg-linear-to-b from-white to-white/40 bg-clip-text text-transparent pb-4"
               style={{ animationDelay: "0.2s" }}
             >
               Claim your seat in the arena.
             </h1>
 
             <p
-              className="text-lg text-muted-foreground max-w-2xl leading-relaxed font-light animate-fade-in-up"
+              className="text-lg text-muted-foreground max-w-2xl leading-relaxed font-light"
               style={{ animationDelay: "0.3s" }}
             >
               Challenge pilots worldwide, unlock cyber-grade cosmetics, and
@@ -83,7 +83,7 @@ export const HeroSection = ({ user, rank, rankPosition }: HeroSectionProps) => {
             </p>
 
             <div
-              className="flex flex-col sm:flex-row items-center gap-4 pt-4 animate-fade-in-up"
+              className="flex flex-col sm:flex-row items-center gap-4 pt-4"
               style={{ animationDelay: "0.4s" }}
             >
               <Button asChild variant="cyber" size="lg" className="font-bold!">
@@ -92,14 +92,10 @@ export const HeroSection = ({ user, rank, rankPosition }: HeroSectionProps) => {
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </Button>
-
-              <Button asChild variant="underline" size="lg">
-                <Link to="/tournaments">See Live Events</Link>
-              </Button>
             </div>
 
             {/* <div
-              className="flex gap-8 text-left text-sm text-muted-foreground animate-fade-in-up"
+              className="flex gap-8 text-left text-sm text-muted-foreground"
               style={{ animationDelay: "0.45s" }}
             >
               <div>

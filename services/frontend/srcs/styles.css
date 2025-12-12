@@ -64,7 +64,7 @@
   /* Animations */
   --animate-fade-in-up: fade-in-up 0.8s ease-out forwards;
   --animate-pulse-slow: pulse-slow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  --animate-fade-in: fade-in 1s ease-in forwards;
+  --animate-fade-in: fade-in 0.8s ease-in forwards;
   --animate-loading-bar: loading-bar 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
   --animate-shimmer: shimmer 4s ease-in-out infinite;
 

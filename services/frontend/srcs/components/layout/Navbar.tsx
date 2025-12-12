@@ -7,10 +7,11 @@ import { UserAvatar } from "@/components/UserAvatar";
 import { useProfileData } from "@/routes/profiles/hooks/useProfileData";
 
 const NAV_ITEMS = [
+  { label: "Home", path: "/" },
   { label: "Play", path: "/lobby" },
-  { label: "Tournaments", path: "/tournaments" },
   { label: "Leaderboard", path: "/leaderboard" },
-//   ...(import.meta.env.DEV ? [{ label: "Dev-Hub", path: "/dev-hub" }] : []),
+  { label: "Profile", path: "/profile" },
+  //   ...(import.meta.env.DEV ? [{ label: "Dev-Hub", path: "/dev-hub" }] : []),
 ];
 
 export const Navbar = () => {
@@ -69,9 +70,9 @@ export const Navbar = () => {
           </div>
 
           {/* Center Nav - Desktop */}
-		  {/* translate-x-[40%] is to center the nav 
-		    * it might need to be adjusted based on the number of items in the nav
-		  */}
+          {/* translate-x-[40%] is to center the nav
+           * it might need to be adjusted based on the number of items in the nav
+           */}
           <nav className="hidden md:flex items-center gap-12 absolute left-1/2 -translate-x-[40%]">
             {NAV_ITEMS.map((item) => {
               const isActive = location.pathname === item.path;
@@ -201,7 +202,7 @@ const GuestSection = () => (
     <div className="flex items-center gap-3">
       <Link
         to="/auth/login"
-        className="hidden md:flex text-[10px] uppercase tracking-widest px-4 py-2 border border-white/10 rounded-full hover:bg-white/10 transition-all duration-300 items-center gap-2"
+        className="hidden md:flex text-[10px] uppercase tracking-widest px-4 py-2 border border-white/10 rounded-full hover:bg-white/10 items-center gap-2"
       >
         <LogIn className="w-3 h-3" />
         Login
