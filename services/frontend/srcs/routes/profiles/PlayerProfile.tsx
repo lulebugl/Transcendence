@@ -33,7 +33,6 @@ export const PlayerProfile = () => {
 
   if (isProfileLoading) return <Loading />;
 
-  console.log("profileData id", profileData.id);
   return (
     <Layout>
       <div className="max-w-5xl mx-auto py-8 md:py-20 space-y-16 lg:space-y-20">

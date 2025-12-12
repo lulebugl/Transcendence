@@ -35,13 +35,6 @@ export type LeaderboardEntry = LeaderboardEntryResponse & {
 };
 
 // ─── Helpers ───────────────────────────────────────────
-const toEpochMs = (
-  value: number | string | Date | null | undefined
-): number => {
-  if (!value) return 0;
-  const ms = new Date(value).getTime();
-  return Number.isNaN(ms) ? 0 : ms;
-};
 
 const getRank = (level: number): Rank => {
   if (level >= 30) return "Platinum";
@@ -66,7 +59,6 @@ export const playersApi = {
     );
     return {
       ...data,
-      lastCall: toEpochMs(data.lastCall),
       rank: getRank(data.level),
       winRate: getWinrate(data.gamesWon, data.gamesLost),
     };
@@ -80,7 +72,6 @@ export const playersApi = {
     return data.map((entry) => ({
       ...entry,
       rank: getRank(entry.level),
-      lastCall: toEpochMs(entry.lastCall),
       winRate: getWinrate(entry.gamesWon, entry.gamesLost),
     }));
   },

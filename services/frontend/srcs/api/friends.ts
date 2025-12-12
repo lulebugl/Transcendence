@@ -11,6 +11,11 @@ export type PendingFriendship = {
   requesterId: number;
   receiverId: number;
   status: "pending";
+  // User info for the "other" user (not the current user)
+  id: number;
+  username: string;
+  avatar_url: string;
+  last_call: number;
 };
 
 export const friendsApi = {

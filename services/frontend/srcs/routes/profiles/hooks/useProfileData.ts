@@ -12,12 +12,24 @@ const XP_PER_LEVEL = 1000;
 // TODO: check the bug where when the app starts everyone is online
 // TODO: check the bug where when the app starts everyone is online
 // TODO: check the bug where when the app starts everyone is online
-export const getOnlineStatus = (lastCall: number): OnlineStatus => {
-	const now = Date.now();
-	if (lastCall >= now - TEN_MINUTES) return "online";
-	if (lastCall >= now - FIFTEEN_MINUTES) return "away";
-	return "offline";
-  };
+
+const toEpochMs = (value: number | string | Date | null | undefined): number => {
+  if (!value) return 0;
+  // If it's a number less than year 2000 in ms, assume it's in seconds
+  if (typeof value === "number" && value < 946684800000) {
+    return value * 1000;
+  }
+  const ms = new Date(value).getTime();
+  return Number.isNaN(ms) ? 0 : ms;
+};
+
+export const getOnlineStatus = (lastCall: number | string | Date | null | undefined): OnlineStatus => {
+  const lastCallMs = toEpochMs(lastCall);
+  const now = Date.now();
+  if (lastCallMs >= now - TEN_MINUTES) return "online";
+  if (lastCallMs >= now - FIFTEEN_MINUTES) return "away";
+  return "offline";
+};
 
 const formatMemberSince = (timestamp: number): string => {
   return new Date(timestamp).toLocaleDateString(undefined, {

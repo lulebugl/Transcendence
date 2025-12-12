@@ -174,45 +174,8 @@ export default async function friendsRoute(fastify: FastifyInstance) {
   fastify.get(
     "/api/friends",
     { preHandler: fastify.auth },
-    async (req: FastifyRequest, reply: FastifyReply) => {
-      const userId = req.user.id;
-
-      // user initiated the friendship
-      const friendsAsRequester = await db
-        .select({
-          id: users.id,
-          username: users.username,
-          avatar_url: users.avatar_url,
-          last_call: users.last_call,
-        })
-        .from(friendships)
-        .innerJoin(users, eq(friendships.receiverId, users.id))
-        .where(
-          and(
-            eq(friendships.requesterId, userId),
-            eq(friendships.status, "accepted")
-          )
-        );
-
-      // user received the request
-      const friendsAsReceiver = await db
-        .select({
-          id: users.id,
-          username: users.username,
-          avatar_url: users.avatar_url,
-          last_call: users.last_call,
-        })
-        .from(friendships)
-        .innerJoin(users, eq(friendships.requesterId, users.id))
-        .where(
-          and(
-            eq(friendships.receiverId, userId),
-            eq(friendships.status, "accepted")
-          )
-        );
-
-      // Combine both results
-      return [...friendsAsRequester, ...friendsAsReceiver];
+    async (req: FastifyRequest) => {
+      return await getFriendshipsWithUserInfo(req.user.id, "accepted");
     }
   );
 
@@ -220,21 +183,49 @@ export default async function friendsRoute(fastify: FastifyInstance) {
   fastify.get(
     "/api/friends/pending",
     { preHandler: fastify.auth },
-    async (req: FastifyRequest, reply: FastifyReply) => {
-      const friends = await db
-        .select()
-        .from(friendships)
-        .where(
-          and(
-            or(
-              eq(friendships.receiverId, req.user.id),
-              eq(friendships.requesterId, req.user.id)
-            ),
-            eq(friendships.status, "pending")
-          )
-        );
-
-      return friends;
+    async (req: FastifyRequest) => {
+      return await getFriendshipsWithUserInfo(req.user.id, "pending");
     }
   );
+}
+
+async function getFriendshipsWithUserInfo(
+  userId: number,
+  status: "accepted" | "pending"
+) {
+  // user initiated the friendship/request
+  const asRequester = await db
+    .select({
+      requesterId: friendships.requesterId,
+      receiverId: friendships.receiverId,
+      status: friendships.status,
+      id: users.id,
+      username: users.username,
+      avatar_url: users.avatar_url,
+      last_call: users.last_call,
+    })
+    .from(friendships)
+    .innerJoin(users, eq(friendships.receiverId, users.id))
+    .where(
+      and(eq(friendships.requesterId, userId), eq(friendships.status, status))
+    );
+
+  // user received the request
+  const asReceiver = await db
+    .select({
+      requesterId: friendships.requesterId,
+      receiverId: friendships.receiverId,
+      status: friendships.status,
+      id: users.id,
+      username: users.username,
+      avatar_url: users.avatar_url,
+      last_call: users.last_call,
+    })
+    .from(friendships)
+    .innerJoin(users, eq(friendships.requesterId, users.id))
+    .where(
+      and(eq(friendships.receiverId, userId), eq(friendships.status, status))
+    );
+
+  return [...asRequester, ...asReceiver];
 }

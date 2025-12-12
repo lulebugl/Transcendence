@@ -10,4 +10,4 @@ export { StatusDot, LiveIndicator } from "./StatusDot";
 export { DottedBadge, type BadgeColor } from "./Badge";
 export { SectionHeader } from "./SectionHeader";
 export { SettingsSection } from "./SettingsSection";
-
+export { TabNavigation } from "./TabNavigation";
