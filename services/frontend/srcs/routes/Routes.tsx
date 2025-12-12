@@ -15,6 +15,7 @@ import { Tournaments } from "@/routes/tournaments";
 import { Pong, PongLobby } from "@/routes/pong";
 import { TestPongDev } from "@/routes/pong/testPongDev";
 import { Leaderboard } from "@/routes/leaderboard";
+import { TermsOfService, PrivacyPolicy } from "@/routes/legal";
 
 interface RouteConfig {
   path: string;
@@ -30,6 +31,8 @@ export const publicRoutes: RouteConfig[] = [
   { path: "/pong-test", element: <TestPongDev /> },
   { path: "/tournaments", element: <Tournaments /> },
   { path: "/profile/:username/achievements", element: <Achievements /> },
+  { path: "/terms-of-service", element: <TermsOfService /> },
+  { path: "/privacy-policy", element: <PrivacyPolicy /> },
   {
 	  path: "/pong",
     element: (
