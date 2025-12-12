@@ -1,12 +1,6 @@
 import { SectionHeader } from "@/components/ui";
 import { type ProfileData } from "@/types";
-import {
-  TrendingUp,
-  Swords,
-  Crown,
-  Flame,
-  Trophy,
-} from "lucide-react";
+import { TrendingUp, Swords, Crown, Flame, Skull } from "lucide-react";
 
 export const StatsGrid = ({ data }: { data: ProfileData }) => {
   if (!data) return null;
@@ -37,10 +31,10 @@ export const StatsGrid = ({ data }: { data: ProfileData }) => {
       color: "text-orange-400",
     },
     {
-      label: "Tournament Wins",
-      value: `${data.tournamentsWon}`,
-      icon: Trophy,
-      color: "text-yellow-400",
+      label: "Losses",
+      value: `${data.gamesLost}`,
+      icon: Skull,
+      color: "text-red-500/80",
     },
   ];
 

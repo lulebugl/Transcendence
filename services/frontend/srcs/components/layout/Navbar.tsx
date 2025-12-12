@@ -4,6 +4,7 @@ import { LogIn, LogOut, Settings, Menu, X } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { MobileMenu } from "./mobile-menu";
 import { UserAvatar } from "@/components/UserAvatar";
+import { useProfileData } from "@/routes/profiles/hooks/useProfileData";
 
 const NAV_ITEMS = [
   { label: "Play", path: "/lobby" },
@@ -120,6 +121,7 @@ export const Navbar = () => {
 
 const UserSection = () => {
   const { user, logout, isLoading } = useAuth();
+  const { profileData } = useProfileData();
 
   if (isLoading) {
     return <UserSectionSkeleton />;
@@ -141,7 +143,7 @@ const UserSection = () => {
             {user.username}
           </span>
           <span className="text-[10px] uppercase tracking-wider text-primary group-hover:text-primary/80 transition-colors">
-            Lv.42
+            Lv. {profileData?.level ?? "-"}
           </span>
         </div>
         <UserAvatar

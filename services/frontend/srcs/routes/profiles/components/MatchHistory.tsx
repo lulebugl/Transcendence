@@ -50,7 +50,7 @@ export const MatchHistory = ({ matches }: { matches: typeof MOCK_MATCHES }) => {
             </div>
 
             {/* mode badge */}
-            <div className="flex justify-center w-24">
+            {/* <div className="flex justify-center w-24">
               <span
                 className={`text-[9px] uppercase tracking-widest px-2 py-1 rounded border ${
                   match.mode === "Tournament"
@@ -62,7 +62,7 @@ export const MatchHistory = ({ matches }: { matches: typeof MOCK_MATCHES }) => {
               >
                 {match.mode}
               </span>
-            </div>
+            </div> */}
 
             {/* Score */}
             <div className="text-center px-4">
