@@ -120,9 +120,15 @@ export const Navbar = () => {
   );
 };
 
+let cachedLevel: number | null = null;
+
 const UserSection = () => {
   const { user, logout, isLoading } = useAuth();
   const { profileData } = useProfileData();
+
+  if (profileData?.level !== undefined) {
+    cachedLevel = profileData.level;
+  }
 
   if (isLoading) {
     return <UserSectionSkeleton />;
@@ -144,7 +150,7 @@ const UserSection = () => {
             {user.username}
           </span>
           <span className="text-[10px] uppercase tracking-wider text-primary group-hover:text-primary/80 transition-colors">
-            Lv. {profileData?.level ?? "-"}
+            Lv. {cachedLevel ?? "-"}
           </span>
         </div>
         <UserAvatar
@@ -168,7 +174,6 @@ const UserSection = () => {
           className="text-[10px] cursor-pointer uppercase tracking-widest p-2 border border-white/10 rounded-full hover:bg-white/10 transition-all duration-300 flex items-center gap-2"
         >
           <LogOut className="w-4 h-4" />
-          {/* Logout */}
         </button>
       </div>
     </div>

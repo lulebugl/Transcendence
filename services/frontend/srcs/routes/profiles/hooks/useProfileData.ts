@@ -10,8 +10,8 @@ const TEN_MINUTES = 1000 * 60 * 10;
 const XP_PER_LEVEL = 1000;
 
 // TODO: check the bug where when the app starts everyone is online
-// TODO: check the bug where when the app starts everyone is online
-// TODO: check the bug where when the app starts everyone is online
+// this is due to lastCall being created at the same time as the user
+// when seeding the database
 
 const toEpochMs = (value: number | string | Date | null | undefined): number => {
   if (!value) return 0;
