@@ -55,8 +55,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       } else {
         setUser(null);
       }
-    } catch (error) {
-      console.error("Failed to fetch user:", error);
+    } catch {
       setUser(null);
     }
   }, []);

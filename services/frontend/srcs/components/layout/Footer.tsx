@@ -6,23 +6,23 @@ export const Footer = () => {
   return (
     <footer className="mt-auto border-t border-white/5">
       <div className="px-6 py-4 md:py-4">
-        <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6">
+        <div className="flex items-center justify-center gap-4 md:gap-6">
           <span className="text-xs font-mono text-secondary-foreground/70">
             © {currentYear} Transcendence
             <span className="text-secondary-foreground/40 pl-5">·</span>
           </span>
 
-          <nav className="flex items-center gap-5 md:gap-8">
+          <nav className="flex items-center justify-center gap-5 md:gap-8">
             <Link
               to="/terms-of-service"
-              className="text-xs font-mono text-secondary-foreground/70 hover:text-foreground transition-colors duration-200"
+              className="text-xs font-mono text-secondary-foreground/70 hover:text-foreground"
             >
               Terms of Service
             </Link>
             <span className="text-secondary-foreground/40">·</span>
             <Link
               to="/privacy-policy"
-              className="text-xs font-mono text-secondary-foreground/70 hover:text-foreground transition-colors duration-200"
+              className="text-xs font-mono text-secondary-foreground/70 hover:text-foreground"
             >
               Privacy Policy
             </Link>

@@ -1,8 +1,5 @@
 # HIGH priority
 
-* currently in progress: Friends and Achievements to double check
-* most urgent is to refacor the friend panel
-
 ## GAME
 
 - separate the logic of the game from babylonjs
@@ -13,32 +10,10 @@
 
 ## Friends (in progress)
 
-- useFriends hook (in progress)
--  Implementer les friends and think about the flow and different states (pending, accepted, declined)
-   * add friend button
-   * remove friends
-   * accept friend request
-   * decline friend request
-   * see friend requests
-   * see friends and their status
-   * pending?
-
-## TOURNAMENTS
-
-- [ ] design tournament page
-   * tournament list
-   * tournament details
-   * tournament registration (and unregistration?)
-   * tournament creation and deletion
-
-# MEDIUM priority
-
--  Implement avatar remove and change on frontend
+* this is the one i'm the least confident about 
+* but it would need a major refactor to be done properly so...
 
 # LOW priority
 
 # BONUS
--  add skeletons
--  ajouter statut declined for friendship
--  maybe add tournament to lobby also
 

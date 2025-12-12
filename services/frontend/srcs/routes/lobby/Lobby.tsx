@@ -76,16 +76,16 @@ export const Lobby = () => {
             variant="cyber"
             size="lg"
             className="min-w-64"
-            disabled={!selectedMode}
+            disabled={!selectedMode || selectedMode === "practice"}
             loading={isSearching}
             onClick={handlePlay}
           >
-            {getButtonText()}
+            { selectedMode === "practice" ? "Coming soon" : getButtonText()}
           </Button>
 
           {selectedMode && !isSearching && (
             <p className="text-xs text-muted-foreground animate-fade-in">
-              Press to start the game
+              Press to find a match
             </p>
           )}
         </div>
