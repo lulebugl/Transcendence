@@ -7,8 +7,7 @@ import playersRoutes from "./players";
 import twoFactorRoutes from "./users/2fa";
 import achievementsRoutes from "./achievements/achievements";
 import apiKeyRoutes from "./apiKeys";
-import publicApiGlobal from "./publicApi/global";
-import publicApiMatches from "./publicApi/matches";
+import publicApi from "./publicApi";
 
 //types
 import { FastifyInstance } from "fastify";
@@ -25,6 +24,5 @@ export default async function routes(fastify: FastifyInstance) {
   fastify.register(twoFactorRoutes);
   fastify.register(achievementsRoutes);
   fastify.register(apiKeyRoutes);
-  fastify.register(publicApiGlobal);
-  fastify.register(publicApiMatches);
+  fastify.register(publicApi);
 }

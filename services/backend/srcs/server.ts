@@ -46,7 +46,6 @@ app.register(fastifyStatic, {
   prefix: "/public/",
 });
 
-
 if (process.env.NODE_ENV !== "development") {
   // maybe 20 is too little, not sure
   app.register(rateLimit, {
@@ -54,17 +53,6 @@ if (process.env.NODE_ENV !== "development") {
     timeWindow: "1 minute",
   });
 }
-
-
-// Is it compatible with the previous global rate limit?
-// Per-route rate limit with API key-aware keyGenerator
-// app.register(rateLimit, {
-//   global: false,
-//   keyGenerator: (req) => {
-//     const apiKey = req.headers["x-api-key"];
-//     return Array.isArray(apiKey) ? apiKey.join(",") : apiKey || req.ip;
-//   },
-// });
 
 app.register(routes);
 
