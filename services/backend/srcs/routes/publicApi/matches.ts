@@ -44,6 +44,7 @@ export default async function publicApiMatches(fastify: FastifyInstance) {
         rateLimit: publicApiRateLimit,
       },
       schema: {
+        tags: ["matches"],
         params: {
           type: "object",
           properties: {
@@ -84,6 +85,7 @@ export default async function publicApiMatches(fastify: FastifyInstance) {
     {
       config: { rateLimit: publicApiRateLimit },
       schema: {
+        tags: ["matches"],
         querystring: {
           type: "object",
           properties: {
@@ -124,6 +126,7 @@ export default async function publicApiMatches(fastify: FastifyInstance) {
     {
       config: { rateLimit: publicApiRateLimit },
       schema: {
+        tags: ["matches"],
         params: {
           type: "object",
           properties: {
@@ -177,6 +180,9 @@ export default async function publicApiMatches(fastify: FastifyInstance) {
     "/api/public/matches/state",
     {
       config: { rateLimit: publicApiRateLimit },
+      schema: {
+        tags: ["matches"],
+      },
     },
     async (_req, reply) => {
       try {

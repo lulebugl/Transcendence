@@ -8,10 +8,24 @@ export default async function publicApi(fastify: FastifyInstance) {
   await fastify.register(swagger, {
     openapi: {
       info: {
-        title: "Public API",
-        description: "Public endpoints (API key required)",
+        title: "Transcendence - 3D Pong - Public API",
+        description: "Public API for Transcendence - 3D Pong Game",
         version: "1.0.0",
       },
+      tags: [
+        { name: "global", description: "Global endpoints" },
+        { name: "matches", description: "Match data endpoints" },
+      ],
+      components: {
+        securitySchemes: {
+          apiKeyAuth: {
+            type: "apiKey",
+            in: "header",
+            name: "x-api-key",
+          },
+        },
+      },
+      security: [{ apiKeyAuth: [] }], // appliqué globalement
     },
   });
 
@@ -20,8 +34,16 @@ export default async function publicApi(fastify: FastifyInstance) {
     uiConfig: {
       docExpansion: "list",
       deepLinking: true,
+      customSiteTitle: "Transcendence - 3D Pong - Public API",
     },
-    staticCSP: true,
+    theme: {
+      js: [
+        {
+          filename: "set-title.js",
+          content: 'document.title = "Transcendence - 3D Pong - Public API";',
+        },
+      ],
+    },
   });
 
   await fastify.register(publicApiGlobal);

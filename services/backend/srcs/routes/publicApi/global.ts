@@ -25,6 +25,9 @@ export default async function publicApiGlobal(fastify: FastifyInstance) {
       config: {
         rateLimit: publicApiRateLimit,
       },
+      schema: {
+        tags: ["global"],
+      },
     },
     async () => {
       return { pong: true, ts: Date.now() };
@@ -37,6 +40,9 @@ export default async function publicApiGlobal(fastify: FastifyInstance) {
       preHandler: [fastify.verifyApiKey],
       config: {
         rateLimit: publicApiRateLimit,
+      },
+      schema: {
+        tags: ["global"],
       },
     },
     async (req: FastifyRequest, reply: FastifyReply) => {
