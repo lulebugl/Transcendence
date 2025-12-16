@@ -7,7 +7,7 @@ import { UserAvatar } from "@/components/UserAvatar";
 import { useProfileData } from "@/routes/profiles/hooks/useProfileData";
 
 const NAV_ITEMS = [
-  { label: "Home", path: "/" },
+//   { label: "Home", path: "/" },
   { label: "Play", path: "/lobby" },
   { label: "Leaderboard", path: "/leaderboard" },
   { label: "Profile", path: "/profile" },
