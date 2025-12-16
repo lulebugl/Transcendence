@@ -99,6 +99,20 @@ export const userAchievements = sqliteTable("user_achievements", {
     .default(sql`(unixepoch())`),
 });
 
+export const apiKeys = sqliteTable("api_keys", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  user_id: integer("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  key_hash: text("key_hash").notNull().unique(),
+  label: text("label"),
+  created_at: integer("created_at", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
+  last_used_at: integer("last_used_at", { mode: "timestamp" }),
+  revoked_at: integer("revoked_at", { mode: "timestamp" }),
+});
+
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 
@@ -107,3 +121,6 @@ export type NewGame = typeof games.$inferInsert;
 
 export type UserStats = typeof userStats.$inferSelect;
 export type NewUserStats = typeof userStats.$inferInsert;
+
+export type ApiKey = typeof apiKeys.$inferSelect;
+export type NewApiKey = typeof apiKeys.$inferInsert;
