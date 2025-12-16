@@ -10,9 +10,10 @@ import cookie from "@fastify/cookie";
 import type { FastifyCookieOptions } from "@fastify/cookie";
 import { startWebSocketServer } from "./pong/miniBackendPong";
 import rateLimit from "@fastify/rate-limit";
-import { envToLogger, prettifyLogger } from './utils/logger-config';
+import { envToLogger, prettifyLogger } from "./utils/logger-config";
 import fastifyStatic from "@fastify/static";
 import path from "path";
+import apiKeyPlugin from "./utils/apiKey";
 
 const app = Fastify({
   logger: envToLogger[process.env.NODE_ENV as keyof typeof envToLogger],
@@ -21,6 +22,7 @@ const app = Fastify({
 prettifyLogger(app);
 
 app.register(fp(authPlugin));
+app.register(apiKeyPlugin);
 app.register(sensible);
 app.register(jwt, { secret: process.env.JWT_SECRET || "dev-secret" });
 app.register(cors, {
@@ -31,18 +33,19 @@ app.register(cors, {
   allowedHeaders: ["Authorization", "Content-Type"],
 });
 app.register(cookie, {
-	secret: process.env.COOKIE_SIGN,
-	hook: "onRequest",
-} as FastifyCookieOptions)
+  secret: process.env.COOKIE_SIGN,
+  hook: "onRequest",
+} as FastifyCookieOptions);
 app.register(require("@fastify/multipart"), {
-	limits: {
-		fileSize: 1024 * 1024 * 5,
-	},
-})
+  limits: {
+    fileSize: 1024 * 1024 * 5,
+  },
+});
 app.register(fastifyStatic, {
-	root: path.join(__dirname, "public"),
-	prefix: "/public/"
-})
+  root: path.join(__dirname, "public"),
+  prefix: "/public/",
+});
+
 
 if (process.env.NODE_ENV !== "development") {
   // maybe 20 is too little, not sure
@@ -51,6 +54,17 @@ if (process.env.NODE_ENV !== "development") {
     timeWindow: "1 minute",
   });
 }
+
+
+// Is it compatible with the previous global rate limit?
+// Per-route rate limit with API key-aware keyGenerator
+// app.register(rateLimit, {
+//   global: false,
+//   keyGenerator: (req) => {
+//     const apiKey = req.headers["x-api-key"];
+//     return Array.isArray(apiKey) ? apiKey.join(",") : apiKey || req.ip;
+//   },
+// });
 
 app.register(routes);
 

@@ -1,6 +1,14 @@
 import { checkAchievements } from "../routes/achievements/achievements-utils";
 import { db } from "./client";
-import { achievements, User, userAchievements, users, userStats } from "./schema";
+import {
+  achievements,
+  apiKeys,
+  User,
+  userAchievements,
+  users,
+  userStats,
+} from "./schema";
+import { hashKey } from "../utils/apiKey";
 import { hash } from "argon2";
 
 // prettier-ignore
@@ -47,6 +55,7 @@ async function seed() {
   await db.delete(users);
   await db.delete(achievements);
   await db.delete(userAchievements);
+  await db.delete(apiKeys);
 
   const testPasswordHash = await hash("test1234");
   const insertedUsers = await db
@@ -79,10 +88,22 @@ async function seed() {
   console.log(`✅ Inserted ${SEED_ACHIEVEMENTS.length} achievements`);
 
   console.log("...Unlocking achievements for players...");
-  await Promise.all(insertedUsers.map(async (user) => {
-    await checkAchievements(user.id);
-  }));
-  
+  await Promise.all(
+    insertedUsers.map(async (user) => {
+      await checkAchievements(user.id);
+    })
+  );
+
+  const test1 = insertedUsers.find((user) => user.username === "test1");
+  if (test1) {
+    const rawKey =
+      "526bd5fa09af414c98cb304016a0922eff6ea2ee9a6d3a1b818960cc10cb6abf";
+    const keyHash = hashKey(rawKey);
+    await db
+      .insert(apiKeys)
+      .values({ user_id: test1.id, key_hash: keyHash, label: "seeded" });
+    console.log(`🔑 API key for test1: ${rawKey}`);
+  }
 
   console.log("🎉 Seeding complete!");
 }
