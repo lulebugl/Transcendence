@@ -99,6 +99,7 @@ export const ProfileSettings = () => {
           </div>
         </div>
       </div>
+	  <span className="h-0.5 block"></span>
     </SettingsSection>
   );
 };

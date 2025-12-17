@@ -171,4 +171,19 @@ export default async function apiKeyRoutes(fastify: FastifyInstance) {
       }
     }
   );
+
+  // POST - delete an active key
+  fastify.delete(
+    "/api/api-keys",
+    { preHandler: fastify.auth },
+    async (
+      req: FastifyRequest
+    ) => {
+      await db
+        .delete(apiKeys)
+        .where(eq(apiKeys.user_id, req.user.id));
+
+      return { success: true };
+    }
+	);
 }

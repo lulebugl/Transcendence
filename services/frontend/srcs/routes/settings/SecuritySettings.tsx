@@ -26,10 +26,10 @@ export const SecuritySettings = () => {
             </h4>
             {!isChangingPassword ? (
               <Button
-                variant="outline"
-				size="sm"
+                variant="default"
+                size="sm"
                 onClick={() => setIsChangingPassword(true)}
-                className="text-black hover:text-black min-w-48 h-9 bg-secondary-foreground hover:bg-secondary-foreground hover:brightness-110"
+                className="min-w-48 h-9"
               >
                 Change Password
               </Button>

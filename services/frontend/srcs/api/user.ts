@@ -7,6 +7,13 @@ interface UploadAvatarResponse {
   avatarUrl: string;
 }
 
+interface GenerateApiKeyResponse {
+  id: number;
+  label: string;
+  created_at: string;
+  apiKey: string;
+}
+
 export const userApi = {
   updateProfile: async (data: Partial<BaseUserType>): Promise<BaseUserType> => {
     return apiRequest<BaseUserType>("/api/users/update", {
@@ -49,6 +56,32 @@ export const userApi = {
     return apiRequest<UploadAvatarResponse>("/api/users/avatar", {
       method: "POST",
       body: data,
+    });
+  },
+  hasApiKey: async (): Promise<{ hasKey: boolean }> => {
+    return apiRequest("/api/api-keys/has", {
+      method: "GET",
+    });
+  },
+  generateApiKey: async (): Promise<GenerateApiKeyResponse> => {
+    return apiRequest<GenerateApiKeyResponse>("/api/api-keys", {
+      method: "POST",
+    });
+  },
+  regenerateApiKey: async (): Promise<GenerateApiKeyResponse> => {
+    return apiRequest<GenerateApiKeyResponse>("/api/api-keys/regenerate", {
+      method: "POST",
+    });
+  },
+  revokeApiKey: async (): Promise<void> => {
+    return apiRequest<void>("/api/api-keys/revoke", {
+      method: "POST",
+    });
+  },
+  // this is equivalent to revokeApiKey
+  deleteApiKey: async (): Promise<void> => {
+    return apiRequest<void>("/api/api-keys", {
+      method: "DELETE",
     });
   },
 };

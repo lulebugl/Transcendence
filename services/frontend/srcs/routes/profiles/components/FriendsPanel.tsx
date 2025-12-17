@@ -305,7 +305,7 @@ const SentRequestItem = ({
       <Button
         variant="ghost"
         size="sm"
-        className="h-7 text-xs text-white hover:text-black hover:bg-secondary-foreground"
+        className="h-7 text-xs text-white hover:text-black hover:bg-foreground"
         onClick={onCancel}
         disabled={isProcessing}
         aria-label="Cancel friend request"

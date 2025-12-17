@@ -1,12 +1,14 @@
 # HIGH priority
 
+- add the real matches
+- add the swagger docs to the footer
+
 ## GAME
 
 - separate the logic of the game from babylonjs
 - regarder comment preload les assets et le jeu pendant le matchmaking
 
 - ameliorer les handler des match-making ( regarder example in 2fa.ts si besoin)
-- creer une route separe pour jouer contre l'ia
 
 ## Friends (in progress)
 

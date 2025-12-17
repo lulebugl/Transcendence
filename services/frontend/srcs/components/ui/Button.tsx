@@ -7,7 +7,7 @@ const baseClasses =
   "group inline-flex items-center justify-center whitespace-nowrap text-sm cursor-pointer font-medium transition-all disabled:pointer-events-none disabled:opacity-60 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:ring-ring/50 focus-visible:ring-2";
 
 const variants = {
-  default: "rounded-md bg-white/90 text-black hover:bg-white/80",
+  default: "rounded-md text-black hover:text-black min-w-48 h-9 bg-foreground hover:bg-foreground hover:brightness-110",
   primary:
     "rounded-md bg-primary text-primary-foreground hover:brightness-110",
   destructive:
