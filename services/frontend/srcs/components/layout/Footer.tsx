@@ -26,6 +26,14 @@ export const Footer = () => {
             >
               Privacy Policy
             </Link>
+			<span className="text-foreground/40">·</span>
+            <Link
+              to="/api/public/docs"
+			  target="_blank"
+              className="text-xs text-foreground/70 hover:text-foreground"
+            >
+              Api Documentation
+            </Link>
           </nav>
         </div>
       </div>
