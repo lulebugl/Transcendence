@@ -1,13 +1,7 @@
 import { checkAchievements } from "../routes/achievements/achievements-utils";
 import { db } from "./client";
-import {
-  achievements,
-  apiKeys,
-  User,
-  userAchievements,
-  users,
-  userStats,
-} from "./schema";
+import { eq } from "drizzle-orm";
+import { achievements, userAchievements, users, userStats } from "./schema";
 import { hashKey } from "../utils/apiKey";
 import { hash } from "argon2";
 
@@ -55,7 +49,6 @@ async function seed() {
   await db.delete(users);
   await db.delete(achievements);
   await db.delete(userAchievements);
-  await db.delete(apiKeys);
 
   const testPasswordHash = await hash("test1234");
   const insertedUsers = await db
@@ -100,8 +93,9 @@ async function seed() {
       "526bd5fa09af414c98cb304016a0922eff6ea2ee9a6d3a1b818960cc10cb6abf";
     const keyHash = hashKey(rawKey);
     await db
-      .insert(apiKeys)
-      .values({ user_id: test1.id, key_hash: keyHash, label: "seeded" });
+      .update(users)
+      .set({ api_key: keyHash })
+      .where(eq(users.id, test1.id));
     console.log(`🔑 API key for test1: ${rawKey}`);
   }
 
