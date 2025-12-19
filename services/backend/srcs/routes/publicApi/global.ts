@@ -27,6 +27,7 @@ export default async function publicApiGlobal(fastify: FastifyInstance) {
       },
       schema: {
         tags: ["global"],
+        security: [],
       },
     },
     async () => {
@@ -43,6 +44,7 @@ export default async function publicApiGlobal(fastify: FastifyInstance) {
       },
       schema: {
         tags: ["global"],
+        security: [{ apiKeyAuth: [] }],
       },
     },
     async (req: FastifyRequest, reply: FastifyReply) => {

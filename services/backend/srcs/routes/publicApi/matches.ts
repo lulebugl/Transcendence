@@ -52,6 +52,7 @@ export default async function publicApiMatches(fastify: FastifyInstance) {
           },
           required: ["id"],
         },
+        security: [],
       },
     },
     async (
@@ -93,6 +94,7 @@ export default async function publicApiMatches(fastify: FastifyInstance) {
             count: { type: "string" },
           },
         },
+        security: [],
       },
     },
     async (
@@ -141,6 +143,7 @@ export default async function publicApiMatches(fastify: FastifyInstance) {
             count: { type: "string" },
           },
         },
+        security: [],
       },
     },
     async (
@@ -182,6 +185,7 @@ export default async function publicApiMatches(fastify: FastifyInstance) {
       config: { rateLimit: publicApiRateLimit },
       schema: {
         tags: ["matches"],
+        security: [],
       },
     },
     async (_req, reply) => {
