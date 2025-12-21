@@ -1,7 +1,9 @@
 # HIGH priority
 
 - add the real matches
-- add the swagger docs to the footer
+- Finish the implementation of the match history page
+ (still reviewing and understand how infinite scroll works, need to dig more on MatchHistory.tsx)
+- Also need to connect the matches to be able to see the matches of other players
 
 ## GAME
 

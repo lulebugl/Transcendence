@@ -4,34 +4,13 @@ import { users, userStats } from "../db/schema";
 import { db } from "../db/client";
 import { eq, desc, count, gt } from "drizzle-orm";
 import { fields } from "./schema";
-
-const MAX_LIMIT_LEADERBOARD = 100;
-
-// ─── Schemas ───────────────────────────────────────────
-const profileParamsSchema: FastifySchema = {
-  params: {
-    type: "object",
-    required: ["username"],
-    properties: {
-      username: { ...fields.username },
-    },
-  },
-};
-
-const leaderboardQuerySchema: FastifySchema = {
-  querystring: {
-    type: "object",
-    properties: {
-      offset: { type: "integer", minimum: 0, default: 0 },
-      limit: {
-        type: "integer",
-        minimum: 1,
-        maximum: MAX_LIMIT_LEADERBOARD,
-        default: 10,
-      },
-    },
-  },
-};
+import {
+  profileParamsSchema,
+  levelParamsSchema,
+  leaderboardQuerySchema,
+  MAX_LIMIT_LEADERBOARD,
+} from "./players.schema";
+import { getPlayerRank } from "../utils/player-utils";
 
 // ─── Helpers ───────────────────────────────────────────
 export async function initPlayerStats(userId: number) {
@@ -76,6 +55,24 @@ async function fetchPlayerProfile(username: string) {
   return { ...row, globalRank: rankResult.count + 1 };
 }
 
+async function fetchPlayerLevel(username: string) {
+  const [row] = await db
+    .select({ level: userStats.level })
+    .from(userStats)
+    .innerJoin(users, eq(userStats.user_id, users.id))
+    .where(eq(users.username, username));
+  return row?.level;
+}
+
+async function fetchPlayerRank(username: string) {
+  const [row] = await db
+    .select({ level: userStats.level })
+    .from(userStats)
+    .innerJoin(users, eq(userStats.user_id, users.id))
+    .where(eq(users.username, username));
+  if (!row) return null;
+  return getPlayerRank(row.level);
+}
 // ─── Routes ────────────────────────────────────────────
 export default async function playersRoutes(fastify: FastifyInstance) {
   // Get a player's profile
@@ -89,12 +86,35 @@ export default async function playersRoutes(fastify: FastifyInstance) {
     }
   );
 
+  fastify.get<{ Params: { username: string } }>(
+    "/api/users/:username/level",
+    { schema: levelParamsSchema },
+    async (req, reply) => {
+      const level = await fetchPlayerLevel(req.params.username);
+      if (!level) return reply.notFound("User not found.");
+      return level;
+    }
+  );
+
+  fastify.get<{ Params: { username: string } }>(
+    "/api/users/:username/rank",
+    { schema: levelParamsSchema },
+    async (req, reply) => {
+      const rank = await fetchPlayerRank(req.params.username);
+      if (!rank) return reply.notFound("User not found.");
+      return rank;
+    }
+  );
+
   // Get leaderboard
   fastify.get<{ Querystring: { offset?: number; limit?: number } }>(
     "/api/leaderboard",
     { schema: leaderboardQuerySchema },
     async (req) => {
       const offset = req.query.offset ?? 0;
+
+	  // this is just a security measure
+	  // but the request should reach this if it hits limit 
       const limit = Math.min(req.query.limit ?? 10, MAX_LIMIT_LEADERBOARD);
 
       return db

@@ -9,7 +9,7 @@ import { getRankTextColor } from "@/lib/constants/";
 import { playersApi } from "@/api/players";
 import { UserAvatar } from "@/components/UserAvatar";
 import { LeaderboardEntry } from "@/api/players";
-import { getOnlineStatus } from "../profiles/hooks/useProfileData";
+import { getOnlineStatus } from "../../hooks/useProfileData";
 import { SystemIndicator } from "@/components/ui/SystemIndicator";
 
 // maybe add a button to refresh the leaderboard

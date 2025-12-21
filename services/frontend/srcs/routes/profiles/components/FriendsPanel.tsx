@@ -9,8 +9,8 @@ import {
   useAcceptFriend,
   useFriendsData,
   useRemoveFriend,
-} from "../hooks/useFriends";
-import { getOnlineStatus } from "../hooks/useProfileData";
+} from "@/hooks/useFriends";
+import { getOnlineStatus } from "@/hooks/useProfileData";
 import { Friends, PendingFriendship } from "@/api/friends";
 import { cn } from "@/lib/utils";
 

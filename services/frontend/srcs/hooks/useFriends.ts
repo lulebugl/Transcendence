@@ -3,7 +3,7 @@ import { Friends, friendsApi, PendingFriendship } from "@/api/friends";
 import { useMutation, type UseMutationOptions } from "@/hooks/useMutation";
 import { useCallback, useMemo } from "react";
 import { useAuth } from "@/hooks/useAuth.ts";
-import { getOnlineStatus } from "./useProfileData";
+import { getOnlineStatus } from "@/hooks/useProfileData";
 
 export function useFriendsList() {
   return useQuery(() => friendsApi.getFriends());

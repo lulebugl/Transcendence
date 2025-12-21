@@ -2,6 +2,7 @@
 import { apiRequest } from "./api";
 import { Rank } from "@/types";
 import { AchievementMetadata } from "@/routes/profiles/achievements";
+import { getRank } from "@/lib/utils";
 
 interface ProfileResponse {
   userId: number;
@@ -35,14 +36,6 @@ export type LeaderboardEntry = LeaderboardEntryResponse & {
 };
 
 // ─── Helpers ───────────────────────────────────────────
-
-const getRank = (level: number): Rank => {
-  if (level >= 30) return "Platinum";
-  if (level >= 20) return "Diamond";
-  if (level >= 10) return "Gold";
-  return "Silver";
-};
-
 const getWinrate = (won: number, lost: number): number => {
   const total = won + lost;
   return total === 0 ? 0 : Number(((won / total) * 100).toFixed(1));
@@ -82,6 +75,16 @@ export const playersApi = {
   },
   getPlayerAchievements: async (playerId: number) => {
     return apiRequest<string[]>(`/api/users/${playerId}/achievements`, {
+      method: "GET",
+    });
+  },
+  getPlayerLevel: async (username: string) => {
+    return apiRequest<number>(`/api/users/${username}/level`, {
+      method: "GET",
+    });
+  },
+  getPlayerRank: async (username: string) => {
+    return apiRequest<Rank>(`/api/users/${username}/rank`, {
       method: "GET",
     });
   },

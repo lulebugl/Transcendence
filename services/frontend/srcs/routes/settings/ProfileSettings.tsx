@@ -8,8 +8,6 @@ import { SettingsSection } from "@/components/ui/SettingsSection";
 import { UserAvatar } from "@/components/UserAvatar";
 import { useAuth } from "@/hooks/useAuth";
 
-// TODO: should i use refreshUser instead of setUserInfo ?
-// TODO: should i use refreshUser instead of setUserInfo ?
 export const ProfileSettings = () => {
   const { user, refreshUser } = useAuth();
   const [successField, setSuccessField] = useState<string | null>(null);
@@ -61,7 +59,7 @@ export const ProfileSettings = () => {
 
   return (
     <SettingsSection
-      title="Public Profile"
+      title="Your Profile"
       description="Manage how you appear to other players."
       className="space-y-8"
     >

@@ -4,9 +4,7 @@ import {
   useAddFriend,
   useRemoveFriend,
   useAcceptFriend,
-  useFriendsList,
-  usePendingFriends,
-} from "@/routes/profiles/hooks/useFriends";
+} from "@/hooks/useFriends";
 import {
   UserPlus,
   UserMinus,

@@ -4,7 +4,7 @@ import { LogIn, LogOut, Settings, Menu, X } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { MobileMenu } from "./mobile-menu";
 import { UserAvatar } from "@/components/UserAvatar";
-import { useProfileData } from "@/routes/profiles/hooks/useProfileData";
+import { useProfileData } from "@/hooks/useProfileData";
 
 const NAV_ITEMS = [
 //   { label: "Home", path: "/" },

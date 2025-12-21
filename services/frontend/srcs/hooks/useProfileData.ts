@@ -4,6 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { playersApi } from "@/api/players";
 import { ProfileData, OnlineStatus } from "@/types";
 import { useEffect } from "react";
+import { toEpochMs } from "@/lib/utils";
 
 const FIFTEEN_MINUTES = 1000 * 60 * 15;
 const TEN_MINUTES = 1000 * 60 * 10;
@@ -13,14 +14,11 @@ const XP_PER_LEVEL = 1000;
 // this is due to lastCall being created at the same time as the user
 // when seeding the database
 
-const toEpochMs = (value: number | string | Date | null | undefined): number => {
-  if (!value) return 0;
-  // If it's a number less than year 2000 in ms, assume it's in seconds
-  if (typeof value === "number" && value < 946684800000) {
-    return value * 1000;
-  }
-  const ms = new Date(value).getTime();
-  return Number.isNaN(ms) ? 0 : ms;
+export const usePlayerLevel = (username?: string) => {
+  const { data: level } = useQuery(() =>
+    username ? playersApi.getPlayerLevel(username) : Promise.resolve(null)
+  );
+  return level;
 };
 
 export const getOnlineStatus = (lastCall: number | string | Date | null | undefined): OnlineStatus => {

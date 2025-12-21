@@ -1,11 +1,10 @@
 import { Layout } from "@/components/layout/Layout";
 import { AchievementsCard } from "./achievements";
-import { MOCK_MATCHES } from "@/lib/mock-data";
-import { MatchHistory } from "./components/MatchHistory";
+import { MatchHistorySection } from "./components/MatchHistorySection";
 import { ProfileHeader } from "./components/ProfileHeader";
 import { Loading } from "@/components/Loading";
 import { StatsGrid } from "./components/StatsGrid";
-import { useProfileData } from "./hooks/useProfileData";
+import { useProfileData } from "@/hooks/useProfileData";
 import { useParams } from "react-router";
 import { ErrorPage } from "@/components/errors/ErrorPage";
 import { useAuth } from "@/hooks/useAuth";
@@ -48,7 +47,7 @@ export const PlayerProfile = () => {
             )}
           </div>
           <div className="lg:col-span-3">
-            <MatchHistory matches={MOCK_MATCHES} />
+            <MatchHistorySection count={5} offset={0} />
           </div>
         </div>
       </div>

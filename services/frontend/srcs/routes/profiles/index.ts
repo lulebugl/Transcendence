@@ -1,3 +1,5 @@
 export { PlayerProfile } from "./PlayerProfile";
-export { MatchHistory } from "./components/MatchHistory";
+export { MatchHistorySection } from "./components/MatchHistorySection";
 export { Achievements } from "./achievements";
+export { FriendsPanel } from "./components/FriendsPanel";
+export { MatchHistory } from "./MatchHistory";

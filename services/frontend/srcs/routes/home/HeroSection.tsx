@@ -78,12 +78,12 @@ export const HeroSection = ({ user, rank, rankPosition }: HeroSectionProps) => {
               className="text-lg text-muted-foreground max-w-2xl leading-relaxed font-light"
               style={{ animationDelay: "0.3s" }}
             >
-              Challenge pilots worldwide, unlock cyber-grade cosmetics, and
-              climb a living ladder that resets every week.
+              Challenge other players, unlock achievements, <br />and
+              climb the ranks.
             </p>
 
             <div
-              className="flex flex-col sm:flex-row items-center gap-4 pt-4"
+              className="flex flex-col sm:flex-row items-center gap-4"
               style={{ animationDelay: "0.4s" }}
             >
               <Button asChild variant="cyber" size="lg" className="font-bold!">

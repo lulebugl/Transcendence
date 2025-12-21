@@ -11,7 +11,7 @@ import { Lock } from "lucide-react";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { usePlayerAchievements } from "./useAchievements";
 import { ErrorPage } from "@/components/errors/ErrorPage";
-import { useProfileData } from "../hooks/useProfileData";
+import { useProfileData } from "@/hooks/useProfileData";
 import { Loading } from "@/components/Loading";
 
 export const Achievements = () => {

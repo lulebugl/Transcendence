@@ -7,8 +7,7 @@ import { PongErrorFallback } from "@/components/errors/ErrorFallback";
 import { Home } from "@/routes/home";
 import { Login, Signup } from "@/routes/auth";
 import { Settings } from "@/routes/settings";
-import { Achievements } from "@/routes/profiles";
-import { PlayerProfile } from "@/routes/profiles/";
+import { PlayerProfile, MatchHistory, Achievements } from "@/routes/profiles/";
 import { Lobby } from "@/routes/lobby";
 import { NotFound } from "@/routes/NotFound";
 import { Tournaments } from "@/routes/tournaments";
@@ -53,6 +52,7 @@ export const protectedRoutes: RouteConfig[] = [
   { path: "/settings", element: <Settings /> },
   { path: "/profile", element: <PlayerProfile /> },
   { path: "/profile/achievements", element: <Achievements /> },
+  { path: "/profile/match-history", element: <MatchHistory /> },
 ];
 
 // ============================================================================
