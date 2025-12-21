@@ -20,6 +20,9 @@ contract MatchStorage {
     /// @notice Maximum total number of matches allowed in the contract.
     uint256 private _maxTotalMatches = 10000;
 
+    /// @notice Counter for the total number of matches recorded.
+    uint256 public totalMatches;
+
     /// @notice Represents a match between two players.
     /// @member id Unique identifier for the match.
     /// @member playerId1 First player's ID.
@@ -67,8 +70,8 @@ contract MatchStorage {
         uint256 indexed playerId2,
         uint8 score1,
         uint8 score2,
-        uint32 expGained1,
-        uint32 expGained2,
+        uint16 expGained1,
+        uint16 expGained2,
         uint256 timestamp
     );
 
@@ -197,13 +200,13 @@ contract MatchStorage {
         uint256 playerId2,
         uint8 score1,
         uint8 score2,
-        uint32 expGained1,
-        uint32 expGained2
+        uint16 expGained1,
+        uint16 expGained2
     ) external onlyOwner whenNotPaused {
 
-        require(_allMatchIds.length < _maxTotalMatches, "Too many matches total");
-        require(_playerMatches[playerId1].length < _maxMatchesPerPlayer, "Too many matches for player 1");
-        require(_playerMatches[playerId2].length < _maxMatchesPerPlayer, "Too many matches for player 2");
+        require(_allMatchIds.length < _maxTotalMatches, "Maximum matches storage reached");
+        require(_playerMatches[playerId1].length < _maxMatchesPerPlayer, "Maximum matches storage reached for player 1");
+        require(_playerMatches[playerId2].length < _maxMatchesPerPlayer, "Maximum matches storage reached for player 2");
         require(playerId1 != playerId2, "Players must differ");
         require(score1 <= 11 && score2 <= 11, "Scores must be between 0 and 11");
 
@@ -225,6 +228,7 @@ contract MatchStorage {
         _allMatchIds.push(matchId);
 
         _nextMatchId++;
+        totalMatches++;
         emit MatchRecorded(
             matchId,
             playerId1,
@@ -242,7 +246,7 @@ contract MatchStorage {
     /// @return The match details.
     function getMatch(uint256 matchId) external view returns (Match memory) {
         Match memory matchData = _matchesById[matchId];
-        require(matchData.timestamp != 0, "Unknown match");
+        require(matchData.timestamp != 0, "Match not found");
         return matchData;
     }
 
@@ -259,7 +263,10 @@ contract MatchStorage {
         }
 
         uint256 available = length - offset;
-        if (count == 0 || count > available) {
+        if (count == 0) {
+            count = 100;
+        }
+        if (count > available) {
             count = available;
         }
 
@@ -288,7 +295,10 @@ contract MatchStorage {
         }
 
         uint256 available = length - offset;
-        if (count == 0 || count > available) {
+        if (count == 0) {
+            count = 100;
+        }
+        if (count > available) {
             count = available;
         }
 
@@ -305,5 +315,11 @@ contract MatchStorage {
     /// @return The number of matches for the player.
     function getPlayerMatchCount(uint256 playerId) external view returns (uint256) {
         return _playerMatches[playerId].length;
+    }
+
+    /// @notice Returns the total number of matches recorded in the contract.
+    /// @return The total number of matches.
+    function getTotalMatchesCount() external view returns (uint256) {
+        return totalMatches;
     }
 }
