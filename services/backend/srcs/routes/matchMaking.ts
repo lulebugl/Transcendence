@@ -13,15 +13,13 @@ export default function matchMaking(fastify: FastifyInstance) {
         schema: {
             body: {
                 type: "object",
-                required: ["username", "playerId"],
-                properties: {
-                    username: { type: "string" },
-                    playerId: { type: "string" }
-                }
+                properties: {}
             }
-        }
+        },
+        preHandler: fastify.auth
     }, async (request, reply) => {
-        const { username, playerId } = request.body as { username: string, playerId: string };
+        const { id, username } = request.user;
+        const playerId = id.toString();
         queue.set(playerId, { id: playerId, username });
         reply.send({ status: "joined", position: queue.size });
     });
@@ -29,14 +27,12 @@ export default function matchMaking(fastify: FastifyInstance) {
         schema: {
             body: {
                 type: "object",
-                required: ["playerId"],
-                properties: {
-                    playerId: { type: "string" }
-                }
+                properties: {}
             }
-        }
+        },
+        preHandler: fastify.auth
     }, async (request, reply) => {
-        const { playerId } = request.body as { playerId: string };
+        const playerId = request.user.id.toString();
         queue.delete(playerId);
         reply.send({ status: "left" });
     });
@@ -48,14 +44,12 @@ export default function matchMaking(fastify: FastifyInstance) {
         schema: {
             querystring: {
                 type: "object",
-                required: ["playerId"],
-                properties: {
-                    playerId: { type: "string" }
-                }
+                properties: {}
             }
-        }
+        },
+        preHandler: fastify.auth
     }, async (request, reply) => {
-        const { playerId } = request.query as { playerId: string };
+        const playerId = request.user.id.toString();
 
         if (playerMatches.has(playerId)) {
             reply.send({

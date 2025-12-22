@@ -23,23 +23,23 @@ app.register(jwt, {
   secret: process.env.JWT_SECRET || "dev-secret",
 });
 app.register(cors, {
-	// this is the frontend url for dev not prod so maybe check later
-	// also maybe make the url dynamic from the env
-	origin: ["https://localhost:5173", "https://localhost:8443"],
-	credentials: true,
-	allowedHeaders: ["Authorization", "Content-Type"],
+  // this is the frontend url for dev not prod so maybe check later
+  // also maybe make the url dynamic from the env
+  origin: ["https://localhost:5173", "https://localhost:8443"],
+  credentials: true,
+  allowedHeaders: ["Authorization", "Content-Type"],
 })
 app.register(cookie, {
-	secret: process.env.COOKIE_SIGN,
-	hook: "onRequest",
+  secret: process.env.COOKIE_SIGN,
+  hook: "onRequest",
 } as FastifyCookieOptions)
 
 if (process.env.NODE_ENV !== "development") {
-	// maybe 20 is too little, not sure
-	app.register(rateLimit, {
-		max: 20,
-		timeWindow: "1 minute"
-	})
+  // maybe 20 is too little, not sure
+  app.register(rateLimit, {
+    max: 20,
+    timeWindow: "1 minute"
+  })
 }
 
 app.register(routes);
@@ -48,7 +48,7 @@ app.register(routes);
 async function main() {
   const port = Number(process.env.PORT) || 3000;
   const host = '0.0.0.0';
-  
+
   startWebSocketServer(9000);
   await app.listen({ port, host }), function (err: Number, address: string) {
     if (err) {
