@@ -27,9 +27,27 @@ import {
   TIMER_PAUSE,
   BALL_MIN_SPEED
 } from './ConstVarGameLogic';
+interface GameState {
+  message: string;
+  GamesID: string;
+  break: boolean;
+  ball: {
+    position: { x: number; y: number; z: number };
+    angle: number;
+    speed: number;
+  };
+  paddleRight: {
+    position: { x: number; y: number; z: number };
+    point: number;
+  };
+  paddleLeft: {
+    position: { x: number; y: number; z: number };
+    point: number;
+  };
+}
 
 function InfoInGame(
-  id = 0,
+  id = "",
   ballx = START_BALL_X, bally = START_BALL_Y, ballz = START_BALL_Z,
   p1x = START_PADDLE_RIGHT_X, p1y = START_PADDLE_RIGHT_Y, p1z = START_PADDLE_RIGHT_Z,
   p2x = START_PADDLE_LEFT_X, p2y = START_PADDLE_LEFT_Y, p2z = START_PADDLE_LEFT_Z,
@@ -37,8 +55,8 @@ function InfoInGame(
   messageType = "Update",
   ballAngle = 3 * Math.PI / 2,  // Initial angle
   gamesPause = false
-) {
-  const message = {
+): GameState {
+  const message: GameState = {
     message: messageType,
     GamesID: id,
     break: gamesPause,
@@ -63,7 +81,7 @@ function InfoInGame(
 export class Game {
   private id: string;
   private players: WebSocket[];
-  private state: any;
+  private state: GameState;
   private loop: any;
   private ballFrozen: boolean = false;
   private sceneIsReadyLeft: boolean = false;

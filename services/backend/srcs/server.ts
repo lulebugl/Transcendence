@@ -49,7 +49,7 @@ async function main() {
   const port = Number(process.env.PORT) || 3000;
   const host = '0.0.0.0';
 
-  startWebSocketServer(9000);
+  startWebSocketServer(app, 9000);
   await app.listen({ port, host }), function (err: Number, address: string) {
     if (err) {
       app.log.error(err);

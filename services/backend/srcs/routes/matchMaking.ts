@@ -1,5 +1,6 @@
 import { FastifyInstance } from "fastify";
 import crypto from "crypto";
+import { GenerateToken } from "./wsToken";
 
 interface Player {
     id: string;
@@ -10,12 +11,6 @@ const queue = new Map<string, Player>();
 
 export default function matchMaking(fastify: FastifyInstance) {
     fastify.post('/api/matchmaking/join', {
-        schema: {
-            body: {
-                type: "object",
-                properties: {}
-            }
-        },
         preHandler: fastify.auth
     }, async (request, reply) => {
         const { id, username } = request.user;
@@ -24,12 +19,6 @@ export default function matchMaking(fastify: FastifyInstance) {
         reply.send({ status: "joined", position: queue.size });
     });
     fastify.post('/api/matchmaking/leave', {
-        schema: {
-            body: {
-                type: "object",
-                properties: {}
-            }
-        },
         preHandler: fastify.auth
     }, async (request, reply) => {
         const playerId = request.user.id.toString();
@@ -41,12 +30,6 @@ export default function matchMaking(fastify: FastifyInstance) {
     let matchCreationInProgress = false;
 
     fastify.get('/api/matchmaking/status', {
-        schema: {
-            querystring: {
-                type: "object",
-                properties: {}
-            }
-        },
         preHandler: fastify.auth
     }, async (request, reply) => {
         const playerId = request.user.id.toString();
@@ -54,7 +37,9 @@ export default function matchMaking(fastify: FastifyInstance) {
         if (playerMatches.has(playerId)) {
             reply.send({
                 status: "matched",
-                matchId: playerMatches.get(playerId)
+                matchId: playerMatches.get(playerId),
+                wsToken: GenerateToken(fastify, playerId, request.user.username),
+                id: playerId,
             });
             return;
         }
@@ -89,7 +74,10 @@ export default function matchMaking(fastify: FastifyInstance) {
                 if (p1.id === playerId || p2.id === playerId) {
                     reply.send({
                         status: "matched",
-                        matchId: matchId
+                        matchId: matchId,
+                        wsToken: GenerateToken(fastify, p1.id, p1.username),
+                        id: playerId,
+
                     });
                 } else {
                     reply.send({

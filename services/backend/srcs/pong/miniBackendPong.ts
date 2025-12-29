@@ -1,19 +1,23 @@
-import WebSocket from 'ws';
+import WS from 'ws'; import { FastifyInstance } from 'fastify';
 import http from 'http';
-import { Game } from './gameClass';
 
-import { db } from '../db/client';
-import { users } from '../db/schema';
-import { eq } from 'drizzle-orm';
 
-export function startWebSocketServer(port = 9000) {
+
+type CustomWebSocket = WS & {
+	isAlive: boolean;
+	playerSlot?: number;
+	matchId?: string;
+	playerId?: string;
+};
+
+export function startWebSocketServer(app: FastifyInstance, port = 9000) {
 	let gameBreak = false;
 	console.log(`Inizialliazazione webSocket wss -NON CONNESSO-`)
 
 	// Map to store active game sessions: matchId -> { player1, player2, game }
-	const games = new Map<string, { player1: WebSocket | null, player2: WebSocket | null, game: Game | null, p1Id: string | null, p2Id: string | null }>();
+	const games = new Map<string, { player1: CustomWebSocket | null, player2: CustomWebSocket | null, game: Game | null, p1Id: string | null, p2Id: string | null }>();
 
-	function setupHeartbeat(ws) {
+	function setupHeartbeat(ws: CustomWebSocket) {
 		ws.isAlive = true;
 		ws.on('pong', () => {
 			ws.isAlive = true;
@@ -21,19 +25,20 @@ export function startWebSocketServer(port = 9000) {
 	}
 	const server = http.createServer({
 	});
-	const wss = new WebSocket.Server({ server });
+	const wss = new WS.Server({ server });
 	server.listen(port, () => {
 		console.log(`WSS server in ascolto su wss`);
 	});
 	const heartbeatInterval = setInterval(() => {
 		wss.clients.forEach((ws) => {
-			if ((ws as any).isAlive === false) {
+			const customWs = ws as CustomWebSocket;
+			if (customWs.isAlive === false) {
 				gameBreak = true;
 				console.log("consessione persa")
-				return ws.terminate();
+				return customWs.terminate();
 			}
-			(ws as any).isAlive = false;
-			ws.ping();
+			customWs.isAlive = false;
+			customWs.ping();
 		});
 	}, 3000);
 
@@ -41,57 +46,49 @@ export function startWebSocketServer(port = 9000) {
 		clearInterval(heartbeatInterval);
 		console.log("close WebSocket");
 	});
-
-	wss.on('connection', async (ws, req) => {
-		console.log('Nuovo client connesso!');
-
+	server.on('upgrade', async (req, socket, head) => {
 		const url = new URL(req.url!, `http://${req.headers.host}`);
 		const matchId = url.searchParams.get('matchId');
+		const token = url.searchParams.get('wsToken'); // Changed from wsToken to token to match plan/convention
 
-		if (!matchId) {
-			console.log("No matchId provided, closing connection");
-			ws.close();
+		if (!matchId || !token) {
+			console.log("No matchId or token provided, closing connection");
+			socket.destroy();
 			return;
 		}
-
-		// Parse cookies to get refreshToken
-		const cookieHeader = req.headers.cookie;
-		if (!cookieHeader) {
-			console.log("No cookies provided, closing connection");
-			ws.close();
-			return;
-		}
-
-		const cookies = Object.fromEntries(cookieHeader.split('; ').map(c => c.split('=')));
-		const refreshToken = cookies['refreshToken'];
-
-		if (!refreshToken) {
-			console.log("No refresh token found, closing connection");
-			ws.close();
-			return;
-		}
-
-		let playerId: string;
-		let username: string;
 
 		try {
-			const [user] = await db.select().from(users).where(eq(users.refresh_token, refreshToken));
-
-			if (!user) {
-				console.log("Invalid refresh token, closing connection");
-				ws.close();
-				return;
-			}
-
-			playerId = user.id.toString();
-			username = user.username;
-			console.log(`User authenticated via cookie: ${username} (${playerId})`);
-
+			const decoded = app.jwt.verify<{ id: number, username: string }>(token);
+			(req as any).user = decoded;
+			(req as any).matchId = matchId;
 		} catch (err) {
-			console.error("Database error during auth:", err);
+			console.log("Invalid token, closing connection", err);
+			socket.destroy();
+			return;
+		}
+
+		wss.handleUpgrade(req, socket, head, (ws) => {
+			wss.emit('connection', ws, req);
+		});
+	});
+
+	wss.on('connection', async (ws: CustomWebSocket, req) => {
+		console.log('Nuovo client connesso!');
+
+
+		const matchId = (req as any).matchId;
+		const user = (req as any).user;
+
+		if (!matchId || !user) {
+			console.log("Missing matchId or user info in connection");
 			ws.close();
 			return;
 		}
+
+		const playerId = user.id.toString();
+		const username = user.username;
+
+		console.log(`User authenticated: ${username} (${playerId})`);
 
 		let session = games.get(matchId);
 
@@ -108,9 +105,9 @@ export function startWebSocketServer(port = 9000) {
 				session.player1.terminate();
 			}
 			session.player1 = ws;
-			(ws as any).playerSlot = 1;
-			(ws as any).matchId = matchId;
-			(ws as any).playerId = playerId;
+			ws.playerSlot = 1;
+			ws.matchId = matchId;
+			ws.playerId = playerId;
 			setupHeartbeat(ws);
 			if (session.game) {
 				session.game.updatePlayerSocket(0, ws);
@@ -121,9 +118,9 @@ export function startWebSocketServer(port = 9000) {
 				session.player2.terminate();
 			}
 			session.player2 = ws;
-			(ws as any).playerSlot = 2;
-			(ws as any).matchId = matchId;
-			(ws as any).playerId = playerId;
+			ws.playerSlot = 2;
+			ws.matchId = matchId;
+			ws.playerId = playerId;
 			setupHeartbeat(ws);
 			if (session.game) {
 				session.game.updatePlayerSocket(1, ws);
@@ -131,18 +128,18 @@ export function startWebSocketServer(port = 9000) {
 		} else if (!session.p1Id) {
 			session.player1 = ws;
 			session.p1Id = playerId;
-			(ws as any).playerSlot = 1;
-			(ws as any).matchId = matchId;
-			(ws as any).playerId = playerId;
+			ws.playerSlot = 1;
+			ws.matchId = matchId;
+			ws.playerId = playerId;
 			ws.send(JSON.stringify({ type: "waiting", message: "Waiting for opponent..." }));
 			console.log(`Player 1 connected to match ${matchId} (ID: ${playerId})`);
 			setupHeartbeat(ws);
 		} else if (!session.p2Id) {
 			session.player2 = ws;
 			session.p2Id = playerId;
-			(ws as any).playerSlot = 2;
-			(ws as any).matchId = matchId;
-			(ws as any).playerId = playerId;
+			ws.playerSlot = 2;
+			ws.matchId = matchId;
+			ws.playerId = playerId;
 			console.log(`Player 2 connected to match ${matchId} (ID: ${playerId})`);
 			session.game = new Game(matchId, session.player1, session.player2);
 			setupHeartbeat(ws);
@@ -154,8 +151,8 @@ export function startWebSocketServer(port = 9000) {
 		}
 
 		ws.on('close', () => {
-			const wsMatchId = (ws as any).matchId;
-			const wsPlayerId = (ws as any).playerId;
+			const wsMatchId = ws.matchId;
+			const wsPlayerId = ws.playerId;
 
 			console.log(`Client disconnected from match ${wsMatchId} (ID: ${wsPlayerId})`);
 

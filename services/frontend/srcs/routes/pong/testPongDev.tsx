@@ -188,10 +188,9 @@ export const TestPongDev = () => {
         // Auto-start connection if matchId is present
         const params = new URLSearchParams(window.location.search);
         const matchId = params.get("matchId");
-        const playerId = params.get("playerId");
 
-        if (matchId && playerId) {
-            websocketRef.current = initWebSocket(`/ws?matchId=${matchId}&playerId=${playerId}`, (data) => {
+        if (matchId) {
+            websocketRef.current = initWebSocket(`/ws?matchId=${matchId}`, (data) => {
                 const msg = data as BackendMessage;
                 if (isStartMessage((msg))) {
                     paddlePlayerRef.current = msg.player === 1 ? paddleRight : paddleLeft;
