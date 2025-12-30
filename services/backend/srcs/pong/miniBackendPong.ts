@@ -25,7 +25,8 @@ export function startWebSocketServer(app: FastifyInstance, port = 9000) {
   }
   const server = http.createServer({
   });
-  const wss = new WS.Server({ server });
+  const wss = new WS.Server({ noServer: true });
+  console.log(`WSS server inizializzato`);
   server.listen(port, () => {
     console.log(`WSS server in ascolto su wss`);
   });

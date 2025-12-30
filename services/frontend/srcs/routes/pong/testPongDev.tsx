@@ -83,71 +83,20 @@ export const TestPongDev = () => {
 
   const offsetLeft = useRef(new Vector3(0, 10, -13)); //Bianco
   const offsetRight = useRef(new Vector3(0, 10, 13)); // Viola
-  const startedRef = useRef(false);
+
 
   useEffect(() => {
-    if (startedRef.current) return;
     const canvas = canvasRef.current;
-    startedRef.current = true;
     if (!canvas) {
       return;
     }
 
-    const engine = new Engine(canvas, true);
-    engine.setHardwareScalingLevel(
-      Math.max(1, (window.devicePixelRatio || 1) * 0.75)
-    );
-    engineRef.current = engine;
-
-    const scene = new Scene(engine);
-    sceneRef.current = scene;
-    scene.clearColor = new Color4(0, 0, 0, 1);
-    scene.skipPointerMovePicking = true;
-    scene.blockMaterialDirtyMechanism = true;
-
-    // Basic light to see the meshes
-    const light = new HemisphericLight("light", new Vector3(0, 1, 0), scene);
-    light.intensity = 1;
-
-    const camera = new ArcRotateCamera(
-      "camera",
-      Math.PI / 2,
-      Math.PI / 3,
-      15,
-      CAMERA_TARGET.clone(),
-      scene
-    );
-    camera.position = CAMERA_BASE_POSITION.clone();
-    camera.fov = 1.1;
-    camera.minZ = 0.1;
-    camera.maxZ = 2000;
-    cameraRef.current = camera;
-
     let disposed = false;
 
-    loadAssets(scene).then(() => {
-      if (!disposed) {
-        sceneReadyRef.current = true;
-        freezeStaticMeshes(meshesRef.current);
-        sendMessage({ type: "ready" }, websocketRef.current);
-        ////               setIsLoading(false);
-      }
-    });
-    const uiGame = GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
-    const barPointRight = createPointBar("100px", "60px", "pink", "black", 75, 0);
-    const barPointLeft = createPointBar("100px", "60px", "white", "black", -75, 0);
-    const pintTextRight = addText(barPointRight, "white", 35);
-    const pintTextLeft = addText(barPointLeft, "white", 35);
-    const exit = createExitGame();
-    const drawText = createTimerBlock();
-    // const start = createStartGame(); // Removed manual start
-    const timerBlock = createTimerBlock();
-    uiGame.addControl(barPointRight);
-    uiGame.addControl(barPointLeft);
-    uiGame.addControl(exit);
-    uiGame.addControl(timerBlock);
-    uiGame.addControl(drawText);
-    // uiGame.addControl(start);
+    const handleResize = () => {
+      engineRef.current?.resize();
+    };
+
     const handleKeyDown = (event: KeyboardEvent) => {
       if (
         !sceneReadyRef.current ||
@@ -170,113 +119,177 @@ export const TestPongDev = () => {
         websocketRef.current.send(JSON.stringify(clientMessage));
       }
     };
-    exit.onPointerUpObservable.add(() => {
-      let message: string;
-      if (paddlePlayerRef.current === paddleLeft) {
-        message = "paddelLeft";
-      }
-      else {
-        message = "paddelRight";
-      }
-      setInterval
-      cleanupGame();
-      sendMessage({ type: "leave", text: message }, websocketRef.current);
-      window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("resize", handleResize);
-      window.location.href = "/";
-    });
 
-    let CameraFlag: boolean = false;
+    const initGame = () => {
+      if (disposed) return;
 
-    // Auto-start connection if matchId is present
-    const params = new URLSearchParams(window.location.search);
-    const matchId = params.get("matchId");
-    const token = params.get('wsToken');
-    websocketRef.current?.close();
 
-    if (matchId) {
-      websocketRef.current = initWebSocket(`/ws?matchId=${matchId}&wsToken=${encodeURIComponent(token)}`, (data) => {
-        const msg = data as BackendMessage;
-        if (isStartMessage((msg))) {
-          paddlePlayerRef.current = msg.player === 1 ? paddleRight : paddleLeft;
-          if (sceneReadyRef.current === true) {
-            moveCameraToPlayer();
-            CameraFlag = true;
-          }
-          else {
-            CameraFlag = false;
-          }
-        } else if (isTimerMessage(msg)) {
-          // setTimer(msg.count);
-          if (msg.count > 0) {
-            timerBlock.text = msg.count.toString();
-            timerBlock.isVisible = true;
-          } else {
-            timerBlock.isVisible = false;
-          }
+      const engine = new Engine(canvas, true);
+      engine.setHardwareScalingLevel(
+        Math.max(1, (window.devicePixelRatio || 1) * 0.75)
+      );
+      engineRef.current = engine;
+
+      const scene = new Scene(engine);
+      sceneRef.current = scene;
+      scene.clearColor = new Color4(0, 0, 0, 1);
+      scene.skipPointerMovePicking = true;
+      scene.blockMaterialDirtyMechanism = true;
+
+      // Basic light to see the meshes
+      const light = new HemisphericLight("light", new Vector3(0, 1, 0), scene);
+      light.intensity = 1;
+
+      const camera = new ArcRotateCamera(
+        "camera",
+        Math.PI / 2,
+        Math.PI / 3,
+        15,
+        CAMERA_TARGET.clone(),
+        scene
+      );
+      camera.position = CAMERA_BASE_POSITION.clone();
+      camera.fov = 1.1;
+      camera.minZ = 0.1;
+      camera.maxZ = 2000;
+      cameraRef.current = camera;
+
+
+
+      loadAssets(scene).then(() => {
+        if (!disposed) {
+          sceneReadyRef.current = true;
+          freezeStaticMeshes(meshesRef.current);
+          sendMessage({ type: "ready" }, websocketRef.current);
+          ////               setIsLoading(false);
         }
-        else if (isGameOver(msg)) {
-          if (websocketRef.current && websocketRef.current.readyState === WebSocket.OPEN) {
-            websocketRef.current.close();
-          }
-          if (Number(msg.winner) === paddlePlayerRef.current) {
-            timerBlock.text = "You Win!";
-            timerBlock.isVisible = true;
-          }
-          else if (Number(msg.winner) === 0) {
-            timerBlock.isVisible = false;
-            drawText.text = "Draw!";
-            drawText.isVisible = true;
-          }
-          else {
-            timerBlock.text = "You Lose!";
-            timerBlock.isVisible = true;
-          }
-          setTimeout(() => {
-            cleanupGame();
-            window.removeEventListener("keydown", handleKeyDown);
-            window.removeEventListener("resize", handleResize);
-            window.location.href = "/";
-          }, 5000);
-        }
-        backendMessageRef.current = msg;
-        console.log(msg);
       });
-    }
+      const uiGame = GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+      const barPointRight = createPointBar("100px", "60px", "pink", "black", 75, 0);
+      const barPointLeft = createPointBar("100px", "60px", "white", "black", -75, 0);
+      const pintTextRight = addText(barPointRight, "white", 35);
+      const pintTextLeft = addText(barPointLeft, "white", 35);
+      const exit = createExitGame();
+      const drawText = createTimerBlock();
+      // const start = createStartGame(); // Removed manual start
+      const timerBlock = createTimerBlock();
+      uiGame.addControl(barPointRight);
+      uiGame.addControl(barPointLeft);
+      uiGame.addControl(exit);
+      uiGame.addControl(timerBlock);
+      uiGame.addControl(drawText);
+      // uiGame.addControl(start);
+      // uiGame.addControl(start);
 
-
-    const handleResize = () => {
-      engine.resize();
-    };
-
-    const renderLoop = () => {
-      if (!sceneReadyRef.current || !scene || !engine) {
-        if (paddlePlayerRef.current === -1)
-          maybeSendNotReady();
-        return;
-      }
-
-      const backendMessage = backendMessageRef.current;
-      if (backendMessage) {
-        if (isUpdateMessage(backendMessage)) {
-          applyStateUpdate(backendMessage);
-          updatePoint(pintTextLeft, backendMessage.state.paddleLeft.point);
-          updatePoint(pintTextRight, backendMessage.state.paddleRight.point);
-          pauseControl(backendMessage.state.break, timerBlock);
+      exit.onPointerUpObservable.add(() => {
+        let message: string;
+        if (paddlePlayerRef.current === paddleLeft) {
+          message = "paddelLeft";
         }
+        else {
+          message = "paddelRight";
+        }
+
+        cleanupGame();
+        sendMessage({ type: "leave", text: message }, websocketRef.current);
+        window.removeEventListener("keydown", handleKeyDown);
+        window.removeEventListener("resize", handleResize);
+        window.location.href = "/";
+      });
+
+      let CameraFlag: boolean = false;
+
+      // Auto-start connection if matchId is present
+      const params = new URLSearchParams(window.location.search);
+      const matchId = params.get("matchId");
+      const token = params.get('wsToken');
+      websocketRef.current?.close();
+
+      if (matchId) {
+        websocketRef.current = initWebSocket(`/ws?matchId=${matchId}&wsToken=${encodeURIComponent(token)}`, (data) => {
+          const msg = data as BackendMessage;
+          if (isStartMessage((msg))) {
+            paddlePlayerRef.current = msg.player === 1 ? paddleRight : paddleLeft;
+            if (sceneReadyRef.current === true) {
+              moveCameraToPlayer();
+              CameraFlag = true;
+            }
+            else {
+              CameraFlag = false;
+            }
+          } else if (isTimerMessage(msg)) {
+            // setTimer(msg.count);
+            if (msg.count > 0) {
+              timerBlock.text = msg.count.toString();
+              timerBlock.isVisible = true;
+            } else {
+              timerBlock.isVisible = false;
+            }
+          }
+          else if (isGameOver(msg)) {
+            if (websocketRef.current && websocketRef.current.readyState === WebSocket.OPEN) {
+              websocketRef.current.close();
+            }
+            if (Number(msg.winner) === paddlePlayerRef.current) {
+              timerBlock.text = "You Win!";
+              timerBlock.isVisible = true;
+            }
+            else if (Number(msg.winner) === 0) {
+              timerBlock.isVisible = false;
+              drawText.text = "Draw!";
+              drawText.isVisible = true;
+            }
+            else {
+              timerBlock.text = "You Lose!";
+              timerBlock.isVisible = true;
+            }
+            setTimeout(() => {
+              cleanupGame();
+              window.removeEventListener("keydown", handleKeyDown);
+              window.removeEventListener("resize", handleResize);
+              window.location.href = "/";
+            }, 5000);
+          }
+          backendMessageRef.current = msg;
+          console.log(msg);
+        });
       }
-      if (!CameraFlag && meshesRef.current.length > 0) {
-        moveCameraToPlayer();
-        CameraFlag = true;
-      }
-      scene.render();
+
+
+
+
+      const renderLoop = () => {
+        if (!sceneReadyRef.current || !scene || !engine) {
+          if (paddlePlayerRef.current === -1)
+            maybeSendNotReady();
+          return;
+        }
+
+        const backendMessage = backendMessageRef.current;
+        if (backendMessage) {
+          if (isUpdateMessage(backendMessage)) {
+            applyStateUpdate(backendMessage);
+            updatePoint(pintTextLeft, backendMessage.state.paddleLeft.point);
+            updatePoint(pintTextRight, backendMessage.state.paddleRight.point);
+            pauseControl(backendMessage.state.break, timerBlock);
+          }
+        }
+        if (!CameraFlag && meshesRef.current.length > 0) {
+          moveCameraToPlayer();
+          CameraFlag = true;
+        }
+        scene.render();
+      };
+
+      window.addEventListener("keydown", handleKeyDown);
+      window.addEventListener("resize", handleResize);
+      engine.runRenderLoop(renderLoop);
     };
 
-    window.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("resize", handleResize);
-    engine.runRenderLoop(renderLoop);
+    const timeoutId = setTimeout(initGame, 50);
 
     return () => {
+      clearTimeout(timeoutId);
       disposed = true;
       console.log("funzione di uscita chiamata");
       window.removeEventListener("keydown", handleKeyDown);
