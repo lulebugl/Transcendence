@@ -54,10 +54,13 @@ export const Lobby = () => {
 
           if (data.status === "matched" && data.matchId && data.id && data.wsToken) {
             setStatus("matched");
-            navigate(`/pong-test?matchId=${data.matchId}&playerId=${data.id}&wsToken=${data.wsToken}`);
+            const url = `/pong-test?matchId=${data.matchId}&wsToken=${encodeURIComponent(data.wsToken)}`;
+            navigate(url);
+
           } else if (data.status === "waiting" && typeof data.queueSize === 'number') {
             setQueueSize(data.queueSize);
           } else if (data.status === "error") {
+
             console.error("Matchmaking error:", data.message);
             setStatus("idle");
           }
