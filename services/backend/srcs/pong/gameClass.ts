@@ -186,11 +186,11 @@ export class Game {
       }
     } else if (info.type === "ready") {
       if (playerIndex === 0) {
-        this.sceneIsReadyLeft = true;
+        this.sceneIsReadyRight = true;
         this.sendToClient({ type: "start", player: playerIndex + 1 }, playerIndex);
       }
       else {
-        this.sceneIsReadyRight = true;
+        this.sceneIsReadyLeft = true;
         this.sendToClient({ type: "start", player: playerIndex + 1 }, playerIndex);
       }
     }
@@ -386,9 +386,9 @@ export class Game {
   }
   // paddleLeft = player 1, paddleRight = player 2
   public getScorePlayer(playerIndex: number): number {
-    if (playerIndex === 1) {
+    if (playerIndex === 2) {
       return this.state.paddleLeft.point;
-    } else if (playerIndex === 2) {
+    } else if (playerIndex === 1) {
       return this.state.paddleRight.point;
     }
     return -1;
@@ -402,11 +402,11 @@ export class Game {
 
   public getWinnerGamer(): number {
     if (this.state.paddleLeft.point > this.state.paddleRight.point) {
-      return Number(this.players[0].playerId);
-    } else if (this.state.paddleLeft.point < this.state.paddleRight.point) {
       return Number(this.players[1].playerId);
+    } else if (this.state.paddleLeft.point < this.state.paddleRight.point) {
+      return Number(this.players[0].playerId);
     }
-    return 0;
+    return -1;
   }
   public getWinnerIndexObjMesh(): number {
     if (this.state.paddleLeft.point > this.state.paddleRight.point) {

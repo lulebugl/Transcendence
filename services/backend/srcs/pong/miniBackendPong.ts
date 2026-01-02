@@ -218,6 +218,12 @@ export function startWebSocketServer(app: FastifyInstance, port = 9000) {
           // write to blockchain call function get info match call getTimeMatch and getScorePlayer
           // count xp for each player and update database
           wsSession.game.stopTimeMatch();
+          // ♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥// ATTETION WINNER IS -1 IF DRAW!!!! ///♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥
+          const winner = wsSession.game.getWinnerGamer();
+          // ♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥// ATTETION WINNER IS -1 IF DRAW!!!! ///♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥
+          console.log("winner", winner);
+          console.log("score", wsSession.game.getScorePlayer(1));
+          console.log("score", wsSession.game.getScorePlayer(2));
           const xp = computeMatchXp(wsSession.game.getScorePlayer(1), wsSession.game.getScorePlayer(2), await getPlayerXp(Number(wsSession.p1Id)), await getPlayerXp(Number(wsSession.p2Id)));
           // update stats
           updatePlayerXp(Number(wsSession.p1Id), xp.xpAGain);
