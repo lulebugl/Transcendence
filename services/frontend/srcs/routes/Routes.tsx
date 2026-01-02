@@ -7,12 +7,14 @@ import { PongErrorFallback } from "@/components/errors/ErrorFallback";
 import { Home } from "@/routes/home";
 import { Login, Signup } from "@/routes/auth";
 import { Settings } from "@/routes/settings";
-import { UserProfile, Achievements } from "@/routes/profile";
+import { PlayerProfile, MatchHistory, Achievements } from "@/routes/profiles/";
 import { Lobby } from "@/routes/lobby";
 import { NotFound } from "@/routes/NotFound";
 import { Tournaments } from "@/routes/tournaments";
 import { Pong, PongLobby } from "@/routes/pong";
 import { TestPongDev } from "@/routes/pong/testPongDev";
+import { Leaderboard } from "@/routes/leaderboard";
+import { TermsOfService, PrivacyPolicy } from "@/routes/legal";
 
 interface RouteConfig {
   path: string;
@@ -23,12 +25,15 @@ export const publicRoutes: RouteConfig[] = [
   { path: "/", element: <Home /> },
   { path: "/lobby", element: <Lobby /> },
   { path: "/lobby-test", element: <PongLobby /> },
-
-  
+  { path: "/leaderboard", element: <Leaderboard /> },
+  { path: "/profile/:username", element: <PlayerProfile /> },
   { path: "/pong-test", element: <TestPongDev /> },
   { path: "/tournaments", element: <Tournaments /> },
+  { path: "/profile/:username/achievements", element: <Achievements /> },
+  { path: "/terms-of-service", element: <TermsOfService /> },
+  { path: "/privacy-policy", element: <PrivacyPolicy /> },
   {
-    path: "/pong",
+	  path: "/pong",
     element: (
       <ErrorBoundary fallback={<PongErrorFallback />}>
         <Suspense fallback={<Loading />}>
@@ -45,8 +50,9 @@ export const publicRoutes: RouteConfig[] = [
 // redirects to login if not authenticated
 export const protectedRoutes: RouteConfig[] = [
   { path: "/settings", element: <Settings /> },
-  { path: "/profile", element: <UserProfile /> },
+  { path: "/profile", element: <PlayerProfile /> },
   { path: "/profile/achievements", element: <Achievements /> },
+  { path: "/profile/match-history", element: <MatchHistory /> },
 ];
 
 // ============================================================================

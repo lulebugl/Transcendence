@@ -83,15 +83,27 @@ export async function api(
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
   };
 
-  if (options.body || !options.method || options.method === "GET") {
-    headers["Content-Type"] = "application/json";
+  // this is to update the "online" status of a user
+  // not ideal because it doubles the requests but it works for now
+  if (token) {
+    await fetch("/api/users/lastCall", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      method: "PATCH",
+      credentials: "include",
+    });
   }
 
-  // this is to update the "online" status of a user
-  await fetch("/api/users/lastCall", {
-    ...options,
-    headers,
-  });
+  if (options.body && !(options.body instanceof FormData)) {
+    if (
+      !options.method ||
+      options.method === "GET" ||
+      typeof options.body === "string"
+    ) {
+      headers["Content-Type"] = "application/json";
+    }
+  }
 
   let response: Response = await fetch(path, {
     ...options,

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { User } from "@/types";
+import { BaseUserType as User } from "@/types";
 import { OtpStatusCard } from "./OtpStatusCard";
 import { OtpSetupFlow } from "./OtpSetupFlow";
 import { OtpDisableFlow } from "./OtpDisableFlow";

@@ -1,18 +1,18 @@
 import { useState } from "react";
-import { User, Shield } from "lucide-react";
+import { User, Shield, Key } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
-import { useAuth } from "@/hooks/useAuth";
 import { ProfileSettings } from "./ProfileSettings";
 import { SecuritySettings } from "./SecuritySettings";
+import { ApiKeySettings } from "./ApiKeySettings";
 
 const TABS = [
   { id: "profile", label: "Profile", icon: User },
   { id: "security", label: "Security", icon: Shield },
+  { id: "api", label: "API", icon: Key },
 ];
 
 export const Settings = () => {
   const [activeTab, setActiveTab] = useState<string>(TABS[0].id);
-  const { user } = useAuth();
 
   return (
     <Layout>
@@ -43,8 +43,9 @@ export const Settings = () => {
         {/* Main Content */}
         <div className="flex-1 min-w-0 mt-12">
           <div className="bg-card border border-border rounded-xl p-6 md:p-8 animate-fade-in-up space-y-8">
-            {activeTab === "profile" && <ProfileSettings user={user} />}
-            {activeTab === "security" && <SecuritySettings user={user} />}
+            {activeTab === "profile" && <ProfileSettings />}
+            {activeTab === "security" && <SecuritySettings />}
+			{activeTab === "api" && <ApiKeySettings />}
           </div>
         </div>
       </div>

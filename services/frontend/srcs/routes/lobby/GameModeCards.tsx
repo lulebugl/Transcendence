@@ -70,6 +70,11 @@ export const GameModeCard = ({
         aria-label={`${title} game mode card`}
         className="relative z-10 space-y-4"
       >
+        {title === "Practice" && (
+          <span className="text-sm font-mono absolute top-0 right-0 text-muted-foreground">
+            [coming soon]
+          </span>
+        )}
         <div
           aria-label={`${title} game mode icon and title`}
           className="flex items-center gap-4"

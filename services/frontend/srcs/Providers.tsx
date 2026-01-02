@@ -6,14 +6,14 @@ import {
   ReactNode,
   createContext,
 } from "react";
-import { User } from "@/types/user";
+import { BaseUserType } from "@/types/users";
 import { api } from "@/api";
 import * as authApi from "@/api/auth";
 import { useNavigate } from "react-router";
 import { LoginResponse } from "@/api/types";
 
 export interface AuthContextType {
-  user: User | null;
+  user: BaseUserType | null;
   isLoading: boolean;
   login: (
     username: string,
@@ -31,7 +31,7 @@ export const AuthContext = createContext<AuthContextType | undefined>(
 );
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<BaseUserType | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -47,7 +47,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const refreshUser = useCallback(async () => {
-    console.log("Refetching user");
     try {
       const res = await api("/api/users/me");
       if (res.ok) {
@@ -56,8 +55,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       } else {
         setUser(null);
       }
-    } catch (error) {
-      console.error("Failed to fetch user:", error);
+    } catch {
       setUser(null);
     }
   }, []);

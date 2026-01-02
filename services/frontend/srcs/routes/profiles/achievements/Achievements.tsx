@@ -1,23 +1,42 @@
-import { Link } from "react-router";
+import { Link, useParams } from "react-router";
 import { Layout } from "@/components/layout/Layout";
 import { ChevronLeft } from "lucide-react";
 import {
-  ACHIEVEMENTS_DATA,
   Rarity,
   rarityBorders,
   rarityGradients,
   rarityColors,
-} from "./achievementsData";
-import { useMemo } from "react";
+} from "./achievements-config";
 import { Lock } from "lucide-react";
 import { SectionHeader } from "@/components/ui/SectionHeader";
+import { usePlayerAchievements } from "./useAchievements";
+import { ErrorPage } from "@/components/errors/ErrorPage";
+import { useProfileData } from "@/hooks/useProfileData";
+import { Loading } from "@/components/Loading";
 
 export const Achievements = () => {
+  const { username } = useParams();
+  const { profileData, isLoading, error } = useProfileData(username);
+
+  if (isLoading) return <Loading />;
+
+  if (error || !profileData) {
+    return (
+      <ErrorPage>
+        <h1 className="text-2xl font-bold text-foreground">
+          Profile not found
+        </h1>
+        <p className="text-muted-foreground">
+          Unable to load the requested profile data.
+        </p>
+      </ErrorPage>
+    );
+  }
   return (
     <Layout>
-      <div className="max-w-4xl mx-auto py-8 md:py-12 space-y-6 animate-fade-in">
+      <div className="max-w-4xl mx-auto py-8 md:py-12 space-y-8 animate-fade-in">
         <Link
-          to="/profile"
+          to={`/profile/${username}`}
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors group"
           aria-label="Back to profile"
         >
@@ -25,14 +44,26 @@ export const Achievements = () => {
           <span>Back to Profile</span>
         </Link>
 
-        <AchievementsList />
+        <AchievementsList playerId={profileData?.id} />
       </div>
     </Layout>
   );
 };
 
-const AchievementsList = () => {
-  const achievements = useMemo(() => ACHIEVEMENTS_DATA, []);
+const AchievementsList = ({ playerId }: { playerId: number }) => {
+  const { achievements, isLoading, error } = usePlayerAchievements(playerId);
+
+  if (isLoading) return <Loading />;
+  if (error)
+    return (
+      <ErrorPage>
+        <h1 className="text-2xl font-bold text-foreground">Error</h1>
+        <p className="text-muted-foreground">
+          Unable to load your achievements.
+        </p>
+      </ErrorPage>
+    );
+
   const unlockedCount = achievements.filter((a) => a.unlocked).length;
 
   return (

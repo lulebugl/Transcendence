@@ -1,5 +1,6 @@
 import { Toaster } from "@/components/ui/Sonner";
 import { Navbar } from "./Navbar";
+import { Footer } from "./Footer";
 
 export const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -9,6 +10,7 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
       <main className="flex-1 relative pt-20 md:px-12 px-4 w-full">
         {children}
       </main>
+	  <Footer />
     </div>
   );
 };

@@ -1,0 +1,2 @@
+export const SUCCESS_NOTIFICATION_DURATION = 3000;
+export const MAX_AVATAR_SIZE = 5 * 1024 * 1024; // 5MB

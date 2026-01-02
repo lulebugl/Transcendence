@@ -1,15 +1,15 @@
-import { User as UserType } from "@/types";
+import { BaseUserType as UserType } from "@/types";
 import { FormInput } from "@/components/forms/FormInput";
 import { useState } from "react";
-import { Camera } from "lucide-react";
 import { useMutation } from "@/hooks/useMutation";
 import { userApi } from "@/api/user";
-import { SUCCESS_NOTIFICATION_DURATION } from "@/lib/constants";
-import { Button } from "@/components/ui";
+import { SUCCESS_NOTIFICATION_DURATION } from "@/lib/constants/constants";
 import { SettingsSection } from "@/components/ui/SettingsSection";
-import { toast } from "@/components/ui/toast";
+import { UserAvatar } from "@/components/UserAvatar";
+import { useAuth } from "@/hooks/useAuth";
 
-export const ProfileSettings = ({ user }: { user: UserType }) => {
+export const ProfileSettings = () => {
+  const { user, refreshUser } = useAuth();
   const [successField, setSuccessField] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [userInfo, setUserInfo] = useState<UserType>(user);
@@ -52,48 +52,31 @@ export const ProfileSettings = ({ user }: { user: UserType }) => {
     }
   };
 
+  const handleAvatarUploaded = (newAvatarUrl: string) => {
+    setUserInfo((prev) => ({ ...prev, avatar_url: newAvatarUrl }));
+    refreshUser();
+  };
+
   return (
     <SettingsSection
-      title="Public Profile"
+      title="Your Profile"
       description="Manage how you appear to other players."
       className="space-y-8"
     >
-
       {/* Avatar Section */}
       <div className="flex items-center gap-6">
-        <div className="relative group cursor-pointer shrink-0">
-          <img
-            src={userInfo?.avatar_url}
-            alt="Avatar"
-            className="w-24 h-24 rounded-full object-cover ring-4 ring-background"
-          />
-          <div className="absolute inset-0 bg-black/40 rounded-full opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-            <Camera className="w-6 h-6 text-white" />
-          </div>
-        </div>
+        <UserAvatar
+          username={userInfo?.username || "User"}
+          avatarUrl={userInfo?.avatar_url}
+          className="w-24 h-24 rounded-full ring-4 ring-background"
+          canUpload={true}
+          onAvatarUploaded={handleAvatarUploaded}
+        />
         <div className="space-y-2">
           <h4 className="font-medium">Profile Picture</h4>
-          <div className="flex gap-3">
-            <Button
-              variant="primary"
-              size="sm"
-              className="text-xs px-4 py-2 hover:bg-primary/90"
-            >
-              Upload New
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="text-xs px-4 py-2 hover:bg-accent"
-			  onClick={() => {
-				toast.error("Not implemented");
-			  }}
-            >
-              Remove
-            </Button>
-          </div>
           <p className="text-xs text-muted-foreground">
-            Recommended size: 500x500px. Max size: 2MB.
+            Click on your avatar to upload a new picture. <br />
+            Recommended size: 500x500px. Max size: 5MB.
           </p>
         </div>
       </div>
@@ -114,6 +97,7 @@ export const ProfileSettings = ({ user }: { user: UserType }) => {
           </div>
         </div>
       </div>
+	  <span className="h-0.5 block"></span>
     </SettingsSection>
   );
 };

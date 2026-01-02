@@ -44,7 +44,7 @@ export const DeleteAccount = ({ onDelete }: DeleteAccountProps) => {
           Delete Account
         </Button>
       ) : (
-        <div className="flex items-center gap-3 animate-in fade-in slide-in-from-right-2 duration-200">
+        <div className="flex items-center gap-3">
           <span className="text-sm text-destructive font-medium">
             Are you sure?
           </span>

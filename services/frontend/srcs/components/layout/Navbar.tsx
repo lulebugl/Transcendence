@@ -4,12 +4,14 @@ import { LogIn, LogOut, Settings, Menu, X } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { MobileMenu } from "./mobile-menu";
 import { UserAvatar } from "@/components/UserAvatar";
+import { useProfileData } from "@/hooks/useProfileData";
 
 const NAV_ITEMS = [
+//   { label: "Home", path: "/" },
   { label: "Play", path: "/lobby" },
-  { label: "Tournaments", path: "/tournaments" },
   { label: "Leaderboard", path: "/leaderboard" },
-//   ...(import.meta.env.DEV ? [{ label: "Dev-Hub", path: "/dev-hub" }] : []),
+  { label: "Profile", path: "/profile" },
+  //   ...(import.meta.env.DEV ? [{ label: "Dev-Hub", path: "/dev-hub" }] : []),
 ];
 
 export const Navbar = () => {
@@ -68,9 +70,9 @@ export const Navbar = () => {
           </div>
 
           {/* Center Nav - Desktop */}
-		  {/* translate-x-[40%] is to center the nav 
-		    * it might need to be adjusted based on the number of items in the nav
-		  */}
+          {/* translate-x-[40%] is to center the nav
+           * it might need to be adjusted based on the number of items in the nav
+           */}
           <nav className="hidden md:flex items-center gap-12 absolute left-1/2 -translate-x-[40%]">
             {NAV_ITEMS.map((item) => {
               const isActive = location.pathname === item.path;
@@ -118,8 +120,15 @@ export const Navbar = () => {
   );
 };
 
+let cachedLevel: number | null = null;
+
 const UserSection = () => {
   const { user, logout, isLoading } = useAuth();
+  const { profileData } = useProfileData();
+
+  if (profileData?.level !== undefined) {
+    cachedLevel = profileData.level;
+  }
 
   if (isLoading) {
     return <UserSectionSkeleton />;
@@ -141,13 +150,13 @@ const UserSection = () => {
             {user.username}
           </span>
           <span className="text-[10px] uppercase tracking-wider text-primary group-hover:text-primary/80 transition-colors">
-            Lv.42
+            Lv. {cachedLevel ?? "-"}
           </span>
         </div>
         <UserAvatar
           username={user.username}
           avatarUrl={user.avatar_url}
-          className="grayscale-25 group-hover:grayscale-0"
+          className="w-8 h-8 grayscale-25 group-hover:grayscale-0"
         />
       </Link>
 
@@ -157,7 +166,7 @@ const UserSection = () => {
           aria-label="Settings"
           className="p-2 border border-white/10 rounded-full hover:bg-white/10 transition-all duration-300 flex items-center justify-center group"
         >
-          <Settings className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+          <Settings className="w-4 h-4 text-foreground group-hover:text-primary transition-colors" />
         </Link>
         <button
           onClick={logout}
@@ -165,7 +174,6 @@ const UserSection = () => {
           className="text-[10px] cursor-pointer uppercase tracking-widest p-2 border border-white/10 rounded-full hover:bg-white/10 transition-all duration-300 flex items-center gap-2"
         >
           <LogOut className="w-4 h-4" />
-          {/* Logout */}
         </button>
       </div>
     </div>
@@ -197,12 +205,9 @@ const GuestSection = () => (
       </span>
     </div>
     <div className="flex items-center gap-3">
-      <div className="hidden md:flex w-10 h-10 rounded-full border border-dashed border-white/15 items-center justify-center text-[10px] uppercase tracking-widest text-muted-foreground">
-        AI
-      </div>
       <Link
         to="/auth/login"
-        className="hidden md:flex text-[10px] uppercase tracking-widest px-4 py-2 border border-white/10 rounded-full hover:bg-white/10 transition-all duration-300 items-center gap-2"
+        className="hidden md:flex text-[10px] uppercase tracking-widest px-4 py-2 border border-white/10 rounded-full hover:bg-white/10 items-center gap-2"
       >
         <LogIn className="w-3 h-3" />
         Login

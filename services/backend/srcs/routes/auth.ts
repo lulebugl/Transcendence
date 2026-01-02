@@ -10,6 +10,7 @@ import base32 from "hi-base32";
 import { randomBytes } from "crypto";
 import { decryptTotpSecret } from "../utils/hash";
 import { fields } from "./schema";
+import { initPlayerStats } from "./players";
 
 interface UserBody {
   username: string;
@@ -111,6 +112,8 @@ export default async function authRoutes(fastify: FastifyInstance) {
 			path: "/api/users/refresh",
 			maxAge: 60 * 60 * 24 * 30,
 		});
+		
+		initPlayerStats(user.id);
 		
         return {
           success: true,
@@ -260,3 +263,5 @@ export default async function authRoutes(fastify: FastifyInstance) {
     }
   );
 }
+
+

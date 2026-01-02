@@ -36,7 +36,7 @@ export const LoginForm = () => {
         return;
       }
 
-      const data = await login(username, password) as LoginResponse;
+      const data = (await login(username, password)) as LoginResponse;
       if (data && "require2fa" in data) {
         setRequire2fa(true);
         setIsSubmitting(false);
@@ -152,17 +152,17 @@ export const LoginForm = () => {
           required
         />
 
-		<Button
+        {error && <FormError message={error} />}
+		
+        <Button
           type="submit"
-		  variant="primary"
-		  size="lg"
+          variant="primary"
+          size="lg"
           className="group relative w-full font-bold tracking-[0.2em] uppercase rounded-none"
         >
           Initialize{" "}
           <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
         </Button>
-
-        {error && <FormError message={error} />}
       </form>
 
       {/* Footer */}

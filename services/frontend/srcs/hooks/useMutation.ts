@@ -2,7 +2,7 @@ import { useCallback, useRef, useState } from "react";
 
 type Mutation<T, A> = (args: A) => Promise<T>;
 
-interface UseMutationOptions<T> {
+export interface UseMutationOptions<T> {
   onSuccess?: (data: T) => void;
   onError?: (error: Error) => void;
 }

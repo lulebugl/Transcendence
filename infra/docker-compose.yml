@@ -33,11 +33,14 @@ services:
       - PORT=3000
       - DB_FILE_NAME=${DB_FILE_NAME:-file:./database/app.db}
       - MASTER_KEY_TOTP=T9CsqZJxo8+cFdD25I1mqikt+YdU4baMU4m8a0WUbEo=
+      - RPC_URL=${RPC_URL}
+      - PRIVATE_KEY_WALLET=${PRIVATE_KEY_WALLET}
+      - CONTRACT_ADDRESS=${CONTRACT_ADDRESS}
     volumes:
-       - ../services/backend/srcs:/app/services/backend/srcs
-       - ../services/backend/database:/app/services/backend/database
-       - ../services/backend/drizzle:/app/services/backend/drizzle
-       - /app/services/backend/node_modules  # Anonymous volume to preserve node_modules
+      - ../services/backend/srcs:/app/services/backend/srcs
+      - ../services/backend/database:/app/services/backend/database
+      - ../services/backend/drizzle:/app/services/backend/drizzle
+      - /app/services/backend/node_modules # Anonymous volume to preserve node_modules
   frontend:
     container_name: frontend
     networks:
@@ -56,8 +59,7 @@ services:
       - ../services/frontend/public:/app/services/frontend/public
       - ../services/frontend/index.html:/app/services/frontend/index.html:ro
       - ../services/frontend/vite.config.ts:/app/services/frontend/vite.config.ts:ro
-      - /app/services/frontend/node_modules  # Anonymous volume to preserve node_modules
-
+      - /app/services/frontend/node_modules # Anonymous volume to preserve node_modules
 
 networks:
   trans:

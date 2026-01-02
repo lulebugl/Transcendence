@@ -1,59 +1,23 @@
 # HIGH priority
 
-- change navbar offset to hard value not percentage 
- 
-- merge partie hugo:
-	* auto-login apres le signup
-	* retrieve user by id
-	* friends api
-	* better logout avec la modification de la route
-	* lastcall pour les status friends
+- add the real matches
+- Finish the implementation of the match history page
+ (still reviewing and understand how infinite scroll works, need to dig more on MatchHistory.tsx)
+- Also need to connect the matches to be able to see the matches of other players
 
 ## GAME
 
 - separate the logic of the game from babylonjs
-- and create a version without 3D for better testing
 - regarder comment preload les assets et le jeu pendant le matchmaking
 
 - ameliorer les handler des match-making ( regarder example in 2fa.ts si besoin)
-- creer une route separe pour jouer contre l'ia
 
-## Users
+## Friends (in progress)
 
--  Implementer les friends and think about the flow and different states (pending, accepted, declined)
-   * add friend button
-   * remove friends
-   * accept friend request
-   * decline friend request
-   * see friend requests
-   * see friends and their status
-   * pending?
-
-- implementer les routes dynamic pour voir les pages des autres utilisateurs
-
-## STATS
-
-- Faire le premier jet de "useUserStats" pour simuler la vrai recuperation des stats
-
-## TOURNAMENTS
-
-- [ ] design tournament page
-   * tournament list
-   * tournament details
-   * tournament registration (and unregistration?)
-   * tournament creation and deletion
-
-# MEDIUM priority
-
--  Implement avatar remove and change on frontend
+* this is the one i'm the least confident about 
+* but it would need a major refactor to be done properly so...
 
 # LOW priority
 
--  also remove overview and add leaderboard in nav
--  add loading state for button in login, signup and otp
-
 # BONUS
--  add skeletons
--  ajouter statut declined for friendship
--  maybe add tournament to lobby also
 

@@ -42,10 +42,10 @@ export const OtpStatusCard = ({
             variant="outline"
             size="sm"
             onClick={onDisable}
-            className="text-destructive hover:text-destructive"
+            className="text-black hover:text-black bg-foreground hover:bg-foreground hover:brightness-110"
             aria-label="Disable two-factor authentication"
           >
-            Disable
+            Remove
           </Button>
         ) : (
           <Button

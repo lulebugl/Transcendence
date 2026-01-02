@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { Layout } from "@/components/layout/Layout";
+import { Layout } from "@/components/layout/";
 
 interface ErrorFallbackProps {
   error?: Error | null;

@@ -1,10 +1,22 @@
 import { apiRequest } from "./api";
-import { User } from "@/types/user";
-import { OtpSetupData } from "@/api/types";
+import { BaseUserType } from "@/types/users";
+import { OtpSetupData } from "./types";
+
+interface UploadAvatarResponse {
+  success: boolean;
+  avatarUrl: string;
+}
+
+interface GenerateApiKeyResponse {
+  id: number;
+  label: string;
+  created_at: string;
+  apiKey: string;
+}
 
 export const userApi = {
-  updateProfile: async (data: Partial<User>): Promise<User> => {
-    return apiRequest<User>("/api/users/update", {
+  updateProfile: async (data: Partial<BaseUserType>): Promise<BaseUserType> => {
+    return apiRequest<BaseUserType>("/api/users/update", {
       method: "PATCH",
       body: JSON.stringify(data),
     });
@@ -38,6 +50,38 @@ export const userApi = {
     return apiRequest<void>("/api/users/2fa/disable", {
       method: "POST",
       body: JSON.stringify(data),
+    });
+  },
+  uploadAvatar: async (data: FormData) => {
+    return apiRequest<UploadAvatarResponse>("/api/users/avatar", {
+      method: "POST",
+      body: data,
+    });
+  },
+  hasApiKey: async (): Promise<{ hasKey: boolean }> => {
+    return apiRequest("/api/api-keys/has", {
+      method: "GET",
+    });
+  },
+  generateApiKey: async (): Promise<GenerateApiKeyResponse> => {
+    return apiRequest<GenerateApiKeyResponse>("/api/api-keys", {
+      method: "POST",
+    });
+  },
+  regenerateApiKey: async (): Promise<GenerateApiKeyResponse> => {
+    return apiRequest<GenerateApiKeyResponse>("/api/api-keys/regenerate", {
+      method: "POST",
+    });
+  },
+  revokeApiKey: async (): Promise<void> => {
+    return apiRequest<void>("/api/api-keys/revoke", {
+      method: "POST",
+    });
+  },
+  // this is equivalent to revokeApiKey
+  deleteApiKey: async (): Promise<void> => {
+    return apiRequest<void>("/api/api-keys", {
+      method: "DELETE",
     });
   },
 };

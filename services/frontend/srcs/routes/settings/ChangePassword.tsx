@@ -75,7 +75,7 @@ export const ChangePassword = ({ onCancel }: ChangePasswordProps) => {
   };
 
   return (
-    <div className="bg-muted/30 border border-border rounded-lg p-5 space-y-4 animate-in slide-in-from-top-2 fade-in duration-200">
+    <div className="bg-muted/30 border border-border rounded-lg p-5 space-y-4">
       <form onSubmit={handleChangePassword} className="space-y-4">
         <div className="space-y-2">
           <PasswordInput
