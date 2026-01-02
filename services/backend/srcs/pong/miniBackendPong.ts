@@ -1,9 +1,10 @@
 import WS from 'ws'; import { FastifyInstance } from 'fastify';
 import http from 'http';
 import { Game } from './gameClass';
+import { playerMatches } from "../routes/matchMaking";
 
 
-type CustomWebSocket = WS & {
+export type CustomWebSocket = WS & {
   isAlive: boolean;
   playerSlot?: number;
   matchId?: string;
@@ -21,6 +22,7 @@ export function startWebSocketServer(app: FastifyInstance, port = 9000) {
     ws.isAlive = true;
     ws.on('pong', () => {
       ws.isAlive = true;
+      //  console.log("pong");
     });
   }
   const server = http.createServer({
@@ -38,22 +40,17 @@ export function startWebSocketServer(app: FastifyInstance, port = 9000) {
         console.log("consessione persa")
         return customWs.terminate();
       }
+      //  console.log("ping");
       customWs.isAlive = false;
       customWs.ping();
     });
   }, 3000);
 
   wss.on('close', () => {
-    //clearInterval(heartbeatInterval);
+    clearInterval(heartbeatInterval);
     console.log("close WebSocket");
   });
   server.on('upgrade', async (req, socket, head) => {
-    try {
-      //socket.destroy(); // chiude socket eventualmente già aperto
-    } catch (err) {
-      console.log("Socket already destroyed or in error state");
-      server.on
-    }
     const url = new URL(req.url!, `http://${req.headers.host}`);
     const matchId = url.searchParams.get('matchId');
     const token = url.searchParams.get('wsToken'); // Changed from wsToken to token to match plan/convention
@@ -93,18 +90,8 @@ export function startWebSocketServer(app: FastifyInstance, port = 9000) {
   wss.on('connection', async (ws: CustomWebSocket, req) => {
     console.log('Nuovo client connesso!');
 
-    const url = new URL(req.url!, `http://${req.headers.host}`);
-    const matchId = url.searchParams.get('matchId');
-    const token = url.searchParams.get('wsToken'); // Changed from wsToken to token to match plan/convention
-    let user = null;
-    try {
-      user = app.jwt.verify<{ playerId: number, username: string }>(token)
-    }
-    catch {
-      ws.close();
-      return;
-    }
-
+    const matchId = (req as any).matchId;
+    const user = (req as any).user;
 
     if (!matchId || !user) {
       if (!matchId) {
@@ -127,6 +114,11 @@ export function startWebSocketServer(app: FastifyInstance, port = 9000) {
     }
     const playerId = user.playerId.toString();
     const username = user.username;
+    if (!playerId || !username) {
+      console.log("No playerId or username");
+      ws.close();
+      return;
+    }
 
     console.log(`User authenticated: ${username} (${playerId})`);
 
@@ -181,7 +173,8 @@ export function startWebSocketServer(app: FastifyInstance, port = 9000) {
       ws.matchId = matchId;
       ws.playerId = playerId;
       console.log(`Player 2 connected to match ${matchId} (ID: ${playerId})`);
-      session.game = new Game(matchId, session.player1, session.player2);
+      ws.send(JSON.stringify({ type: "waiting", message: "Opponent found, starting match..." }));
+      session.game = new Game(matchId.toString(), session.player1, session.player2);
       setupHeartbeat(ws);
     } else {
       console.log(`Match ${matchId} is full. Rejecting ${playerId}`);
@@ -216,6 +209,8 @@ export function startWebSocketServer(app: FastifyInstance, port = 9000) {
           wsSession.game = null;
         }
         console.log(`Both players disconnected, removing match ${wsMatchId}`);
+        playerMatches.delete(wsSession.p1Id);
+        playerMatches.delete(wsSession.p2Id);
         games.delete(wsMatchId);
       }
     });

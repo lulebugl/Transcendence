@@ -1,4 +1,5 @@
 let count: number = 0;
+import { CustomWebSocket } from './miniBackendPong';
 import WebSocket from 'ws';
 import {
   START_BALL_X,
@@ -80,7 +81,7 @@ function InfoInGame(
 
 export class Game {
   private id: string;
-  private players: WebSocket[];
+  private players: CustomWebSocket[];
   private state: GameState;
   private loop: any;
   private ballFrozen: boolean = false;
@@ -96,7 +97,7 @@ export class Game {
   private paddleSensitivityPlayer1: number = 0.9;
   private paddleSensitivityPlayer2: number = 0.9;
 
-  constructor(id: string, player1: WebSocket, player2: WebSocket) {
+  constructor(id: string, player1: CustomWebSocket, player2: CustomWebSocket) {
     this.id = id;
     this.players = [player1, player2];
     this.state = InfoInGame(id);
@@ -134,6 +135,9 @@ export class Game {
 
           this.broadcast({ type: 'timer', count: countdown });
         }
+      }
+      else {
+        this.broadcast({ type: 'ready?' });
       }
     }, 1000);
   }
@@ -357,7 +361,7 @@ export class Game {
     this.breakTimeStart = Date.now();
   }
 
-  updatePlayerSocket(playerIndex: number, newSocket: WebSocket) {
+  updatePlayerSocket(playerIndex: number, newSocket: CustomWebSocket) {
     this.players[playerIndex] = newSocket;
     newSocket.on('message', (msg) => {
       try {

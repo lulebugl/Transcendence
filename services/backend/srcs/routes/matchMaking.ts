@@ -2,12 +2,14 @@ import { FastifyInstance } from "fastify";
 import crypto from "crypto";
 import { GenerateToken } from "./wsToken";
 
+
 interface Player {
     id: string;
     username: string;
 }
 
 const queue = new Map<string, Player>();
+export const playerMatches = new Map<string, string>();
 
 export default function matchMaking(fastify: FastifyInstance) {
     fastify.post('/api/matchmaking/join', {
@@ -26,7 +28,7 @@ export default function matchMaking(fastify: FastifyInstance) {
         reply.send({ status: "left" });
     });
 
-    const playerMatches = new Map<string, string>();
+
     let matchCreationInProgress = false;
 
     fastify.get('/api/matchmaking/status', {
@@ -41,6 +43,9 @@ export default function matchMaking(fastify: FastifyInstance) {
                 wsToken: GenerateToken(fastify, playerId, request.user.username),
                 id: playerId,
             });
+            if (queue.has(playerId)) {
+                queue.delete(playerId);
+            }
             return;
         }
 
@@ -75,7 +80,7 @@ export default function matchMaking(fastify: FastifyInstance) {
                     reply.send({
                         status: "matched",
                         matchId: matchId,
-                        wsToken: GenerateToken(fastify, p1.id, p1.username),
+                        wsToken: GenerateToken(fastify, playerId, request.user.username),
                         id: playerId,
 
                     });

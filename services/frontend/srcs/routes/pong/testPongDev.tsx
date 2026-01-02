@@ -49,6 +49,9 @@ type BackendMessage = UpdateMessage | StartMessage | Record<string, unknown>;
 const isUpdateMessage = (message: BackendMessage): message is UpdateMessage =>
   message?.type === "update";
 
+const isReadyMessage = (message: BackendMessage): message is ReadyMessage =>
+  message?.type === "ready?";
+
 const isStartMessage = (message: BackendMessage): message is StartMessage =>
   message?.type === "start";
 
@@ -79,6 +82,7 @@ export const TestPongDev = () => {
   const paddlePlayerRef = useRef<number>(-1);
   const meshesRef = useRef<AbstractMesh[]>([]);
   const lastNotReadyRef = useRef<number>(0);
+  const readyMessageRef = useRef<boolean>(false);
   // const [timer, setTimer] = useState<number | null>(null); // Removed React state
 
   const offsetLeft = useRef(new Vector3(0, 10, -13)); //Bianco
@@ -160,6 +164,8 @@ export const TestPongDev = () => {
         if (!disposed) {
           sceneReadyRef.current = true;
           freezeStaticMeshes(meshesRef.current);
+          console.log("sceneReadyRef.current", sceneReadyRef.current);
+          console.log("try to send ready");
           sendMessage({ type: "ready" }, websocketRef.current);
           ////               setIsLoading(false);
         }
@@ -203,11 +209,16 @@ export const TestPongDev = () => {
       const params = new URLSearchParams(window.location.search);
       const matchId = params.get("matchId");
       const token = params.get('wsToken');
-      websocketRef.current?.close();
 
       if (matchId) {
         websocketRef.current = initWebSocket(`/ws?matchId=${matchId}&wsToken=${encodeURIComponent(token)}`, (data) => {
           const msg = data as BackendMessage;
+          console.log("msg siamo nel websocket");
+          if (isReadyMessage(msg)) {
+
+            console.log("try to send ready");
+            sendMessage({ type: "ready" }, websocketRef.current);
+          }
           if (isStartMessage((msg))) {
             paddlePlayerRef.current = msg.player === 1 ? paddleRight : paddleLeft;
             if (sceneReadyRef.current === true) {
@@ -258,12 +269,15 @@ export const TestPongDev = () => {
 
 
 
+
       const renderLoop = () => {
         if (!sceneReadyRef.current || !scene || !engine) {
+          console.log("impossible to render")
           if (paddlePlayerRef.current === -1)
             maybeSendNotReady();
           return;
         }
+        console.log("Render loop running. Camera:", cameraRef.current?.position);
 
         const backendMessage = backendMessageRef.current;
         if (backendMessage) {
