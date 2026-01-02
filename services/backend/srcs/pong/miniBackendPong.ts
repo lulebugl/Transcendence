@@ -186,7 +186,7 @@ export function startWebSocketServer(app: FastifyInstance, port = 9000) {
       return;
     }
 
-    ws.on('close', () => {
+    ws.on('close', async () => {
       const wsMatchId = ws.matchId;
       const wsPlayerId = ws.playerId;
 
@@ -207,21 +207,29 @@ export function startWebSocketServer(app: FastifyInstance, port = 9000) {
       }
 
       if (!wsSession.player1 && !wsSession.player2) {
+
+        console.log(`Both players disconnected, removing match ${wsMatchId}`);
+        // reconetction logic and stop timeMatch
+        playerMatches.delete(wsSession.p1Id);
+        playerMatches.delete(wsSession.p2Id);
+
+
         if (wsSession.game) {
+          // write to blockchain call function get info match call getTimeMatch and getScorePlayer
+          // count xp for each player and update database
+          wsSession.game.stopTimeMatch();
+          const xp = computeMatchXp(wsSession.game.getScorePlayer(1), wsSession.game.getScorePlayer(2), await getPlayerXp(Number(wsSession.p1Id)), await getPlayerXp(Number(wsSession.p2Id)));
+          // update stats
+          updatePlayerXp(Number(wsSession.p1Id), xp.xpAGain);
+          updatePlayerXp(Number(wsSession.p2Id), xp.xpBGain);
+          // update blockchain
+
+
+
+          // stop gameLoop and delete game
           wsSession.game.stop();
           wsSession.game = null;
         }
-        console.log(`Both players disconnected, removing match ${wsMatchId}`);
-        playerMatches.delete(wsSession.p1Id);
-        playerMatches.delete(wsSession.p2Id);
-        // write to blockchain call function get info match
-        // count xp for each player and update database
-        const xp = computeMatchXp(wsSession.game.getScorePlayer(1), wsSession.game.getScorePlayer(2), getPlayerXp(Number(wsSession.p1Id)), getPlayerXp(Number(wsSession.p2Id)));
-        // update database
-        updatePlayerXp(Number(wsSession.p1Id), xp.xpAGain);
-        updatePlayerXp(Number(wsSession.p2Id), xp.xpBGain);
-        // update blockchain
-
         games.delete(wsMatchId);
       }
     });

@@ -1,6 +1,7 @@
 let count: number = 0;
 import { CustomWebSocket } from './miniBackendPong';
 import WebSocket from 'ws';
+
 import {
   START_BALL_X,
   START_BALL_Y,
@@ -88,6 +89,7 @@ export class Game {
   private sceneIsReadyLeft: boolean = false;
   private sceneIsReadyRight: boolean = false;
   private breakTimeStart: number = 0;
+  private timeGame: number = 0;
 
   // Pause logic properties
   private PauseFlag: boolean = false;
@@ -130,6 +132,7 @@ export class Game {
 
         if (countdown < 0) {
           clearInterval(interval);
+          this.timeGame = Date.now();
           this.loop = setInterval(() => this.update(), 44);
         } else {
 
@@ -239,7 +242,7 @@ export class Game {
 
     // Pause Logithi
     if (this.state.paddleLeft.point === LIMIT_POINT || this.state.paddleRight.point === LIMIT_POINT) {
-      return this.broadcast({ type: 'gameOver', winner: this.state.paddleLeft.point === LIMIT_POINT ? 1 : 2 });
+      return this.broadcast({ type: 'gameOver', winner: this.getWinnerIndexObjMesh() });
     }
     if (this.PauseFlag) {
       console.log("PAUSE");
@@ -251,7 +254,7 @@ export class Game {
       }
       // verifico da quanto tempo é disconesso se è piu di TIMER_PAUSE disconetto tutti
       if (this.state.break && breakTime > TIMER_PAUSE) {
-        this.broadcast({ type: 'gameOver', winner: 0 });
+        this.broadcast({ type: 'gameOver', winner: this.getWinnerIndexObjMesh() });
         this.state.break = false;
         this.stop();
       }
@@ -381,4 +384,37 @@ export class Game {
   public disconnectPlayer() {
     this.broadcast({ type: 'gameOver', winner: 0 });
   }
+  // paddleLeft = player 1, paddleRight = player 2
+  public getScorePlayer(playerIndex: number): number {
+    if (playerIndex === 1) {
+      return this.state.paddleLeft.point;
+    } else if (playerIndex === 2) {
+      return this.state.paddleRight.point;
+    }
+    return -1;
+  }
+  public getTimeMatch(): number {
+    return this.timeGame;
+  }
+  public stopTimeMatch() {
+    this.timeGame = Date.now() - this.timeGame;
+  }
+
+  public getWinnerGamer(): number {
+    if (this.state.paddleLeft.point > this.state.paddleRight.point) {
+      return Number(this.players[0].playerId);
+    } else if (this.state.paddleLeft.point < this.state.paddleRight.point) {
+      return Number(this.players[1].playerId);
+    }
+    return 0;
+  }
+  public getWinnerIndexObjMesh(): number {
+    if (this.state.paddleLeft.point > this.state.paddleRight.point) {
+      return 11;
+    } else if (this.state.paddleLeft.point < this.state.paddleRight.point) {
+      return 8;
+    }
+    return 0;
+  }
+
 }

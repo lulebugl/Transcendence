@@ -29,4 +29,4 @@ export const PADDLE_MIN_STEP: number = 0.1;
 export const PADDLE_MAX_STEP: number = 1;
 export const TIMER_PAUSE: number = 30_000; //30 seconds
 
-export const LIMIT_POINT: number = 11;
+export const LIMIT_POINT: number = 2;
