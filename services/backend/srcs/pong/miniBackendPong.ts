@@ -2,6 +2,9 @@ import WS from 'ws'; import { FastifyInstance } from 'fastify';
 import http from 'http';
 import { Game } from './gameClass';
 import { playerMatches } from "../routes/matchMaking";
+import { computeMatchXp } from './expCounter';
+import { db } from '../db/client';
+import { updatePlayerXp, getPlayerXp } from './writeExpOnDB'
 
 
 export type CustomWebSocket = WS & {
@@ -211,6 +214,14 @@ export function startWebSocketServer(app: FastifyInstance, port = 9000) {
         console.log(`Both players disconnected, removing match ${wsMatchId}`);
         playerMatches.delete(wsSession.p1Id);
         playerMatches.delete(wsSession.p2Id);
+        // write to blockchain call function get info match
+        // count xp for each player and update database
+        const xp = computeMatchXp(wsSession.game.getScorePlayer(1), wsSession.game.getScorePlayer(2), getPlayerXp(Number(wsSession.p1Id)), getPlayerXp(Number(wsSession.p2Id)));
+        // update database
+        updatePlayerXp(Number(wsSession.p1Id), xp.xpAGain);
+        updatePlayerXp(Number(wsSession.p2Id), xp.xpBGain);
+        // update blockchain
+
         games.delete(wsMatchId);
       }
     });

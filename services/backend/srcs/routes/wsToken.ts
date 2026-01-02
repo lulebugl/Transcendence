@@ -12,5 +12,5 @@ export default function wsToken(fastify: FastifyInstance) {
 }
 
 export const GenerateToken = (fastify: FastifyInstance, playerId: string, username: string) => {
-    return fastify.jwt.sign({ playerId, username }, { expiresIn: "30s" });
+    return fastify.jwt.sign({ playerId, username }, { expiresIn: "15s" });
 };
