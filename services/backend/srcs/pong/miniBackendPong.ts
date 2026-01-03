@@ -192,26 +192,25 @@ export function startWebSocketServer(app: FastifyInstance, port = 9000) {
 
       console.log(`Client disconnected from match ${wsMatchId} (ID: ${wsPlayerId})`);
 
-      if (!session.game) return;
       const wsSession = games.get(wsMatchId);
       if (!wsSession) return;
 
       if (wsSession.player1 === ws) {
         wsSession.player1 = null;
-        wsSession.game.setPauseFlags(true);
+        if (wsSession.game) wsSession.game.setPauseFlags(true);
       }
 
       if (wsSession.player2 === ws) {
         wsSession.player2 = null;
-        wsSession.game.setPauseFlags(true);
+        if (wsSession.game) wsSession.game.setPauseFlags(true);
       }
 
       if (!wsSession.player1 && !wsSession.player2) {
 
         console.log(`Both players disconnected, removing match ${wsMatchId}`);
         // reconetction logic and stop timeMatch
-        playerMatches.delete(wsSession.p1Id);
-        playerMatches.delete(wsSession.p2Id);
+        if (wsSession.p1Id) playerMatches.delete(wsSession.p1Id);
+        if (wsSession.p2Id) playerMatches.delete(wsSession.p2Id);
 
 
         if (wsSession.game) {
@@ -224,11 +223,13 @@ export function startWebSocketServer(app: FastifyInstance, port = 9000) {
           console.log("winner", winner);
           console.log("score", wsSession.game.getScorePlayer(1));
           console.log("score", wsSession.game.getScorePlayer(2));
-          const xp = computeMatchXp(wsSession.game.getScorePlayer(1), wsSession.game.getScorePlayer(2), await getPlayerXp(Number(wsSession.p1Id)), await getPlayerXp(Number(wsSession.p2Id)));
-          // update stats
-          updatePlayerXp(Number(wsSession.p1Id), xp.xpAGain);
-          updatePlayerXp(Number(wsSession.p2Id), xp.xpBGain);
-          // update blockchain
+          if (wsSession.p1Id && wsSession.p2Id) {
+            const xp = computeMatchXp(wsSession.game.getScorePlayer(1), wsSession.game.getScorePlayer(2), await getPlayerXp(Number(wsSession.p1Id)), await getPlayerXp(Number(wsSession.p2Id)));
+            // update stats
+            updatePlayerXp(Number(wsSession.p1Id), xp.xpAGain);
+            updatePlayerXp(Number(wsSession.p2Id), xp.xpBGain);
+            // update blockchain
+          }
 
 
 
