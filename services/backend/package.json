@@ -11,7 +11,8 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "db:seed": "tsx srcs/db/seed.ts"
+    "db:seed": "tsx srcs/db/seed.ts",
+    "chain:seed-matches": "tsx srcs/blockchain/seedMatches.ts"
   },
   "dependencies": {
     "@fastify/cookie": "^11.0.2",

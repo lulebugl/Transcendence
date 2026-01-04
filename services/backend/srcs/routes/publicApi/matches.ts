@@ -45,12 +45,43 @@ export default async function publicApiMatches(fastify: FastifyInstance) {
       },
       schema: {
         tags: ["matches"],
+        description: "Fetch details for a single match by id",
         params: {
           type: "object",
           properties: {
             id: { type: "string" },
           },
           required: ["id"],
+        },
+        security: [],
+        response: {
+          200: {
+            description: "Match found",
+            type: "object",
+            properties: {
+              match: {
+                type: "object",
+                description: "Match payload from the blockchain backend",
+                additionalProperties: true,
+              },
+            },
+            required: ["match"],
+          },
+          400: {
+            description: "Invalid id or bad request",
+            type: "object",
+            properties: { error: { type: "string" } },
+          },
+          404: {
+            description: "Match not found",
+            type: "object",
+            properties: { error: { type: "string" } },
+          },
+          500: {
+            description: "Unexpected server error",
+            type: "object",
+            properties: { error: { type: "string" } },
+          },
         },
       },
     },
@@ -86,11 +117,36 @@ export default async function publicApiMatches(fastify: FastifyInstance) {
       config: { rateLimit: publicApiRateLimit },
       schema: {
         tags: ["matches"],
+        description: "Paginated list of matches",
         querystring: {
           type: "object",
           properties: {
             offset: { type: "string" },
             count: { type: "string" },
+          },
+        },
+        security: [],
+        response: {
+          200: {
+            description: "Matches returned",
+            type: "object",
+            properties: {
+              matches: {
+                type: "array",
+                items: { type: "object", additionalProperties: true },
+              },
+            },
+            required: ["matches"],
+          },
+          400: {
+            description: "Invalid pagination parameters",
+            type: "object",
+            properties: { error: { type: "string" } },
+          },
+          500: {
+            description: "Unexpected server error",
+            type: "object",
+            properties: { error: { type: "string" } },
           },
         },
       },
@@ -127,6 +183,7 @@ export default async function publicApiMatches(fastify: FastifyInstance) {
       config: { rateLimit: publicApiRateLimit },
       schema: {
         tags: ["matches"],
+        description: "Paginated matches for a given player",
         params: {
           type: "object",
           properties: {
@@ -139,6 +196,30 @@ export default async function publicApiMatches(fastify: FastifyInstance) {
           properties: {
             offset: { type: "string" },
             count: { type: "string" },
+          },
+        },
+        security: [],
+        response: {
+          200: {
+            description: "Matches for player returned",
+            type: "object",
+            properties: {
+              matches: {
+                type: "array",
+                items: { type: "object", additionalProperties: true },
+              },
+            },
+            required: ["matches"],
+          },
+          400: {
+            description: "Invalid player id or pagination",
+            type: "object",
+            properties: { error: { type: "string" } },
+          },
+          500: {
+            description: "Unexpected server error",
+            type: "object",
+            properties: { error: { type: "string" } },
           },
         },
       },
@@ -182,6 +263,23 @@ export default async function publicApiMatches(fastify: FastifyInstance) {
       config: { rateLimit: publicApiRateLimit },
       schema: {
         tags: ["matches"],
+        description: "Current on-chain game state snapshot",
+        security: [],
+        response: {
+          200: {
+            description: "State fetched",
+            type: "object",
+            properties: {
+              state: { type: "object", additionalProperties: true },
+            },
+            required: ["state"],
+          },
+          500: {
+            description: "Unable to fetch state",
+            type: "object",
+            properties: { error: { type: "string" } },
+          },
+        },
       },
     },
     async (_req, reply) => {
