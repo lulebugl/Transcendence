@@ -288,7 +288,8 @@ export default async function publicApiMatches(fastify: FastifyInstance) {
         return { state };
       } catch (err) {
         if (err instanceof BlockchainError) {
-          return reply.status(err.status).send({ error: err.message });
+		  // @ts-ignore
+          return reply.code(err.status).send({ error: err.message });
         }
         reply.log.error({ err }, "Failed to fetch contract state");
         return reply.internalServerError("Unable to fetch contract state");

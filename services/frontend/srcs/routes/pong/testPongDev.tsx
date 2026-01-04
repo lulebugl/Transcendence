@@ -49,6 +49,7 @@ type BackendMessage = UpdateMessage | StartMessage | Record<string, unknown>;
 const isUpdateMessage = (message: BackendMessage): message is UpdateMessage =>
   message?.type === "update";
 
+// @ts-expect-error - ReadyMessage is not defined yet TODO: define it
 const isReadyMessage = (message: BackendMessage): message is ReadyMessage =>
   message?.type === "ready?";
 

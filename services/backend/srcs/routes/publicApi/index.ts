@@ -33,7 +33,6 @@ export default async function publicApi(fastify: FastifyInstance) {
     uiConfig: {
       docExpansion: "list",
       deepLinking: true,
-      customSiteTitle: "Transcendence - 3D Pong - Public API",
     },
     theme: {
       js: [
