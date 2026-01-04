@@ -46,13 +46,15 @@ app.register(fastifyStatic, {
   prefix: "/public/",
 });
 
-if (process.env.NODE_ENV !== "development") {
-  // maybe 20 is too little, not sure
-  app.register(rateLimit, {
-    max: 20,
-    timeWindow: "1 minute",
-  });
-}
+// app wide rate limit is hitted very fast
+// some pages makes a lot of requests
+// so disabled it for now and not sure if we need it
+// if (process.env.NODE_ENV !== "development") {
+//   app.register(rateLimit, {
+//     max: 20,
+//     timeWindow: "1 minute",
+//   });
+// }
 
 app.register(routes);
 
