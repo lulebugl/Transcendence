@@ -5,14 +5,10 @@ import { playersApi } from "@/api/players";
 import { ProfileData, OnlineStatus } from "@/types";
 import { useEffect } from "react";
 import { toEpochMs } from "@/lib/utils";
+import { xpForLevel } from "@/lib/xp";
 
 const FIFTEEN_MINUTES = 1000 * 60 * 15;
 const TEN_MINUTES = 1000 * 60 * 10;
-const XP_PER_LEVEL = 1000;
-
-// TODO: check the bug where when the app starts everyone is online
-// this is due to lastCall being created at the same time as the user
-// when seeding the database
 
 export const usePlayerLevel = (username?: string) => {
   const { data: level } = useQuery(() =>
@@ -34,10 +30,6 @@ const formatMemberSince = (timestamp: number): string => {
     month: "long",
     year: "numeric",
   });
-};
-
-const getNextLevelXp = (level: number): number => {
-  return level * XP_PER_LEVEL;
 };
 
 // ─── Hook ──────────────────────────────────────────────
@@ -75,7 +67,7 @@ export function useProfileData(username?: string) {
       xp: playerData.xp,
       rank: playerData.rank,
       memberSince: formatMemberSince(playerData.memberSince),
-      nextLevelXp: getNextLevelXp(playerData.level),
+      nextLevelXp: xpForLevel(playerData.level + 1),
       winRate: playerData.winRate,
       gamesWon: playerData.gamesWon,
       gamesLost: playerData.gamesLost,

@@ -1,18 +1,26 @@
-export function xpForLevel(L: number): number {
+// Sigmoid curve parameters for XP progression
+const XP_MAX = 100000.0;
+const K = 0.126376;
+const L0 = 36.4014;
+const C = 1177.3525;
 
-    // parameters of the curb for XP
-    const XP_MAX = 100000.0;
-    const k = 0.126376;
-    const L0 = 36.4014;
-    const C = 1177.3525;
+export function xpForLevel(level: number): number {
+    const xp = XP_MAX / (1.0 + Math.exp(-K * (level - L0))) - C;
+    if (xp < 0) return 0;
+    return Math.round(xp / 10) * 10;
+}
 
-    // equation
-    const xp = XP_MAX / (1.0 + Math.exp(-k * (L - L0))) - C;
+export function levelFromXp(xp: number): number {
+    // Inverse of the sigmoid: solve xp = XP_MAX / (1 + e^(-k(L-L0))) - C for L
+    // L = L0 - ln(XP_MAX / (xp + C) - 1) / k
+    const adjusted = xp + C;
+    if (adjusted <= 0) return 1;
 
-    // security for 0
-    if (xp < 0.0) return 0.0;
+    const ratio = XP_MAX / adjusted;
+    if (ratio <= 1) return 99; // max level cap
 
-    return xp;
+    const level = L0 - Math.log(ratio - 1) / K;
+    return Math.max(1, Math.floor(level));
 }
 
 // function tanh because I did not find find one

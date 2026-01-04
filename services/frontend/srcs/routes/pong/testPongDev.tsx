@@ -258,7 +258,7 @@ export const TestPongDev = () => {
               cleanupGame();
               window.removeEventListener("keydown", handleKeyDown);
               window.removeEventListener("resize", handleResize);
-              window.location.href = "/";
+              window.location.href = "/lobby";
             }, 5000);
           }
           backendMessageRef.current = msg;
