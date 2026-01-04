@@ -27,7 +27,7 @@ const SEED_STATS = [
   { games_played: 65, games_won: 48, tournaments_won: 2, level: 15, xp: 4000, current_win_streak: 0, best_win_streak: 8 },
   { games_played: 50, games_won: 35, tournaments_won: 1, level: 14, xp: 3200, current_win_streak: 2, best_win_streak: 7 },
   { games_played: 40, games_won: 25, tournaments_won: 0, level: 12, xp: 2400, current_win_streak: 0, best_win_streak: 5 },
-  { games_played: 30, games_won: 15, tournaments_won: 0, level: 7, xp: 1600, current_win_streak: 1, best_win_streak: 4 },
+  { games_played: 30, games_won: 15, tournaments_won: 0, level: 7, xp: 1500, current_win_streak: 1, best_win_streak: 4 },
   { games_played: 11, games_won: 8, tournaments_won: 0, level: 3, xp: 150, current_win_streak: 0, best_win_streak: 3 },
 ];
 
