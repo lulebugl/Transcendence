@@ -5,12 +5,11 @@ export default function wsToken(fastify: FastifyInstance) {
         preHandler: fastify.auth
     }, async (request, reply) => {
         const { id, username } = request.user;
-        const playerId = id.toString();
-        const token = fastify.jwt.sign({ playerId, username }, { expiresIn: "30s" });
+        const token = fastify.jwt.sign({ id, username }, { expiresIn: "30s" });
         reply.send({ token });
     });
 }
 
-export const GenerateToken = (fastify: FastifyInstance, playerId: string, username: string) => {
-    return fastify.jwt.sign({ playerId, username }, { expiresIn: "15s" });
+export const GenerateToken = (fastify: FastifyInstance, id: number, username: string) => {
+    return fastify.jwt.sign({ id, username }, { expiresIn: "15s" });
 };
