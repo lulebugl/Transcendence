@@ -18,7 +18,7 @@ export const Leaderboard = () => {
     data: players,
     isLoading,
     error,
-  } = useQuery(() => playersApi.getLeaderboard());
+  } = useQuery(() => playersApi.getLeaderboard(0, 100));
 
   return (
     <Layout>

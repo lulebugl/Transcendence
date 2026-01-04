@@ -1,5 +1,7 @@
 let count: number = 0;
+import { CustomWebSocket } from './miniBackendPong';
 import WebSocket from 'ws';
+
 import {
   START_BALL_X,
   START_BALL_Y,
@@ -23,11 +25,31 @@ import {
   PADDLE_START_STEP,
   PADDLE_MIN_STEP,
   PADDLE_MAX_STEP,
+  LIMIT_POINT,
+  TIMER_PAUSE,
   BALL_MIN_SPEED
 } from './ConstVarGameLogic';
+interface GameState {
+  message: string;
+  GamesID: string;
+  break: boolean;
+  ball: {
+    position: { x: number; y: number; z: number };
+    angle: number;
+    speed: number;
+  };
+  paddleRight: {
+    position: { x: number; y: number; z: number };
+    point: number;
+  };
+  paddleLeft: {
+    position: { x: number; y: number; z: number };
+    point: number;
+  };
+}
 
 function InfoInGame(
-  id = 0,
+  id = "",
   ballx = START_BALL_X, bally = START_BALL_Y, ballz = START_BALL_Z,
   p1x = START_PADDLE_RIGHT_X, p1y = START_PADDLE_RIGHT_Y, p1z = START_PADDLE_RIGHT_Z,
   p2x = START_PADDLE_LEFT_X, p2y = START_PADDLE_LEFT_Y, p2z = START_PADDLE_LEFT_Z,
@@ -35,8 +57,8 @@ function InfoInGame(
   messageType = "Update",
   ballAngle = 3 * Math.PI / 2,  // Initial angle
   gamesPause = false
-) {
-  const message = {
+): GameState {
+  const message: GameState = {
     message: messageType,
     GamesID: id,
     break: gamesPause,
@@ -59,23 +81,25 @@ function InfoInGame(
 }
 
 export class Game {
-  private id: any;
-  private players: any;
-  private state: any;
+  private id: string;
+  private players: CustomWebSocket[];
+  private state: GameState;
   private loop: any;
   private ballFrozen: boolean = false;
   private sceneIsReadyLeft: boolean = false;
   private sceneIsReadyRight: boolean = false;
+  private breakTimeStart: number = 0;
+  private timeGame: number = 0;
 
   // Pause logic properties
   private PauseFlag: boolean = false;
   private speedMemory: number = 0;
 
   // 🔹 value of sensitivity, to take from setting's player, here is jsut to test
-  private paddleSensitivityPlayer1: number = 0.1;
+  private paddleSensitivityPlayer1: number = 0.9;
   private paddleSensitivityPlayer2: number = 0.9;
 
-  constructor(id, player1, player2) {
+  constructor(id: string, player1: CustomWebSocket, player2: CustomWebSocket) {
     this.id = id;
     this.players = [player1, player2];
     this.state = InfoInGame(id);
@@ -108,11 +132,15 @@ export class Game {
 
         if (countdown < 0) {
           clearInterval(interval);
-          this.loop = setInterval(() => this.update(), 16);
+          this.timeGame = Date.now();
+          this.loop = setInterval(() => this.update(), 44);
         } else {
 
           this.broadcast({ type: 'timer', count: countdown });
         }
+      }
+      else {
+        this.broadcast({ type: 'ready?' });
       }
     }, 1000);
   }
@@ -158,11 +186,11 @@ export class Game {
       }
     } else if (info.type === "ready") {
       if (playerIndex === 0) {
-        this.sceneIsReadyLeft = true;
+        this.sceneIsReadyRight = true;
         this.sendToClient({ type: "start", player: playerIndex + 1 }, playerIndex);
       }
       else {
-        this.sceneIsReadyRight = true;
+        this.sceneIsReadyLeft = true;
         this.sendToClient({ type: "start", player: playerIndex + 1 }, playerIndex);
       }
     }
@@ -212,13 +240,23 @@ export class Game {
       this.freezeBallAndReset();
     }
 
-    // Pause Logic
+    // Pause Logithi
+    if (this.state.paddleLeft.point === LIMIT_POINT || this.state.paddleRight.point === LIMIT_POINT) {
+      return this.broadcast({ type: 'gameOver', winner: this.getWinnerIndexObjMesh() });
+    }
     if (this.PauseFlag) {
       console.log("PAUSE");
       this.state.break = true;
+      let breakTime = Date.now() - this.breakTimeStart;
       if (this.state.ball.speed !== 0) {
         this.speedMemory = this.state.ball.speed;
         this.state.ball.speed = 0;
+      }
+      // verifico da quanto tempo é disconesso se è piu di TIMER_PAUSE disconetto tutti
+      if (this.state.break && breakTime > TIMER_PAUSE) {
+        this.broadcast({ type: 'gameOver', winner: this.getWinnerIndexObjMesh() });
+        this.state.break = false;
+        this.stop();
       }
 
       if (this.areAllPlayersConnected()) {
@@ -258,7 +296,7 @@ export class Game {
     this.state.ball.position.x = START_BALL_X;
     this.state.ball.position.z = START_BALL_Z;
     this.state.ball.speed = BALL_START_SPEED;
-    this.state.ball.angle = 3 * Math.PI / 2; // Random direction
+    this.state.ball.angle = (Math.random() < 0.5 ? Math.PI / 2 : 3 * Math.PI / 2) + (Math.random() - 0.5) * Math.PI / 2;
   }
 
   broadcast(data) {
@@ -315,17 +353,18 @@ export class Game {
   }
 
   // Preserved Pause Methods
-  areAllPlayersConnected(): boolean {
+  private areAllPlayersConnected(): boolean {
     return this.players.every(p => p && p.readyState === WebSocket.OPEN);
   }
 
-  setPauseFlags(flag: boolean) {
+  public setPauseFlags(flag: boolean) {
     this.PauseFlag = flag;
     this.state.break = flag;
     this.broadcast({ type: 'update', state: this.state });
+    this.breakTimeStart = Date.now();
   }
 
-  updatePlayerSocket(playerIndex: number, newSocket: WebSocket) {
+  updatePlayerSocket(playerIndex: number, newSocket: CustomWebSocket) {
     this.players[playerIndex] = newSocket;
     newSocket.on('message', (msg) => {
       try {
@@ -337,10 +376,45 @@ export class Game {
     });
   }
 
-  sendToClient(message: any, playerIndex: number) {
+  public sendToClient(message: any, playerIndex: number) {
     if (this.players[playerIndex]) {
       this.players[playerIndex].send(JSON.stringify(message));
     }
+  }
+  public disconnectPlayer() {
+    this.broadcast({ type: 'gameOver', winner: 0 });
+  }
+  // paddleLeft = player 1, paddleRight = player 2
+  public getScorePlayer(playerIndex: number): number {
+    if (playerIndex === 2) {
+      return this.state.paddleLeft.point;
+    } else if (playerIndex === 1) {
+      return this.state.paddleRight.point;
+    }
+    return -1;
+  }
+  public getTimeMatch(): number {
+    return this.timeGame;
+  }
+  public stopTimeMatch() {
+    this.timeGame = Date.now() - this.timeGame;
+  }
+
+  public getWinnerGamer(): number {
+    if (this.state.paddleLeft.point > this.state.paddleRight.point) {
+      return Number(this.players[1].playerId);
+    } else if (this.state.paddleLeft.point < this.state.paddleRight.point) {
+      return Number(this.players[0].playerId);
+    }
+    return -1;
+  }
+  public getWinnerIndexObjMesh(): number {
+    if (this.state.paddleLeft.point > this.state.paddleRight.point) {
+      return 11;
+    } else if (this.state.paddleLeft.point < this.state.paddleRight.point) {
+      return 8;
+    }
+    return 0;
   }
 
 }

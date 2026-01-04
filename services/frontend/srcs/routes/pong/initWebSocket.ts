@@ -13,8 +13,8 @@ export function initWebSocket(uri: string, onMessage: (data: any) => void): WebS
   return ws;
 }
 
-export function sendMessage(message: unknown, websocket: WebSocket): void {
-  if (websocket.readyState === WebSocket.OPEN) {
+export function sendMessage(message: unknown, websocket: WebSocket | null): void {
+  if (websocket && websocket.readyState === WebSocket.OPEN) {
     websocket.send(JSON.stringify(message));
     console.log("send message", message);
   }

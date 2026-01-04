@@ -46,13 +46,15 @@ app.register(fastifyStatic, {
   prefix: "/public/",
 });
 
-if (process.env.NODE_ENV !== "development") {
-  // maybe 20 is too little, not sure
-  app.register(rateLimit, {
-    max: 20,
-    timeWindow: "1 minute",
-  });
-}
+// app wide rate limit is hitted very fast
+// some pages makes a lot of requests
+// so disabled it for now and not sure if we need it
+// if (process.env.NODE_ENV !== "development") {
+//   app.register(rateLimit, {
+//     max: 20,
+//     timeWindow: "1 minute",
+//   });
+// }
 
 app.register(routes);
 
@@ -68,8 +70,8 @@ app.setErrorHandler((error, request, reply) => {
     process.env.NODE_ENV === "development"
       ? (error as FastifyError).message
       : statusCode >= 500
-      ? "Internal server error"
-      : (error as FastifyError).message;
+        ? "Internal server error"
+        : (error as FastifyError).message;
 
   return reply.status(statusCode).send({
     error: true,
@@ -80,17 +82,16 @@ app.setErrorHandler((error, request, reply) => {
 
 async function main() {
   const port = Number(process.env.PORT) || 3000;
-  const host = "0.0.0.0";
+  const host = '0.0.0.0';
 
-  startWebSocketServer(9000);
-  await app.listen({ port, host }),
-    function (err: Number, address: string) {
-      if (err) {
-        app.log.error(err);
-        process.exit(1);
-      }
-      app.log.info(`server listening on ${address}`);
-    };
+  startWebSocketServer(app, 9000);
+  await app.listen({ port, host }), function (err: Number, address: string) {
+    if (err) {
+      app.log.error(err);
+      process.exit(1);
+    }
+    app.log.info(`server listening on ${address}`);
+  };
 }
 
 ["SIGINT", "SIGTERM"].forEach((signal) => {

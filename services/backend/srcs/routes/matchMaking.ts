@@ -1,5 +1,7 @@
 import { FastifyInstance } from "fastify";
 import crypto from "crypto";
+import { GenerateToken } from "./wsToken";
+
 
 interface Player {
     id: string;
@@ -7,61 +9,43 @@ interface Player {
 }
 
 const queue = new Map<string, Player>();
+export const playerMatches = new Map<string, string>();
 
 export default function matchMaking(fastify: FastifyInstance) {
     fastify.post('/api/matchmaking/join', {
-        schema: {
-            body: {
-                type: "object",
-                required: ["username", "playerId"],
-                properties: {
-                    username: { type: "string" },
-                    playerId: { type: "string" }
-                }
-            }
-        }
+        preHandler: fastify.auth
     }, async (request, reply) => {
-        const { username, playerId } = request.body as { username: string, playerId: string };
+        const { id, username } = request.user;
+        const playerId = id.toString();
         queue.set(playerId, { id: playerId, username });
         reply.send({ status: "joined", position: queue.size });
     });
     fastify.post('/api/matchmaking/leave', {
-        schema: {
-            body: {
-                type: "object",
-                required: ["playerId"],
-                properties: {
-                    playerId: { type: "string" }
-                }
-            }
-        }
+        preHandler: fastify.auth
     }, async (request, reply) => {
-        const { playerId } = request.body as { playerId: string };
+        const playerId = request.user.id.toString();
         queue.delete(playerId);
         reply.send({ status: "left" });
     });
 
-    const playerMatches = new Map<string, string>();
+
     let matchCreationInProgress = false;
 
     fastify.get('/api/matchmaking/status', {
-        schema: {
-            querystring: {
-                type: "object",
-                required: ["playerId"],
-                properties: {
-                    playerId: { type: "string" }
-                }
-            }
-        }
+        preHandler: fastify.auth
     }, async (request, reply) => {
-        const { playerId } = request.query as { playerId: string };
+        const playerId = request.user.id.toString();
 
         if (playerMatches.has(playerId)) {
             reply.send({
                 status: "matched",
-                matchId: playerMatches.get(playerId)
+                matchId: playerMatches.get(playerId),
+                wsToken: GenerateToken(fastify, parseInt(playerId), request.user.username),
+                id: playerId,
             });
+            if (queue.has(playerId)) {
+                queue.delete(playerId);
+            }
             return;
         }
 
@@ -95,7 +79,10 @@ export default function matchMaking(fastify: FastifyInstance) {
                 if (p1.id === playerId || p2.id === playerId) {
                     reply.send({
                         status: "matched",
-                        matchId: matchId
+                        matchId: matchId,
+                        wsToken: GenerateToken(fastify, parseInt(playerId), request.user.username),
+                        id: playerId,
+
                     });
                 } else {
                     reply.send({

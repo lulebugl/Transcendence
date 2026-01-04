@@ -166,9 +166,16 @@ const extractMatchId = (
   return null;
 };
 
+type RecordMatchOptions = {
+  waitConfirmations?: number;
+  overrides?: ethers.TransactionRequest;
+};
+
 export const recordMatch = async (
-  input: RecordMatchInput
+  input: RecordMatchInput,
+  options: RecordMatchOptions = {}
 ): Promise<{ txHash: string; matchId: number | null }> => {
+  const waitConfirmations = options.waitConfirmations ?? 1;
   return handleCall(async () => {
     const tx = await contract.recordMatch(
       input.playerId1,
@@ -176,9 +183,15 @@ export const recordMatch = async (
       input.score1,
       input.score2,
       input.expGained1,
-      input.expGained2
+      input.expGained2,
+      options.overrides ?? {}
     );
-    const receipt = await tx.wait();
+
+    if (waitConfirmations === 0) {
+      return { txHash: tx.hash, matchId: null };
+    }
+
+    const receipt = await tx.wait(waitConfirmations);
     return { txHash: tx.hash, matchId: extractMatchId(receipt) };
   });
 };

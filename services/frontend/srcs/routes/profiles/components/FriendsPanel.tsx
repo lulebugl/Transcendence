@@ -35,8 +35,10 @@ export const FriendsPanel = ({ isOwnProfile }: { isOwnProfile: boolean }) => {
       toast.success("Friend request accepted");
       refetchAll();
     },
-    onError: (error) =>
-      toast.error(error.message || "Failed to accept friend request"),
+    onError: () => {
+      refetchAll();
+      toast.error("Failed to accept friend request");
+    },
   });
 
   const { mutate: removeFriend, isLoading: isRemoving } = useRemoveFriend({
@@ -44,7 +46,10 @@ export const FriendsPanel = ({ isOwnProfile }: { isOwnProfile: boolean }) => {
       toast.success("Request cancelled");
       refetchAll();
     },
-    onError: (error) => toast.error(error.message || "Failed to update"),
+    onError: () => {
+      refetchAll();
+      toast.error("Failed to remove friend");
+    },
   });
 
   if (!user || !isOwnProfile) return null;
@@ -63,7 +68,10 @@ export const FriendsPanel = ({ isOwnProfile }: { isOwnProfile: boolean }) => {
         <TabNavigation
           tabs={["friends", "requests"]}
           activeTab={viewMode}
-          onTabChange={(tab) => setViewMode(tab as ViewMode)}
+          onTabChange={(tab) => {
+            refetchAll();
+            setViewMode(tab as ViewMode);
+          }}
           badges={{ friends: friends.length, requests: totalPending }}
         />
 
@@ -232,7 +240,7 @@ const IncomingRequestItem = ({
   isProcessing,
 }: IncomingRequestItemProps) => {
   const status = getOnlineStatus(request.last_call);
-  
+
   return (
     <div className="flex items-center gap-3 p-2 rounded-lg bg-white/5">
       <UserAvatar
