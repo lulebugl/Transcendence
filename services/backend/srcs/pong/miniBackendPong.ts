@@ -118,7 +118,7 @@ export function startWebSocketServer(app: FastifyInstance, port = 9000) {
     } else {
       console.log(user);
     }
-    const playerId = user.playerId.toString();
+    const playerId = user.id.toString();
     const username = user.username;
     if (!playerId || !username) {
       console.log("No playerId or username");
