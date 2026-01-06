@@ -34,3 +34,7 @@ declare module "fastify" {
   }
 }
 
+export function isEmail(value: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+

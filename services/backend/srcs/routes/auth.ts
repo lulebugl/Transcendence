@@ -11,16 +11,18 @@ import { randomBytes } from "crypto";
 import { decryptTotpSecret } from "../utils/hash";
 import { fields } from "./schema";
 import { initPlayerStats } from "./players";
+import { isEmail } from "../utils/auth";
 
 interface UserBody {
   username: string;
   avatarUrl?: string;
   password: string;
   totp_enabled?: boolean;
+  email: string;
 }
 
 interface loginBody {
-  username: string;
+  identifier: string,
   password: string;
   totp: string;
 }
@@ -34,21 +36,22 @@ export default async function authRoutes(fastify: FastifyInstance) {
       schema: {
         body: {
           type: "object",
-          required: ["username", "password"],
+          required: ["username", "password", "email"],
           properties: {
             username: { ...fields.username },
             password: { ...fields.password },
             avatarUrl: { ...fields.url },
+			email: { ...fields.email },
           },
         },
       },
     },
     async (req: FastifyRequest<{ Body: UserBody }>, reply: FastifyReply) => {
-      const { username, avatarUrl, password, totp_enabled } = req.body;
+      const { username, avatarUrl, password, totp_enabled, email } = req.body;
       const DEFAULT_AVATAR_BASE_URL =
         "https://api.dicebear.com/7.x/avataaars/svg";
 
-      if (!username.trim() || !password.trim()) {
+      if (!username.trim() || !password.trim() || !email.trim()) {
         return fastify.httpErrors.badRequest("Fields cannot be empty.");
       }
       if (password.length < 8) {
@@ -84,6 +87,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
             : `${DEFAULT_AVATAR_BASE_URL}?seed=NeoPaddle`,
           password_hash: password_hash,
           totp_secret_key: secret_hash,
+		  email: email,
         });
 
 		const [user] = await db
@@ -136,23 +140,31 @@ export default async function authRoutes(fastify: FastifyInstance) {
       schema: {
         body: {
           type: "object",
-          required: ["username", "password"],
+          required: ["password", "identifier"],
           properties: {
-            username: { ...fields.username },
-            password: { type: "string" },
+            identifier: { 
+				type: "string",
+				minLength: 3,
+				maxLength: 255,
+			},
+            password: { ...fields.password },
             totp: { type: "string" },
           },
         },
       },
     },
     async (req: FastifyRequest<{ Body: loginBody }>, reply: FastifyReply) => {
-      const { username, password, totp } = req.body;
+      const { identifier, password, totp } = req.body;
 
       let totpNumber: number = 1;
       const [user] = await db
         .select()
         .from(users)
-        .where(eq(users.username, username));
+        .where(
+			isEmail(identifier)
+			? eq(users.email, identifier) 
+			: eq(users.username, identifier)
+		);
 
       if (!user) return reply.unauthorized("Invalid credentials");
 
@@ -166,7 +178,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
           return reply.send({ require2fa: true });
         }
 
-        fastify.log.info(`TOTP submitted for user '${username}': ${totp}`);
+        fastify.log.info(`TOTP submitted for user '${identifier}': ${totp}`);
 
         const parsedTotp = totp.replace(/\s+/g, "");
         if (!/^\d{6}$/.test(parsedTotp)) {

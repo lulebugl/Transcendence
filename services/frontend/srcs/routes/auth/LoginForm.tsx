@@ -10,7 +10,7 @@ import { LoginResponse } from "@/api/types";
 import { Button } from "@/components/ui";
 
 export const LoginForm = () => {
-  const [pseudo, setPseudo] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [require2fa, setRequire2fa] = useState(false);
@@ -30,13 +30,12 @@ export const LoginForm = () => {
     setIsSubmitting(true);
 
     try {
-      const username = pseudo.trim();
-      if (!username || !password.trim()) {
-        setError("Username and password are required");
+      if (!identifier || !password.trim()) {
+        setError("Identifier and password are required");
         return;
       }
 
-      const data = (await login(username, password)) as LoginResponse;
+      const data = (await login(identifier, password)) as LoginResponse;
       if (data && "require2fa" in data) {
         setRequire2fa(true);
         setIsSubmitting(false);
@@ -67,7 +66,7 @@ export const LoginForm = () => {
     setError(null);
     setIsSubmitting(true);
     try {
-      await login(pseudo, password, otp);
+      await login(identifier, password, otp);
       navigate("/");
     } catch (err) {
       const error = err as Error;
@@ -119,11 +118,11 @@ export const LoginForm = () => {
 
       <form onSubmit={handleSubmit} className="p-8 space-y-6">
         <FormInput
-          label="Pilot Pseudo"
-          id="pseudo"
-          value={pseudo}
+          label="Pilot Pseudo or email"
+          id="identifier"
+          value={identifier}
           onChange={(e) => {
-            setPseudo(e.target.value);
+            setIdentifier(e.target.value);
             if (error) setError(null);
           }}
           icon={User}
