@@ -10,14 +10,12 @@ import { db } from '../db/client';
 import { updatePlayerXp, getPlayerXp } from './writeExpOnDB'
 
 type User = FastifyJWT["user"];
-export type CustomWebSocket = WS & {
+export interface CustomWebSocket extends WS {  // Usa "interface" invece di "type"
   isAlive: boolean;
   playerSlot?: number | null;
   matchId?: string | null;
-  //playerId?: string;
   user: User | null;
-};
-
+}
 
 export function startWebSocketServer(app: FastifyInstance, port = 9000) {
   let gameBreak = false;
