@@ -20,8 +20,8 @@ declare module "@fastify/jwt" {
       username: string;
     };
     user: {
-      id: number;
-      username: string;
+      id: number |  null;
+      username: string | null;
       iat: number;
       exp: number;
     };

@@ -99,10 +99,10 @@ export class Game {
   private paddleSensitivityPlayer1: number = 0.9;
   private paddleSensitivityPlayer2: number = 0.9;
 
-  constructor(id: string, player1: CustomWebSocket, player2: CustomWebSocket) {
-    this.id = id;
+  constructor(MatchId: string, player1: CustomWebSocket, player2: CustomWebSocket) {
+    this.id = MatchId;
     this.players = [player1, player2];
-    this.state = InfoInGame(id);
+    this.state = InfoInGame(MatchId);
     this.sceneIsReadyLeft = false;
     this.sceneIsReadyRight = false;
     // ascolta i messaggi dei due client
@@ -402,9 +402,9 @@ export class Game {
 
   public getWinnerGamer(): number {
     if (this.state.paddleLeft.point > this.state.paddleRight.point) {
-      return Number(this.players[1].playerId);
+      return Number(this.players[1].user.playerId);
     } else if (this.state.paddleLeft.point < this.state.paddleRight.point) {
-      return Number(this.players[0].playerId);
+      return Number(this.players[0].user.playerId);
     }
     return -1;
   }
