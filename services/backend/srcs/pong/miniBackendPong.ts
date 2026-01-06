@@ -115,14 +115,14 @@ export function startWebSocketServer(app: FastifyInstance, port = 9000) {
     }
 
 
-    if (!ws.user.playerId || !ws.user.username) {
+    if (!ws.user.id || !ws.user.username) {
       console.log("No playerId or username");
       ws.close();
       return;
     }
 
 
-    console.log(`User authenticated: ${ws.username} (${ws.user.playerId})`);
+    console.log(`User authenticated: ${ws.username} (${ws.user.id})`);
 
     let session = games.get(matchId);
 
@@ -133,7 +133,7 @@ export function startWebSocketServer(app: FastifyInstance, port = 9000) {
     }
 
     // Handle reconnection or new connection
-    if (session.p1Id === ws.user.playerId) {
+    if (session.p1Id === ws.user.id) {
       console.log(`Player 1 reconnected to match ${matchId}`);
       if (session.player1 && session.player1 !== ws) {
         session.player1.terminate();
@@ -144,7 +144,7 @@ export function startWebSocketServer(app: FastifyInstance, port = 9000) {
       if (session.game) {
         session.game.updatePlayerSocket(0, ws);
       }
-    } else if (session.p2Id === ws.user.playerId) {
+    } else if (session.p2Id === ws.user.id) {
       console.log(`Player 2 reconnected to match ${matchId}`);
       if (session.player2 && session.player2 !== ws) {
         session.player2.terminate();
@@ -157,14 +157,14 @@ export function startWebSocketServer(app: FastifyInstance, port = 9000) {
       }
     } else if (!session.p1Id) {
       session.player1 = ws;
-      session.p1Id = ws.user.playerId;
+      session.p1Id = ws.user.id;
       ws.playerSlot = 1;
       ws.send(JSON.stringify({ type: "waiting", message: "Waiting for opponent..." }));
       console.log(`Player 1 connected to match ${matchId} (ID: ${ws.user})`);
       setupHeartbeat(ws);
     } else if (!session.p2Id) {
       session.player2 = ws;
-      session.p2Id = ws.user.playerId;
+      session.p2Id = ws.user.id;
       ws.playerSlot = 2;
       console.log(`Player 2 connected to match ${matchId} (ID: ${ws.user})`);
       ws.send(JSON.stringify({ type: "waiting", message: "Opponent found, starting match..." }));
@@ -179,7 +179,7 @@ export function startWebSocketServer(app: FastifyInstance, port = 9000) {
 
     ws.on('close', async () => {
       const wsMatchId : string = ws.matchId;
-      const wsPlayerId : number = ws.user.playerId;
+      const wsPlayerId : number = ws.user.id;
 
       console.log(`Client disconnected from match ${wsMatchId} (ID: ${ws.user.playerId})`);
 
