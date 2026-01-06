@@ -12,6 +12,10 @@
     "forceConsistentCasingInFileNames": true,
 	"typeRoots": ["./src/types", "./node_modules/@types"]
   },
+  "baseUrl": ".",
+  "paths": {
+	"@/*": ["./srcs/*"]
+  },
   "include": ["srcs"]
 }
 

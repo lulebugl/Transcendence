@@ -3,8 +3,7 @@ import { FastifyInstance } from "fastify";
 import http from "http";
 import { Game } from "./gameClass";
 import { playerMatches } from "../routes/matchMaking";
-import { updatePostGameStats } from "./updateStats";
-import { recordMatch } from "../blockchain/blockchain";
+import { processGameCompletion } from "./gameCompletion";
 
 export type CustomWebSocket = WS & {
   isAlive: boolean;
@@ -238,29 +237,13 @@ export function startWebSocketServer(app: FastifyInstance, port = 9000) {
           wsSession.game.stopTimeMatch();
 
           if (wsSession.p1Id && wsSession.p2Id) {
-            const p1Id = Number(wsSession.p1Id);
-            const p2Id = Number(wsSession.p2Id);
-            const p1Score = wsSession.game.getScorePlayer(1);
-            const p2Score = wsSession.game.getScorePlayer(2);
-
-            // updatePostGameStats handles draw check internally
-            const xpResult = await updatePostGameStats({
-              player1Id: p1Id,
-              player2Id: p2Id,
-              player1Score: p1Score,
-              player2Score: p2Score,
+            await processGameCompletion({
+              player1Id: Number(wsSession.p1Id),
+              player2Id: Number(wsSession.p2Id),
+              player1Score: wsSession.game.getScorePlayer(1),
+              player2Score: wsSession.game.getScorePlayer(2),
+              durationSeconds: wsSession.game.getTimeMatch(),
             });
-
-            // if (xpResult) {
-            //   await recordMatch({
-            //     playerId1: p1Id,
-            //     playerId2: p2Id,
-            //     score1: p1Score,
-            //     score2: p2Score,
-            //     expGained1: xpResult.player1XpGain,
-            //     expGained2: xpResult.player2XpGain,
-            //   });
-            // }
           }
 
           // stop gameLoop and delete game
