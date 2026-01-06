@@ -129,7 +129,7 @@ export default async function playersRoutes(fastify: FastifyInstance) {
         })
         .from(userStats)
         .innerJoin(users, eq(userStats.user_id, users.id))
-        .orderBy(desc(userStats.xp))
+        .orderBy(desc(userStats.level))
         .limit(limit)
         .offset(offset);
     }

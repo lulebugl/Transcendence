@@ -20,17 +20,3 @@ export function levelFromXp(xp: number): number {
   const level = L0 - Math.log(ratio - 1) / K;
   return Math.max(1, Math.floor(level));
 }
-
-export function getXpProgress(currentXp: number, currentLevel: number) {
-  const currentLevelXp = xpForLevel(currentLevel);
-  const nextLevelXp = xpForLevel(currentLevel + 1);
-  const xpIntoLevel = currentXp - currentLevelXp;
-  const xpNeededForLevel = nextLevelXp - currentLevelXp;
-
-  return {
-    current: xpIntoLevel,
-    needed: xpNeededForLevel,
-    percentage: Math.min(100, (xpIntoLevel / xpNeededForLevel) * 100),
-  };
-}
-

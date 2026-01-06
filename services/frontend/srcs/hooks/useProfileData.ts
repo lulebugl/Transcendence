@@ -58,6 +58,10 @@ export function useProfileData(username?: string) {
   const profileData = useMemo((): ProfileData | null => {
     if (!playerData) return null;
 
+	const currentXp = xpForLevel(playerData.level);
+    const nextLevelXp = xpForLevel(playerData.level + 1);
+    const xpNeededForNextLevel = nextLevelXp - currentXp;
+
     return {
       id: playerData.userId,
       username: playerData.username,
@@ -67,8 +71,8 @@ export function useProfileData(username?: string) {
       xp: playerData.xp,
       rank: playerData.rank,
       memberSince: formatMemberSince(playerData.memberSince),
-      nextLevelXp: xpForLevel(playerData.level + 1),
-      winRate: playerData.winRate,
+      nextLevelXp: xpNeededForNextLevel,
+      winRate: Math.round(playerData.winRate),
       gamesWon: playerData.gamesWon,
       gamesLost: playerData.gamesLost,
       bestWinStreak: playerData.bestWinStreak,

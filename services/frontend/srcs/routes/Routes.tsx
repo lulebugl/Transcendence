@@ -15,6 +15,7 @@ import { Pong, PongLobby } from "@/routes/pong";
 import { TestPongDev } from "@/routes/pong/testPongDev";
 import { Leaderboard } from "@/routes/leaderboard";
 import { TermsOfService, PrivacyPolicy } from "@/routes/legal";
+import { SimulateGame } from "./dev/simulateGame";
 
 interface RouteConfig {
   path: string;
@@ -85,5 +86,6 @@ export const devRoutes: RouteConfig[] = import.meta.env.DEV
       { path: "", element: <DevHub /> },
       { path: "playground/ui", element: <PrimitivesPlayground /> },
       { path: "playground/components", element: <ComponentsPlayground /> },
+	  { path: "simulate-game", element: <SimulateGame /> },
     ]
   : [];
