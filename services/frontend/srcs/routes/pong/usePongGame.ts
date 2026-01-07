@@ -13,21 +13,25 @@ import {
 import { paddleLeft, paddleRight } from "./pong-helpers";
 import { PongUIManager } from "./pongUI";
 import { NOT_READY_INTERVAL } from "./PongConstants";
+import { useNavigate } from "react-router";
 
 export const usePongGame = (canvasRef: React.RefObject<HTMLCanvasElement>) => {
     const [isLoading, setIsLoading] = useState(false);
     const sceneManagerRef = useRef<PongSceneManager | null>(null);
+    const navigate = useNavigate();
     const websocketRef = useRef<WebSocket | null>(null);
     const paddlePlayerRef = useRef<number>(-1);
     const ReadyScene = useRef<boolean>(false);
     const lastNotReadyRef = useRef<number>(0);
     const uiManagerRef = useRef<PongUIManager | null>(null);
 
+	const cleanupRef = useRef<() => void>(() => {});
+
     useEffect(() => {
         if (!canvasRef.current) return;
 
         let disposed = false;
-        const sceneManager = new PongSceneManager(canvasRef.current);
+        const sceneManager = new PongSceneManager(canvasRef.current, navigate);
         sceneManagerRef.current = sceneManager;
 
         const handleResize = () => sceneManager.resize();
@@ -95,7 +99,7 @@ export const usePongGame = (canvasRef: React.RefObject<HTMLCanvasElement>) => {
 
                         setTimeout(() => {
                             cleanup();
-                            window.location.href = "/lobby";
+                            navigate("/lobby");
                         }, 5000);
                     }
                 });
@@ -122,13 +126,14 @@ export const usePongGame = (canvasRef: React.RefObject<HTMLCanvasElement>) => {
             window.removeEventListener("resize", handleResize);
         };
 
+		cleanupRef.current = cleanup;
         return () => {
             clearTimeout(timeoutId);
             disposed = true;
             cleanup();
         };
 
-    }, []);
+    }, [canvasRef, navigate]);
 
-    return { isLoading };
+    return { isLoading, cleanup: cleanupRef.current };
 };

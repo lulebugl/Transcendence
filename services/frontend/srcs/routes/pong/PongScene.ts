@@ -17,6 +17,7 @@ import {
 } from "./pong-helpers";
 import { ASSET_PATH, CAMERA_BASE_POSITION, CAMERA_TARGET, MOVING_MESH_INDICES } from "./PongConstants";
 import { UpdateMessage } from "./PongTypes";
+import { NavigateFunction } from "react-router";
 
 export class PongSceneManager {
     public engine: Engine;
@@ -24,17 +25,19 @@ export class PongSceneManager {
     public camera: ArcRotateCamera;
     public meshes: AbstractMesh[] = [];
     public sceneReady: boolean = false;
+	public navigate: NavigateFunction;
 
     private offsetLeft = new Vector3(0, 10, -13);
     private offsetRight = new Vector3(0, 10, 13);
 
-    constructor(canvas: HTMLCanvasElement) {
+    constructor(canvas: HTMLCanvasElement, navigate: NavigateFunction) {
         this.engine = new Engine(canvas, true);
         this.engine.setHardwareScalingLevel(
             Math.max(1, (window.devicePixelRatio || 1) * 0.75)
         );
 
         this.scene = new Scene(this.engine);
+		this.navigate = navigate;
         this.scene.clearColor = new Color4(0, 0, 0, 1);
         this.scene.skipPointerMovePicking = true;
         this.scene.blockMaterialDirtyMechanism = true;
@@ -63,7 +66,9 @@ export class PongSceneManager {
             this.freezeStaticMeshes();
             this.sceneReady = true;
         } catch (error) {
-            window.location.href = "/lobby";
+			// use navigate instead of window.location.href for better state management
+			this.navigate("/lobby");
+            // window.location.href = "/lobby";
             console.error("Error loading assets:", error);
         }
     }
