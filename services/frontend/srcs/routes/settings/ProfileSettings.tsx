@@ -17,6 +17,7 @@ export const ProfileSettings = () => {
   const { mutate: updateUser } = useMutation(userApi.updateProfile, {
     onSuccess: () => {
       console.log("Profile updated");
+	  refreshUser();
     },
   });
 

@@ -16,7 +16,6 @@ import { eq, and, count, gt } from "drizzle-orm";
 //   });
 
 interface GameData {
-  // will probably be the matchMakingData
   score: number;
   opponentScore: number;
   durationSeconds?: number;
@@ -37,7 +36,6 @@ const ACHIEVEMENT_CHECKERS: Record<string, AchievementChecker> = {
   hot_streak: async (stats) =>
     stats.current_win_streak >= 5 || stats.best_win_streak >= 5,
   centurion: async (stats) => stats.games_played >= 100,
-  tournament_victor: async (stats) => stats.tournaments_won >= 1,
   grinder: async (stats) => stats.level >= 30,
   perfectionist: async (stats, gameData) => {
     return gameData?.score === 11 && gameData?.opponentScore === 0;

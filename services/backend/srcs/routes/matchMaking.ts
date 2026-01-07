@@ -40,7 +40,7 @@ export default function matchMaking(fastify: FastifyInstance) {
             reply.send({
                 status: "matched",
                 matchId: playerMatches.get(playerId),
-                wsToken: GenerateToken(fastify, playerId, request.user.username),
+                wsToken: GenerateToken(fastify, parseInt(playerId), request.user.username),
                 id: playerId,
             });
             if (queue.has(playerId)) {
@@ -80,7 +80,7 @@ export default function matchMaking(fastify: FastifyInstance) {
                     reply.send({
                         status: "matched",
                         matchId: matchId,
-                        wsToken: GenerateToken(fastify, playerId, request.user.username),
+                        wsToken: GenerateToken(fastify, parseInt(playerId), request.user.username),
                         id: playerId,
 
                     });

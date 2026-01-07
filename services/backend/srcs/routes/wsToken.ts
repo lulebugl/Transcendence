@@ -5,8 +5,7 @@ export default function wsToken(fastify: FastifyInstance) {
         preHandler: fastify.auth
     }, async (request, reply) => {
         const { id, username } = request.user;
-        const playerId = id.toString();
-        const token = fastify.jwt.sign({ playerId, username }, { expiresIn: "30s" });
+        const token = fastify.jwt.sign({ id, username }, { expiresIn: "30s" });
         reply.send({ token });
     });
 }

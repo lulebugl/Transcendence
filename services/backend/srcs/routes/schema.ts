@@ -1,3 +1,5 @@
+import { kMaxLength } from "node:buffer";
+
 export const fields = {
 	username: {
 	  type: "string",
@@ -26,4 +28,11 @@ export const fields = {
 	  format: "uri",
 	  maxLength: 500,
 	},
+
+	email: {
+		type: "string",
+		format: "email",
+		maxLength: 255,
+	},
+	
   } as const;

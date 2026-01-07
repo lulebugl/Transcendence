@@ -1,9 +1,8 @@
 // routes/players.ts
-import { FastifyInstance, FastifySchema } from "fastify";
+import { FastifyInstance } from "fastify";
 import { users, userStats } from "../db/schema";
 import { db } from "../db/client";
 import { eq, desc, count, gt } from "drizzle-orm";
-import { fields } from "./schema";
 import {
   profileParamsSchema,
   levelParamsSchema,
@@ -130,7 +129,7 @@ export default async function playersRoutes(fastify: FastifyInstance) {
         })
         .from(userStats)
         .innerJoin(users, eq(userStats.user_id, users.id))
-        .orderBy(desc(userStats.xp))
+        .orderBy(desc(userStats.level))
         .limit(limit)
         .offset(offset);
     }

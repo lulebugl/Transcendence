@@ -23,6 +23,9 @@ export function DevHub() {
           <Button asChild>
             <Link to="/dev/playground/components">Components Playground</Link>
           </Button>
+		  <Button asChild>
+            <Link to="/dev/simulate-game">Simulate Game</Link>
+          </Button>
         </div>
       </div>
     </Layout>

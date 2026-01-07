@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router";
-import { ArrowRight, Lock, User } from "lucide-react";
+import { ArrowRight, Lock, User, Mail } from "lucide-react";
 import { FormInput } from "@/components/forms/FormInput";
 import { useAuth } from "@/hooks/useAuth";
 import { FormError } from "@/components/forms/FormError";
 
 export const SignUpForm = () => {
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -37,7 +38,7 @@ export const SignUpForm = () => {
     }
 
     try {
-      await signup(username, password);
+      await signup(username, password, email);
       navigate("/");
     } catch (err) {
       const error = err as Error;
@@ -85,6 +86,21 @@ export const SignUpForm = () => {
           icon={User}
           placeholder="PILOT_01"
           error={errors.username}
+          required
+        />
+
+		<FormInput
+          label="Email"
+          id="email"
+          value={email}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            if (errors.email)
+              setErrors((prev) => ({ ...prev, email: "" }));
+          }}
+          icon={Mail}
+          placeholder="pilot_01@mail.com"
+          error={errors.email}
           required
         />
 

@@ -1,6 +1,9 @@
 {
-	"dependencies": {
-	  "@app/backend": "file:services/backend",
-	  "@app/frontend": "file:services/frontend"
-	}
+  "scripts": {
+    "chain:seed-matches": "npm --prefix services/backend run chain:seed-matches"
+  },
+  "dependencies": {
+    "@app/backend": "file:services/backend",
+    "@app/frontend": "file:services/frontend"
   }
+}

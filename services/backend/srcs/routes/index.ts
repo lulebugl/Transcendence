@@ -8,6 +8,7 @@ import twoFactorRoutes from "./users/2fa";
 import achievementsRoutes from "./achievements/achievements";
 import apiKeyRoutes from "./apiKeys";
 import publicApi from "./publicApi";
+import { simulateGameRoutes } from "./tests";
 
 //types
 import { FastifyInstance } from "fastify";
@@ -25,4 +26,8 @@ export default async function routes(fastify: FastifyInstance) {
   fastify.register(achievementsRoutes);
   fastify.register(apiKeyRoutes);
   fastify.register(publicApi);
+
+  if (process.env.NODE_ENV === "development") {
+    fastify.register(simulateGameRoutes);
+  }
 }

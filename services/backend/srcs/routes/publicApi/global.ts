@@ -27,6 +27,20 @@ export default async function publicApiGlobal(fastify: FastifyInstance) {
       },
       schema: {
         tags: ["global"],
+        security: [],
+        description: "Simple ping check for the public API",
+        response: {
+          200: {
+            description: "API is reachable",
+            type: "object",
+            properties: {
+              pong: { type: "boolean" },
+              ts: { type: "number", description: "Current timestamp (ms)" },
+            },
+            required: ["pong", "ts"],
+            additionalProperties: false,
+          },
+        },
       },
     },
     async () => {
@@ -43,6 +57,35 @@ export default async function publicApiGlobal(fastify: FastifyInstance) {
       },
       schema: {
         tags: ["global"],
+        security: [{ apiKeyAuth: [] }],
+        description: "Resolve the current API key owner",
+        response: {
+          200: {
+            description: "User resolved from API key",
+            type: "object",
+            properties: {
+              id: { type: "number" },
+              username: { type: "string" },
+            },
+            required: ["id", "username"],
+            additionalProperties: false,
+          },
+          404: {
+            description: "User not found",
+            type: "object",
+            properties: { error: { type: "string" } },
+          },
+          401: {
+            description: "Missing or invalid API key",
+            type: "object",
+            properties: { error: { type: "string" } },
+          },
+          500: {
+            description: "Unexpected server error",
+            type: "object",
+            properties: { error: { type: "string" } },
+          },
+        },
       },
     },
     async (req: FastifyRequest, reply: FastifyReply) => {
