@@ -7,6 +7,7 @@ import {
     Scene,
     Vector3,
 } from "@babylonjs/core";
+import "@babylonjs/loaders/glTF";
 import { ImportMeshAsync } from "@babylonjs/core/Loading/sceneLoader";
 import {
     ball,
@@ -62,6 +63,7 @@ export class PongSceneManager {
             this.freezeStaticMeshes();
             this.sceneReady = true;
         } catch (error) {
+            window.location.href = "/lobby";
             console.error("Error loading assets:", error);
         }
     }

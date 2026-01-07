@@ -32,7 +32,7 @@ services:
       - NODE_ENV=${NODE_ENV:-development}
       - PORT=3000
       - DB_FILE_NAME=${DB_FILE_NAME:-file:./database/app.db}
-      - MASTER_KEY_TOTP=T9CsqZJxo8+cFdD25I1mqikt+YdU4baMU4m8a0WUbEo=
+      - MASTER_KEY_TOTP=${MASTER_KEY_TOTP}
       - RPC_URL=${RPC_URL}
       - PRIVATE_KEY_WALLET=${PRIVATE_KEY_WALLET}
       - CONTRACT_ADDRESS=${CONTRACT_ADDRESS}
