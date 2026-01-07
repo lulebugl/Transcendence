@@ -1,29 +1,30 @@
 import { FastifyInstance } from "fastify";
 import crypto from "crypto";
 import { GenerateToken } from "./wsToken";
+// test
 
 
 interface Player {
-    id: string;
+    id: number;
     username: string;
 }
 
-const queue = new Map<string, Player>();
-export const playerMatches = new Map<string, string>();
+const queue = new Map<number, Player>();
+export const playerMatches = new Map<number, string>();
 
 export default function matchMaking(fastify: FastifyInstance) {
     fastify.post('/api/matchmaking/join', {
         preHandler: fastify.auth
     }, async (request, reply) => {
         const { id, username } = request.user;
-        const playerId = id.toString();
+        const playerId: number = id;
         queue.set(playerId, { id: playerId, username });
         reply.send({ status: "joined", position: queue.size });
     });
     fastify.post('/api/matchmaking/leave', {
         preHandler: fastify.auth
     }, async (request, reply) => {
-        const playerId = request.user.id.toString();
+        const playerId: number = request.user.id;
         queue.delete(playerId);
         reply.send({ status: "left" });
     });
@@ -34,13 +35,13 @@ export default function matchMaking(fastify: FastifyInstance) {
     fastify.get('/api/matchmaking/status', {
         preHandler: fastify.auth
     }, async (request, reply) => {
-        const playerId = request.user.id.toString();
+        const playerId: number = request.user.id;
 
         if (playerMatches.has(playerId)) {
             reply.send({
                 status: "matched",
                 matchId: playerMatches.get(playerId),
-                wsToken: GenerateToken(fastify, parseInt(playerId), request.user.username),
+                wsToken: GenerateToken(fastify, playerId, request.user.username),
                 id: playerId,
             });
             if (queue.has(playerId)) {
@@ -68,7 +69,7 @@ export default function matchMaking(fastify: FastifyInstance) {
                 const players = Array.from(queue.values());
                 const p1 = players[0];
                 const p2 = players[1];
-                const matchId = crypto.randomUUID();
+                const matchId: string = crypto.randomUUID();
 
                 queue.delete(p1.id);
                 queue.delete(p2.id);
@@ -80,7 +81,7 @@ export default function matchMaking(fastify: FastifyInstance) {
                     reply.send({
                         status: "matched",
                         matchId: matchId,
-                        wsToken: GenerateToken(fastify, parseInt(playerId), request.user.username),
+                        wsToken: GenerateToken(fastify, playerId, request.user.username),
                         id: playerId,
 
                     });
