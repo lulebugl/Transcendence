@@ -1,6 +1,7 @@
 import { FastifyInstance } from "fastify";
 import crypto from "crypto";
 import { GenerateToken } from "./wsToken";
+// test
 
 
 interface Player {
@@ -23,7 +24,7 @@ export default function matchMaking(fastify: FastifyInstance) {
     fastify.post('/api/matchmaking/leave', {
         preHandler: fastify.auth
     }, async (request, reply) => {
-        const playerId : number = request.user.id;
+        const playerId: number = request.user.id;
         queue.delete(playerId);
         reply.send({ status: "left" });
     });
@@ -34,13 +35,13 @@ export default function matchMaking(fastify: FastifyInstance) {
     fastify.get('/api/matchmaking/status', {
         preHandler: fastify.auth
     }, async (request, reply) => {
-        const playerId : number = request.user.id;
+        const playerId: number = request.user.id;
 
         if (playerMatches.has(playerId)) {
             reply.send({
                 status: "matched",
                 matchId: playerMatches.get(playerId),
-                wsToken: GenerateToken(fastify, parseInt(playerId), request.user.username),
+                wsToken: GenerateToken(fastify, playerId, request.user.username),
                 id: playerId,
             });
             if (queue.has(playerId)) {
@@ -68,7 +69,7 @@ export default function matchMaking(fastify: FastifyInstance) {
                 const players = Array.from(queue.values());
                 const p1 = players[0];
                 const p2 = players[1];
-                const matchId : string = crypto.randomUUID();
+                const matchId: string = crypto.randomUUID();
 
                 queue.delete(p1.id);
                 queue.delete(p2.id);
@@ -80,7 +81,7 @@ export default function matchMaking(fastify: FastifyInstance) {
                     reply.send({
                         status: "matched",
                         matchId: matchId,
-                        wsToken: GenerateToken(fastify, parseInt(playerId), request.user.username),
+                        wsToken: GenerateToken(fastify, playerId, request.user.username),
                         id: playerId,
 
                     });
