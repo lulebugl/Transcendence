@@ -1,9 +1,8 @@
 import { Layout } from "../layout";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 import { Button } from "../ui/Button";
 
 export function ErrorPage({ ...props }: React.PropsWithChildren) {
-  const navigate = useNavigate();
   return (
     <Layout>
       <div className="h-[90vh] flex items-center justify-center bg-background">

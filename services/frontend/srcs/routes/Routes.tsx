@@ -9,7 +9,7 @@ import { Login, Signup } from "@/routes/auth";
 import { Settings } from "@/routes/settings";
 import { PlayerProfile, MatchHistory, Achievements } from "@/routes/profiles/";
 import { Lobby } from "@/routes/lobby";
-import { NotFound } from "@/routes/NotFound";
+import { NotFound } from "@/routes/ErrorPages";
 import { Tournaments } from "@/routes/tournaments";
 import { Pong, PongLobby } from "@/routes/pong";
 import { TestPongDev } from "@/routes/pong/testPongDev";

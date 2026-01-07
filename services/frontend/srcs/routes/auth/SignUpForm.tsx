@@ -24,7 +24,11 @@ export const SignUpForm = () => {
     setErrors({});
 
     const newErrors: Record<string, string> = {};
-
+	
+	const emailRegex = /^.+@.+\..+$/;
+    if (!emailRegex.test(email)) {
+      newErrors.email = "Email must be a valid email address";
+    }
     if (password.length < 8) {
       newErrors.password = "Password must be at least 8 characters long";
     }
