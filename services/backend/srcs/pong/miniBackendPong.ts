@@ -1,4 +1,4 @@
-import WS from 'ws'; 
+import WS from 'ws';
 import { FastifyInstance } from 'fastify';
 import http from 'http';
 import { FastifyJWT } from '@fastify/jwt';
@@ -10,7 +10,7 @@ import { db } from '../db/client';
 import { updatePlayerXp, getPlayerXp } from './writeExpOnDB'
 
 type User = FastifyJWT["user"];
-export interface CustomWebSocket extends WS {  // Usa "interface" invece di "type"
+export interface CustomWebSocket extends WS {
   isAlive: boolean;
   playerSlot?: number | null;
   matchId?: string | null;
@@ -56,11 +56,11 @@ export function startWebSocketServer(app: FastifyInstance, port = 9000) {
     clearInterval(heartbeatInterval);
     console.log("close WebSocket");
   });
-  server.on('upgrade', async  (req: http.IncomingMessage, socket: net.Socket, head: Buffer) => {
+  server.on('upgrade', async (req: http.IncomingMessage, socket: net.Socket, head: Buffer) => {
     const url = new URL(req.url!, `http://${req.headers.host}`);
     const matchId = url.searchParams.get('matchId');
     const token = url.searchParams.get('wsToken'); // Changed from wsToken to token to match plan/convention
-    let user : User;
+    let user: User;
 
     if (!matchId || !token) {
       if (!token) {
@@ -87,18 +87,18 @@ export function startWebSocketServer(app: FastifyInstance, port = 9000) {
       return;
     }
 
-    wss.handleUpgrade(req , socket , head, (ws: CustomWebSocket) => {
+    wss.handleUpgrade(req, socket, head, (ws: CustomWebSocket) => {
       ws.user = user;
       ws.matchId = matchId;
       wss.emit('connection', ws, req);
     });
   });
 
-  wss.on('connection', async (ws: CustomWebSocket, req: http.IncomingMessage ) => {
+  wss.on('connection', async (ws: CustomWebSocket, req: http.IncomingMessage) => {
     console.log('Nuovo client connesso!');
 
-    const matchId : string = ws.matchId;
-    const user : User = ws.user;
+    const matchId: string = ws.matchId;
+    const user: User = ws.user;
     console.log(ws.user);
     console.log(user);
     if (!matchId || !user) {
@@ -122,7 +122,7 @@ export function startWebSocketServer(app: FastifyInstance, port = 9000) {
     }
 
 
-    console.log(`User authenticated: ${ws.username} (${ws.user.id})`);
+    console.log(`User authenticated: ${ws.user.username} (${ws.user.id})`);
 
     let session = games.get(matchId);
 
@@ -178,8 +178,8 @@ export function startWebSocketServer(app: FastifyInstance, port = 9000) {
     }
 
     ws.on('close', async () => {
-      const wsMatchId : string = ws.matchId;
-      const wsPlayerId : number = ws.user.id;
+      const wsMatchId: string = ws.matchId;
+      const wsPlayerId: number = ws.user.id;
 
       console.log(`Client disconnected from match ${wsMatchId} (ID: ${ws.user.playerId})`);
 
@@ -200,6 +200,7 @@ export function startWebSocketServer(app: FastifyInstance, port = 9000) {
 
         console.log(`Both players disconnected, removing match ${wsMatchId}`);
         // reconetction logic and stop timeMatch
+        // delete playerMatches
         if (wsSession.p1Id) playerMatches.delete(wsSession.p1Id);
         if (wsSession.p2Id) playerMatches.delete(wsSession.p2Id);
 
