@@ -270,6 +270,7 @@ export class Game {
           // Fallback if speedMemory was 0
           this.state.ball.speed = BALL_START_SPEED;
         }
+        this.setCamera(this.players);
       }
     }
 
@@ -306,7 +307,7 @@ export class Game {
         p.send(msg);
     });
   }
-  setCamera(players) {
+  setCamera(players: CustomWebSocket) {
     let id = 0;
     this.players.forEach(p => {
       if (p.readyState === WebSocket.OPEN) {

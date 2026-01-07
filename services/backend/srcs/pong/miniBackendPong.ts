@@ -176,13 +176,13 @@ export function startWebSocketServer(app: FastifyInstance, port = 9000) {
       ws.send(
         JSON.stringify({ type: "waiting", message: "Waiting for opponent..." })
       );
-      console.log(`Player 1 connected to match ${matchId} (ID: ${ws.user})`);
+      console.log(`Player 1 connected to match ${matchId} (ID: ${ws.user.id})`);
       setupHeartbeat(ws);
     } else if (!session.p2Id) {
       session.player2 = ws;
       session.p2Id = ws.user.id;
       ws.playerSlot = 2;
-      console.log(`Player 2 connected to match ${matchId} (ID: ${ws.user})`);
+      console.log(`Player 2 connected to match ${matchId} (ID: ${ws.user.id})`);
       ws.send(
         JSON.stringify({
           type: "waiting",
@@ -208,7 +208,7 @@ export function startWebSocketServer(app: FastifyInstance, port = 9000) {
       const wsPlayerId: number = ws.user.id;
 
       console.log(
-        `Client disconnected from match ${wsMatchId} (ID: ${ws.user.playerId})`
+        `Client disconnected from match ${wsMatchId} (ID: ${wsPlayerId})`
       );
 
       const wsSession = games.get(wsMatchId);
