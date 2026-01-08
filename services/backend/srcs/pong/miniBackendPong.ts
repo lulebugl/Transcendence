@@ -2,12 +2,10 @@ import WS from 'ws';
 import { FastifyInstance } from 'fastify';
 import http from 'http';
 import { FastifyJWT } from '@fastify/jwt';
-import { IncomingMessage } from "http";
 import { Game } from './gameClass';
 import { playerMatches } from "../routes/matchMaking";
 import { processGameCompletion } from "./gameCompletion";
-//ADD
-
+import net from 'net';
 
 type User = FastifyJWT["user"];
 export interface CustomWebSocket extends WS {
@@ -86,9 +84,8 @@ export function startWebSocketServer(app: FastifyInstance, port = 9000) {
     try {
       const decoded = app.jwt.verify(token);
       console.log(`User decode: ${decoded})`)
-      user = decoded
+      user = decoded as User;
     } catch (err) {
-
       console.log("Invalid token, closing connection", err);
       if (!socket.destroyed) {
         socket.destroy();
