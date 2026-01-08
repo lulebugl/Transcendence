@@ -26,7 +26,9 @@ export const Lobby = () => {
   useEffect(() => {
     if (status !== "matched" || !matchData) return;
 
-    const url = `/pong-test?matchId=${matchData.matchId}&wsToken=${encodeURIComponent(matchData.wsToken)}`;
+    const url = `/pong-test?matchId=${
+      matchData.matchId
+    }&wsToken=${encodeURIComponent(matchData.wsToken)}`;
     navigate(url);
   }, [status, matchData, navigate]);
 
@@ -73,7 +75,11 @@ export const Lobby = () => {
               color="primary"
               features={["Unlock Achievements", "Earn XP", "Leaderboard"]}
               isSelected={selectedMode === "ranked"}
-              onSelect={() => !isSearching && setSelectedMode("ranked")}
+              onSelect={() => {
+                if (!isSearching) {
+                  setSelectedMode("ranked");
+                }
+              }}
             />
             <GameModeCard
               mode="practice"
@@ -138,7 +144,12 @@ interface IdleStateProps {
   showHint: boolean;
 }
 
-const IdleState = ({ buttonText, canPlay, onPlay, showHint }: IdleStateProps) => (
+const IdleState = ({
+  buttonText,
+  canPlay,
+  onPlay,
+  showHint,
+}: IdleStateProps) => (
   <>
     <Button
       variant="cyber"
