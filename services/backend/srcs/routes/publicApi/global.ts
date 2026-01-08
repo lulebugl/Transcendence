@@ -14,6 +14,13 @@ const publicApiRateLimit = {
   keyGenerator: keyByApiKeyOrIp,
 };
 
+const errorResponse = {
+  type: "object",
+  properties: { error: { type: "string" } },
+  required: ["error"],
+  additionalProperties: false,
+} as const;
+
 export default async function publicApiGlobal(fastify: FastifyInstance) {
   if (!fastify.verifyApiKey) {
     throw new Error("verifyApiKey decorator is missing");
@@ -39,6 +46,10 @@ export default async function publicApiGlobal(fastify: FastifyInstance) {
             },
             required: ["pong", "ts"],
             additionalProperties: false,
+          },
+          500: {
+            description: "Unexpected server error",
+            ...errorResponse,
           },
         },
       },
@@ -72,18 +83,15 @@ export default async function publicApiGlobal(fastify: FastifyInstance) {
           },
           404: {
             description: "User not found",
-            type: "object",
-            properties: { error: { type: "string" } },
+            ...errorResponse,
           },
           401: {
             description: "Missing or invalid API key",
-            type: "object",
-            properties: { error: { type: "string" } },
+            ...errorResponse,
           },
           500: {
             description: "Unexpected server error",
-            type: "object",
-            properties: { error: { type: "string" } },
+            ...errorResponse,
           },
         },
       },

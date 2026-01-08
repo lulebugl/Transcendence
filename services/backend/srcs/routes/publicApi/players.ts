@@ -1,11 +1,12 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import {
   BlockchainError,
-  getMatch,
-  getMatches,
-  getTotalMatchesCount,
-  readContractState,
+  getPlayerMatches,
+  getPlayerMatchCount,
 } from "../../blockchain/blockchain";
+import { db } from "../../db/client";
+import { users } from "../../db/schema";
+import { eq } from "drizzle-orm";
 
 const keyByApiKeyOrIp = (req: { headers: any; ip: string }) => {
   const apiKey = req.headers["x-api-key"];
@@ -51,13 +52,13 @@ const matchSchema = {
   ],
 } as const;
 
-export default async function publicApiMatches(fastify: FastifyInstance) {
+export default async function publicApiPlayers(fastify: FastifyInstance) {
   if (!fastify.verifyApiKey) {
     throw new Error("verifyApiKey decorator is missing");
   }
 
-  interface MatchParams {
-    id: string;
+  interface PlayerParams {
+    playerId: string;
   }
 
   interface PaginationQuery {
@@ -66,87 +67,19 @@ export default async function publicApiMatches(fastify: FastifyInstance) {
   }
 
   fastify.get(
-    "/api/public/matches/:id",
-    {
-      config: {
-        rateLimit: publicApiRateLimit,
-      },
-      schema: {
-        tags: ["matches"],
-        description: "Fetch details for a single match by id",
-        params: {
-          type: "object",
-          properties: {
-            id: { type: "string" },
-          },
-          required: ["id"],
-        },
-        security: [],
-        response: {
-          200: {
-            description: "Match found",
-            type: "object",
-            properties: {
-              match: {
-                description: "Match payload from the blockchain backend",
-                ...matchSchema,
-              },
-            },
-            required: ["match"],
-          },
-          400: {
-            description: "Invalid id or bad request",
-            ...errorResponse,
-          },
-          404: {
-            description: "Match not found",
-            ...errorResponse,
-          },
-          502: {
-            description:
-              "Blockchain call reverted or upstream blockchain error",
-            ...errorResponse,
-          },
-          500: {
-            description: "Unexpected server error",
-            ...errorResponse,
-          },
-        },
-      },
-    },
-    async (
-      req: FastifyRequest<{ Params: MatchParams }>,
-      reply: FastifyReply
-    ) => {
-      const matchId = Number(req.params.id);
-      if (!Number.isInteger(matchId) || matchId <= 0) {
-        return reply.status(400).send({ error: "Invalid match id" });
-      }
-
-      try {
-        const match = await getMatch(matchId);
-        return { match };
-      } catch (err) {
-        if (err instanceof BlockchainError) {
-          if (err.status === 400) {
-            return reply.status(400).send({ error: err.message });
-          }
-          return reply.status(err.status).send({ error: err.message });
-        }
-
-        req.log.error({ err }, "Failed to fetch match");
-        return reply.status(500).send({ error: "Unable to fetch match" });
-      }
-    }
-  );
-
-  fastify.get(
-    "/api/public/matches",
+    "/api/public/players/:playerId/matches",
     {
       config: { rateLimit: publicApiRateLimit },
       schema: {
-        tags: ["matches"],
-        description: "Paginated list of matches",
+        tags: ["players"],
+        description: "Paginated matches for a given player",
+        params: {
+          type: "object",
+          properties: {
+            playerId: { type: "string" },
+          },
+          required: ["playerId"],
+        },
         querystring: {
           type: "object",
           properties: {
@@ -157,7 +90,7 @@ export default async function publicApiMatches(fastify: FastifyInstance) {
         security: [],
         response: {
           200: {
-            description: "Matches returned",
+            description: "Matches for player returned",
             type: "object",
             properties: {
               matches: {
@@ -166,14 +99,14 @@ export default async function publicApiMatches(fastify: FastifyInstance) {
                 examples: [
                   [
                     {
-                      id: 1,
+                      id: 2,
                       playerId1: 7,
-                      playerId2: 13,
-                      score1: 21,
-                      score2: 19,
-                      expGained1: 120,
-                      expGained2: 95,
-                      timestamp: 1712345678,
+                      playerId2: 15,
+                      score1: 11,
+                      score2: 5,
+                      expGained1: 80,
+                      expGained2: 40,
+                      timestamp: 1712345689,
                       winner: 7,
                     },
                   ],
@@ -183,7 +116,7 @@ export default async function publicApiMatches(fastify: FastifyInstance) {
             required: ["matches"],
           },
           400: {
-            description: "Invalid pagination parameters",
+            description: "Invalid player id or pagination",
             ...errorResponse,
           },
           502: {
@@ -199,11 +132,18 @@ export default async function publicApiMatches(fastify: FastifyInstance) {
       },
     },
     async (
-      req: FastifyRequest<{ Querystring: PaginationQuery }>,
+      req: FastifyRequest<{
+        Params: PlayerParams;
+        Querystring: PaginationQuery;
+      }>,
       reply: FastifyReply
     ) => {
+      const playerId = Number(req.params.playerId);
       const offset = Number(req.query.offset ?? 0);
       const count = Number(req.query.count ?? 0);
+      if (!Number.isInteger(playerId) || playerId <= 0) {
+        return reply.status(400).send({ error: "Invalid player id" });
+      }
       if (!Number.isInteger(offset) || offset < 0) {
         return reply.status(400).send({ error: "Invalid offset" });
       }
@@ -212,92 +152,117 @@ export default async function publicApiMatches(fastify: FastifyInstance) {
       }
 
       try {
-        const matches = await getMatches(offset, count);
+        const matches = await getPlayerMatches(playerId, offset, count);
         return { matches };
       } catch (err) {
         if (err instanceof BlockchainError) {
           return reply.status(err.status).send({ error: err.message });
         }
-        req.log.error({ err }, "Failed to fetch matches");
-        return reply.status(500).send({ error: "Unable to fetch matches" });
+        req.log.error({ err }, "Failed to fetch player matches");
+        return reply
+          .status(500)
+          .send({ error: "Unable to fetch player matches" });
       }
     }
   );
 
   fastify.get(
-    "/api/public/matches/state",
+    "/api/public/players/:playerId/name",
     {
       config: { rateLimit: publicApiRateLimit },
       schema: {
-        tags: ["matches"],
-        description: "Current on-chain game state snapshot",
+        tags: ["players"],
+        description: "Fetch username for the given player id",
+        params: {
+          type: "object",
+          properties: {
+            playerId: { type: "string" },
+          },
+          required: ["playerId"],
+        },
         security: [],
         response: {
           200: {
-            description: "State fetched",
+            description: "Username resolved",
             type: "object",
             properties: {
-              state: {
-                type: "object",
-                additionalProperties: true,
-                examples: [
-                  {
-                    owner: "0x1234...abcd",
-                    paused: false,
-                    maxMatchesPerPlayer: 100,
-                    maxTotalMatches: 10000,
-                  },
-                ],
-              },
+              username: { type: "string" },
             },
-            required: ["state"],
+            required: ["username"],
+            additionalProperties: false,
           },
-          502: {
-            description:
-              "Blockchain call reverted or upstream blockchain error",
+          400: {
+            description: "Invalid player id",
+            ...errorResponse,
+          },
+          404: {
+            description: "Player not found",
             ...errorResponse,
           },
           500: {
-            description: "Unable to fetch state",
+            description: "Unexpected server error",
             ...errorResponse,
           },
         },
       },
     },
-    async (_req, reply) => {
+    async (
+      req: FastifyRequest<{ Params: PlayerParams }>,
+      reply: FastifyReply
+    ) => {
+      const playerId = Number(req.params.playerId);
+      if (!Number.isInteger(playerId) || playerId <= 0) {
+        return reply.status(400).send({ error: "Invalid player id" });
+      }
+
       try {
-        const state = await readContractState();
-        return { state };
-      } catch (err) {
-        if (err instanceof BlockchainError) {
-          // @ts-ignore
-          return reply.code(err.status).send({ error: err.message });
+        const [user] = await db
+          .select({ username: users.username })
+          .from(users)
+          .where(eq(users.id, playerId));
+
+        if (!user) {
+          return reply.status(404).send({ error: "Player not found" });
         }
-        reply.log.error({ err }, "Failed to fetch contract state");
+
+        return { username: user.username };
+      } catch (err) {
+        req.log.error({ err }, "Failed to fetch player username");
         return reply
           .status(500)
-          .send({ error: "Unable to fetch contract state" });
+          .send({ error: "Unable to fetch player username" });
       }
     }
   );
 
   fastify.get(
-    "/api/public/matches/totalMatchesCount",
+    "/api/public/players/:playerId/totalMatchesCount",
     {
       config: { rateLimit: publicApiRateLimit },
       schema: {
-        tags: ["matches"],
-        description: "Total number of matches recorded on-chain",
+        tags: ["players"],
+        description: "Total matches count for a given player",
+        params: {
+          type: "object",
+          properties: {
+            playerId: { type: "string" },
+          },
+          required: ["playerId"],
+        },
         security: [],
         response: {
           200: {
-            description: "Total matches count",
+            description: "Total matches count for player",
             type: "object",
             properties: {
               totalMatches: { type: "integer" },
             },
             required: ["totalMatches"],
             additionalProperties: false,
+          },
+          400: {
+            description: "Invalid player id",
+            ...errorResponse,
           },
           502: {
             description:
@@ -311,18 +276,28 @@ export default async function publicApiMatches(fastify: FastifyInstance) {
         },
       },
     },
-    async (_req, reply) => {
+    async (
+      req: FastifyRequest<{
+        Params: PlayerParams;
+      }>,
+      reply: FastifyReply
+    ) => {
+      const playerId = Number(req.params.playerId);
+      if (!Number.isInteger(playerId) || playerId <= 0) {
+        return reply.status(400).send({ error: "Invalid player id" });
+      }
+
       try {
-        const totalMatches = await getTotalMatchesCount();
+        const totalMatches = await getPlayerMatchCount(playerId);
         return { totalMatches };
       } catch (err) {
         if (err instanceof BlockchainError) {
           return reply.status(err.status).send({ error: err.message });
         }
-        reply.log.error({ err }, "Failed to fetch total matches count");
+        req.log.error({ err }, "Failed to fetch player match count");
         return reply
           .status(500)
-          .send({ error: "Unable to fetch total matches" });
+          .send({ error: "Unable to fetch player match count" });
       }
     }
   );
