@@ -48,7 +48,7 @@ export const ProfileHeader = ({
                 />
               </div>
 
-              <div className="grid grid-cols-2 lg:grid-cols-1 gap-3 lg:gap-4 min-w-[240px] lg:min-w-[220px] relative md:absolute md:right-0 md:top-0">
+              <div className="grid grid-cols-2 md:grid-cols-1 gap-3 md:gap-4 min-w-[240px] md:min-w-[220px] relative md:absolute md:right-0 md:top-0">
                 <InfoStat
                   icon={<TrendingUp className="w-4 h-4" />}
                   value={`# ${player.rankPosition}`}

@@ -1,4 +1,7 @@
+import { useAuth } from "@/hooks/useAuth";
+import { useMatchHistory } from "@/hooks/useMatchHistory";
 import { ProfileData, BaseUserType as User } from "@/types";
+import { useMatches } from "react-router";
 
 interface StatsBarProps {
   user: User;
@@ -42,6 +45,8 @@ const StatContainer = ({ children }: { children: React.ReactNode }) => {
 };
 
 export const StatsBar = ({ profileData }: { profileData: ProfileData }) => {
+  const { user } = useAuth();
+  const { matchHistory } = useMatchHistory(user?.id, 1);
   if (!profileData) return null;
 
   return (
@@ -50,46 +55,45 @@ export const StatsBar = ({ profileData }: { profileData: ProfileData }) => {
       style={{ animationDelay: "0.5s" }}
     >
       <StatContainer>
-          <div className="text-xs text-muted-foreground uppercase tracking-widest mb-2 group-hover:text-primary transition-colors">
-            Progress
-          </div>
-          <div className="text-3xl font-light tabular-nums">
-            {Math.round((profileData.xp / profileData.nextLevelXp) * 100)}%
-          </div>
-          <div className="w-24 h-0.5 bg-white/10 rounded-full mt-2 overflow-hidden">
-            <div className="h-full bg-primary w-full origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-700 ease-out" />
-          </div>
+        <div className="text-xs text-muted-foreground uppercase tracking-widest mb-2 group-hover:text-primary transition-colors">
+          Progress
+        </div>
+        <div className="text-3xl font-light tabular-nums">
+          {Math.round((profileData.xp / profileData.nextLevelXp) * 100)}%
+        </div>
+        <div className="w-24 h-0.5 bg-white/10 rounded-full mt-2 overflow-hidden">
+          <div className="h-full bg-primary w-full origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-700 ease-out" />
+        </div>
       </StatContainer>
 
       <StatContainer>
-          <div className="text-xs text-muted-foreground uppercase tracking-widest mb-2 group-hover:text-emerald-400 transition-colors">
-            Win Rate
-          </div>
-          <div className="text-3xl font-light tabular-nums group-hover:scale-110 transition-transform duration-300">
-            {profileData.winRate}%
-          </div>
-		  <div className="w-24 h-0.5 mt-2 overflow-hidden">
-          </div>
+        <div className="text-xs text-muted-foreground uppercase tracking-widest mb-2 group-hover:text-emerald-400 transition-colors">
+          Win Rate
+        </div>
+        <div className="text-3xl font-light tabular-nums group-hover:scale-110 transition-transform duration-300">
+          {profileData.winRate}%
+        </div>
+        <div className="w-24 h-0.5 mt-2 overflow-hidden"></div>
       </StatContainer>
 
       <StatContainer>
-          <div className="text-xs text-muted-foreground uppercase tracking-widest mb-2 group-hover:text-white transition-colors">
-            Latest Result
-          </div>
-          <div className="text-3xl font-light tabular-nums flex items-center gap-3 group-hover:tracking-widest transition-all duration-300">
-            <span
-              className={
-                RECENT_MATCHES[0].result === "WIN"
-                  ? "text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]"
-                  : "text-muted-foreground"
-              }
-            >
-              {RECENT_MATCHES[0].result}
-            </span>
-          </div>
-          <span className="text-xs text-muted-foreground font-thin opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-y-2 group-hover:translate-y-0">
-            vs {RECENT_MATCHES[0].opponent}
+        <div className="text-xs text-muted-foreground uppercase tracking-widest mb-2 group-hover:text-white transition-colors">
+          Latest Result
+        </div>
+        <div className="text-3xl font-light tabular-nums flex items-center gap-3 group-hover:tracking-widest transition-all duration-300">
+          <span
+            className={
+              matchHistory[0]?.result === "WIN"
+                ? "text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]"
+                : "text-muted-foreground"
+            }
+          >
+            {matchHistory[0]?.result}
           </span>
+        </div>
+        <span className="text-xs text-muted-foreground font-thin opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-y-2 group-hover:translate-y-0">
+          vs {matchHistory[0]?.opponentName}
+        </span>
       </StatContainer>
     </section>
   );

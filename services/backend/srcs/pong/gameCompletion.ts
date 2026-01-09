@@ -49,18 +49,19 @@ export async function processGameCompletion(data: GameCompletionData) {
   ]);
 
   // Record match on blockchain if XP was gained (not a draw)
-//   let blockchainResult;
-//   if (xpResult) {
-//     blockchainResult = await recordMatch({
-//       playerId1: player1Id,
-//       playerId2: player2Id,
-//       score1: player1Score,
-//       score2: player2Score,
-//       expGained1: xpResult.player1XpGain,
-//       expGained2: xpResult.player2XpGain,
-//     });
-//   }
+  let blockchainResult;
+  if (xpResult) {
+    blockchainResult = await recordMatch({
+      playerId1: player1Id,
+      playerId2: player2Id,
+      score1: player1Score,
+      score2: player2Score,
+      expGained1: xpResult.player1XpGain,
+      expGained2: xpResult.player2XpGain,
+    });
+  }
 
+//   console.log("blockchainResult", blockchainResult);
   return {
     xpResult,
     // blockchainResult,

@@ -37,6 +37,7 @@ export const publicRoutes: RouteConfig[] = [
   { path: "/pong-test", element: <Suspense fallback={<Loading />}><TestPongDev /></Suspense> },
   { path: "/tournaments", element: <Tournaments /> },
   { path: "/profile/:username/achievements", element: <Achievements /> },
+  { path: "/profile/:playerId/match-history", element: <MatchHistory /> },
   { path: "/terms-of-service", element: <TermsOfService /> },
   { path: "/privacy-policy", element: <PrivacyPolicy /> },
   {

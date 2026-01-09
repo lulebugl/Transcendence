@@ -7,6 +7,12 @@ import {
 import { db } from "../../db/client";
 import { users } from "../../db/schema";
 import { eq } from "drizzle-orm";
+import {
+  errorResponse,
+  EnrichedMatchSchema,
+  playerMatchesResponseSchema,
+} from "./matches.schema";
+import { enrichMatch } from "./matches";
 
 const keyByApiKeyOrIp = (req: { headers: any; ip: string }) => {
   const apiKey = req.headers["x-api-key"];
@@ -18,39 +24,6 @@ const publicApiRateLimit = {
   timeWindow: "1 minute",
   keyGenerator: keyByApiKeyOrIp,
 };
-
-const errorResponse = {
-  type: "object",
-  properties: { error: { type: "string" } },
-  required: ["error"],
-  additionalProperties: false,
-} as const;
-
-const matchSchema = {
-  type: "object",
-  additionalProperties: false,
-  properties: {
-    id: { type: "integer", examples: [1] },
-    playerId1: { type: "integer", examples: [7] },
-    playerId2: { type: "integer", examples: [13] },
-    score1: { type: "integer", examples: [21] },
-    score2: { type: "integer", examples: [19] },
-    expGained1: { type: "integer", examples: [120] },
-    expGained2: { type: "integer", examples: [95] },
-    timestamp: { type: "integer", examples: [1712345678] },
-    winner: { type: ["integer", "null"], examples: [7] },
-  },
-  required: [
-    "id",
-    "playerId1",
-    "playerId2",
-    "score1",
-    "score2",
-    "expGained1",
-    "expGained2",
-    "timestamp",
-  ],
-} as const;
 
 export default async function publicApiPlayers(fastify: FastifyInstance) {
   if (!fastify.verifyApiKey) {
@@ -88,47 +61,7 @@ export default async function publicApiPlayers(fastify: FastifyInstance) {
           },
         },
         security: [],
-        response: {
-          200: {
-            description: "Matches for player returned",
-            type: "object",
-            properties: {
-              matches: {
-                type: "array",
-                items: matchSchema,
-                examples: [
-                  [
-                    {
-                      id: 2,
-                      playerId1: 7,
-                      playerId2: 15,
-                      score1: 11,
-                      score2: 5,
-                      expGained1: 80,
-                      expGained2: 40,
-                      timestamp: 1712345689,
-                      winner: 7,
-                    },
-                  ],
-                ],
-              },
-            },
-            required: ["matches"],
-          },
-          400: {
-            description: "Invalid player id or pagination",
-            ...errorResponse,
-          },
-          502: {
-            description:
-              "Blockchain call reverted or upstream blockchain error",
-            ...errorResponse,
-          },
-          500: {
-            description: "Unexpected server error",
-            ...errorResponse,
-          },
-        },
+        response: { ...playerMatchesResponseSchema },
       },
     },
     async (
@@ -153,7 +86,8 @@ export default async function publicApiPlayers(fastify: FastifyInstance) {
 
       try {
         const matches = await getPlayerMatches(playerId, offset, count);
-        return { matches };
+        const enrichedMatches = await Promise.all(matches.map(enrichMatch));
+        return { matches: enrichedMatches };
       } catch (err) {
         if (err instanceof BlockchainError) {
           return reply.status(err.status).send({ error: err.message });

@@ -5,11 +5,14 @@ import { Link, Navigate } from "react-router";
 import { useAuth } from "@/hooks/useAuth";
 import { useInfiniteMatchHistory, type MatchResult } from "@/hooks/useMatchHistory";
 import { useRef, useEffect } from "react";
-
+import { useParams } from "react-router";
 const MATCHES_PER_PAGE = 50;
 
 export const MatchHistory = () => {
   const { user } = useAuth();
+  const { playerId } = useParams();
+
+  const effectivePlayerId = playerId ? Number(playerId) : user?.id ?? 0;
   const {
     matches,
     isLoading,
@@ -17,7 +20,7 @@ export const MatchHistory = () => {
     error,
     hasMore,
     loadMore,
-  } = useInfiniteMatchHistory(user?.id ?? 0, MATCHES_PER_PAGE);
+  } = useInfiniteMatchHistory(effectivePlayerId, MATCHES_PER_PAGE);
 
   const loadMoreRef = useRef<HTMLDivElement>(null);
 

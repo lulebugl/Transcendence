@@ -47,7 +47,7 @@ export const PlayerProfile = () => {
             )}
           </div>
           <div className="lg:col-span-3">
-            <MatchHistorySection count={5} offset={0} />
+            <MatchHistorySection playerId={profileData.id} count={5} offset={0} />
           </div>
         </div>
       </div>

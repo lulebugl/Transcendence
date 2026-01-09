@@ -5,7 +5,52 @@ import {
   getMatches,
   getTotalMatchesCount,
   readContractState,
+  Match,
 } from "../../blockchain/blockchain";
+import { db } from "../../db/client";
+import { users, userStats } from "../../db/schema";
+import { eq, inArray } from "drizzle-orm";
+import { getPlayerRank, PlayerRank } from "../../utils/player-utils";
+import { errorResponse, matchesSchema, latestMatchesSchema, EnrichedMatchSchema } from "./matches.schema";
+
+export interface EnrichedMatch extends Match {
+  player1Name: string;
+  player1Rank: PlayerRank;
+  player2Name: string;
+  player2Rank: PlayerRank;
+  player1Avatar: string;
+  player2Avatar: string;
+}
+
+export async function enrichMatch(match: Match): Promise<EnrichedMatch> {
+  const players = await db
+    .select({
+      id: users.id,
+      username: users.username,
+      avatar_url: users.avatar_url,
+      level: userStats.level,
+    })
+    .from(users)
+    .innerJoin(userStats, eq(users.id, userStats.user_id))
+    .where(inArray(users.id, [match.playerId1, match.playerId2]));
+
+  const player1 = players.find((p) => p.id === match.playerId1);
+  const player2 = players.find((p) => p.id === match.playerId2);
+
+  if (!player1 || !player2) {
+    throw new Error("Player not found");
+  }
+
+  return {
+    ...match,
+    player1Name: player1.username,
+    player1Rank: getPlayerRank(player1.level),
+    player1Avatar: player1.avatar_url,
+    player2Name: player2.username,
+    player2Rank: getPlayerRank(player2.level),
+    player2Avatar: player2.avatar_url,
+  };
+}
 
 const keyByApiKeyOrIp = (req: { headers: any; ip: string }) => {
   const apiKey = req.headers["x-api-key"];
@@ -17,39 +62,6 @@ const publicApiRateLimit = {
   timeWindow: "1 minute",
   keyGenerator: keyByApiKeyOrIp,
 };
-
-const errorResponse = {
-  type: "object",
-  properties: { error: { type: "string" } },
-  required: ["error"],
-  additionalProperties: false,
-} as const;
-
-const matchSchema = {
-  type: "object",
-  additionalProperties: false,
-  properties: {
-    id: { type: "integer", examples: [1] },
-    playerId1: { type: "integer", examples: [7] },
-    playerId2: { type: "integer", examples: [13] },
-    score1: { type: "integer", examples: [21] },
-    score2: { type: "integer", examples: [19] },
-    expGained1: { type: "integer", examples: [120] },
-    expGained2: { type: "integer", examples: [95] },
-    timestamp: { type: "integer", examples: [1712345678] },
-    winner: { type: ["integer", "null"], examples: [7] },
-  },
-  required: [
-    "id",
-    "playerId1",
-    "playerId2",
-    "score1",
-    "score2",
-    "expGained1",
-    "expGained2",
-    "timestamp",
-  ],
-} as const;
 
 export default async function publicApiMatches(fastify: FastifyInstance) {
   if (!fastify.verifyApiKey) {
@@ -89,7 +101,7 @@ export default async function publicApiMatches(fastify: FastifyInstance) {
             properties: {
               match: {
                 description: "Match payload from the blockchain backend",
-                ...matchSchema,
+                ...EnrichedMatchSchema,
               },
             },
             required: ["match"],
@@ -125,7 +137,8 @@ export default async function publicApiMatches(fastify: FastifyInstance) {
 
       try {
         const match = await getMatch(matchId);
-        return { match };
+        const enrichedMatch = await enrichMatch(match);
+        return { match: enrichedMatch };
       } catch (err) {
         if (err instanceof BlockchainError) {
           if (err.status === 400) {
@@ -143,61 +156,9 @@ export default async function publicApiMatches(fastify: FastifyInstance) {
   fastify.get(
     "/api/public/matches",
     {
-      config: { rateLimit: publicApiRateLimit },
-      schema: {
-        tags: ["matches"],
-        description: "Paginated list of matches",
-        querystring: {
-          type: "object",
-          properties: {
-            offset: { type: "string" },
-            count: { type: "string" },
-          },
-        },
-        security: [],
-        response: {
-          200: {
-            description: "Matches returned",
-            type: "object",
-            properties: {
-              matches: {
-                type: "array",
-                items: matchSchema,
-                examples: [
-                  [
-                    {
-                      id: 1,
-                      playerId1: 7,
-                      playerId2: 13,
-                      score1: 21,
-                      score2: 19,
-                      expGained1: 120,
-                      expGained2: 95,
-                      timestamp: 1712345678,
-                      winner: 7,
-                    },
-                  ],
-                ],
-              },
-            },
-            required: ["matches"],
-          },
-          400: {
-            description: "Invalid pagination parameters",
-            ...errorResponse,
-          },
-          502: {
-            description:
-              "Blockchain call reverted or upstream blockchain error",
-            ...errorResponse,
-          },
-          500: {
-            description: "Unexpected server error",
-            ...errorResponse,
-          },
-        },
-      },
-    },
+      config: { rateLimit: publicApiRateLimit },	
+		schema: matchesSchema,
+	},
     async (
       req: FastifyRequest<{ Querystring: PaginationQuery }>,
       reply: FastifyReply
@@ -213,7 +174,8 @@ export default async function publicApiMatches(fastify: FastifyInstance) {
 
       try {
         const matches = await getMatches(offset, count);
-        return { matches };
+        const enrichedMatches = await Promise.all(matches.map(enrichMatch));
+        return { matches: enrichedMatches };
       } catch (err) {
         if (err instanceof BlockchainError) {
           return reply.status(err.status).send({ error: err.message });
@@ -317,7 +279,7 @@ export default async function publicApiMatches(fastify: FastifyInstance) {
         return { totalMatches };
       } catch (err) {
         if (err instanceof BlockchainError) {
-          return reply.status(err.status).send({ error: err.message });
+          return reply.status(err.status as any).send({ error: err.message });
         }
         reply.log.error({ err }, "Failed to fetch total matches count");
         return reply

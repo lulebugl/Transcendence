@@ -93,24 +93,6 @@ export const HeroSection = ({ user, rank, rankPosition }: HeroSectionProps) => {
                 </Link>
               </Button>
             </div>
-
-            {/* <div
-              className="flex gap-8 text-left text-sm text-muted-foreground"
-              style={{ animationDelay: "0.45s" }}
-            >
-              <div>
-                <p className="text-2xl font-light text-white">+420%</p>
-                <p className="uppercase tracking-[0.3em] text-[10px] mt-1">
-                  Community Growth
-                </p>
-              </div>
-              <div>
-                <p className="text-2xl font-light text-white">99.2%</p>
-                <p className="uppercase tracking-[0.3em] text-[10px] mt-1">
-                  Match Stability
-                </p>
-              </div>
-            </div> */}
           </>
         )}
       </div>
