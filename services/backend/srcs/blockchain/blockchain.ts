@@ -104,6 +104,35 @@ const normalizeMatch = (m: MatchOnChain): Match => {
 
 const iface = new ethers.Interface(contractABI as ethers.InterfaceAbi);
 
+const describeCallException = (err: any) => {
+  const reason = err?.reason ?? err?.shortMessage;
+  const txHash = err?.transactionHash ?? err?.hash ?? err?.transaction?.hash;
+
+  // Try to decode the revert error data for a clearer diagnosis.
+  const revertData = err?.data?.data ?? err?.error?.data ?? err?.data;
+  let decodedError: ethers.ErrorDescription | null = null;
+  if (typeof revertData === "string" && revertData.startsWith("0x")) {
+    try {
+      decodedError = iface.parseError(revertData);
+    } catch {
+      decodedError = null;
+    }
+  }
+
+  const errorName =
+    decodedError?.name ?? err?.errorName ?? err?.data?.errorName;
+  const errorSignature =
+    decodedError?.signature ?? err?.errorSignature ?? err?.data?.errorSignature;
+  const errorArgs = decodedError?.args ?? err?.args ?? err?.data?.args;
+
+  const gasMessage = err?.info?.error?.message ?? err?.shortMessage ?? "";
+  const gasHint = /out of gas/i.test(gasMessage)
+    ? "execution likely ran out of gas"
+    : undefined;
+
+  return { reason, txHash, errorName, errorSignature, errorArgs, gasHint };
+};
+
 const mapEthersError = (err: any): BlockchainError => {
   const code = err?.code as string | undefined;
   const reason = err?.reason as string | undefined;
@@ -113,13 +142,30 @@ const mapEthersError = (err: any): BlockchainError => {
   }
 
   if (code === "CALL_EXCEPTION") {
-    return new BlockchainError(
-      "Blockchain call reverted",
-      502,
-      code,
-      reason,
-      err
-    );
+    const details = describeCallException(err);
+    const messageParts = [
+      details.reason,
+      details.errorName ? `error=${details.errorName}` : null,
+      details.errorSignature ? `sig=${details.errorSignature}` : null,
+      details.txHash ? `tx=${details.txHash}` : null,
+      details.gasHint,
+    ].filter(Boolean);
+
+    const message = messageParts.length
+      ? `Blockchain call reverted: ${messageParts.join(" | ")}`
+      : "Blockchain call reverted";
+
+    const bcErr = new BlockchainError(message, 502, code, details.reason, err);
+
+    (bcErr as any).metadata = {
+      txHash: details.txHash,
+      errorName: details.errorName,
+      errorSignature: details.errorSignature,
+      errorArgs: details.errorArgs,
+      gasHint: details.gasHint,
+    };
+
+    return bcErr;
   }
 
   if (code === "NETWORK_ERROR") {
@@ -233,6 +279,13 @@ export const getPlayerMatchCount = async (
 ): Promise<number> => {
   return handleCall(async () => {
     const count = await contract.getPlayerMatchCount(playerId);
+    return Number(count);
+  });
+};
+
+export const getTotalMatchesCount = async (): Promise<number> => {
+  return handleCall(async () => {
+    const count = await contract.getTotalMatchesCount();
     return Number(count);
   });
 };

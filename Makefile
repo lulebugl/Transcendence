@@ -37,6 +37,18 @@ seed-db:
 prune:
 	docker system prune -a
 
+# Usage: make seed-blockchain <count>
+ARGS := $(filter-out seed-blockchain,$(MAKECMDGOALS))
+.PHONY: seed-blockchain $(ARGS)
+$(ARGS):
+
+seed-blockchain:
+	@if [ -z "$(ARGS)" ]; then \
+		echo "Usage: make seed-blockchain <count>"; exit 1; \
+	fi
+	@docker compose -f infra/docker-compose.yml --env-file $(ENV_FILE) exec backend sh -c \
+		"cd /app/services/backend && MATCH_SEED_COUNT=$(ARGS) pnpm chain:seed-matches"
+
 hard-reset:
 	make down
 	make prune

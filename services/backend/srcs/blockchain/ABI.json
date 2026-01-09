@@ -1,531 +1,557 @@
 [
   {
+    "type": "constructor",
     "inputs": [],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
+    "stateMutability": "nonpayable"
   },
   {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "matchId",
-        "type": "uint256"
-      },
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "playerId1",
-        "type": "uint256"
-      },
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "playerId2",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint8",
-        "name": "score1",
-        "type": "uint8"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint8",
-        "name": "score2",
-        "type": "uint8"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint32",
-        "name": "expGained1",
-        "type": "uint32"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint32",
-        "name": "expGained2",
-        "type": "uint32"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "timestamp",
-        "type": "uint256"
-      }
-    ],
     "name": "MatchRecorded",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
+    "type": "event",
     "inputs": [
       {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "previousValue",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "newValue",
-        "type": "uint256"
-      }
-    ],
-    "name": "MaxMatchesPerPlayerUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "previousValue",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "newValue",
-        "type": "uint256"
-      }
-    ],
-    "name": "MaxTotalMatchesUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "previousOwner",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "newOwner",
-        "type": "address"
-      }
-    ],
-    "name": "OwnershipTransferred",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "account",
-        "type": "address"
-      }
-    ],
-    "name": "Paused",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "account",
-        "type": "address"
-      }
-    ],
-    "name": "Unpaused",
-    "type": "event"
-  },
-  {
-    "inputs": [],
-    "name": "_owner",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "_paused",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
         "name": "matchId",
-        "type": "uint256"
-      }
-    ],
-    "name": "getMatch",
-    "outputs": [
-      {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "id",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "playerId1",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "playerId2",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint8",
-            "name": "score1",
-            "type": "uint8"
-          },
-          {
-            "internalType": "uint8",
-            "name": "score2",
-            "type": "uint8"
-          },
-          {
-            "internalType": "uint32",
-            "name": "expGained1",
-            "type": "uint32"
-          },
-          {
-            "internalType": "uint32",
-            "name": "expGained2",
-            "type": "uint32"
-          },
-          {
-            "internalType": "uint256",
-            "name": "timestamp",
-            "type": "uint256"
-          }
-        ],
-        "internalType": "struct MatchStorage.Match",
-        "name": "",
-        "type": "tuple"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "offset",
-        "type": "uint256"
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
       },
       {
-        "internalType": "uint256",
-        "name": "count",
-        "type": "uint256"
-      }
-    ],
-    "name": "getMatches",
-    "outputs": [
-      {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "id",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "playerId1",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "playerId2",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint8",
-            "name": "score1",
-            "type": "uint8"
-          },
-          {
-            "internalType": "uint8",
-            "name": "score2",
-            "type": "uint8"
-          },
-          {
-            "internalType": "uint32",
-            "name": "expGained1",
-            "type": "uint32"
-          },
-          {
-            "internalType": "uint32",
-            "name": "expGained2",
-            "type": "uint32"
-          },
-          {
-            "internalType": "uint256",
-            "name": "timestamp",
-            "type": "uint256"
-          }
-        ],
-        "internalType": "struct MatchStorage.Match[]",
-        "name": "",
-        "type": "tuple[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "playerId",
-        "type": "uint256"
-      }
-    ],
-    "name": "getPlayerMatchCount",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "playerId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "offset",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "count",
-        "type": "uint256"
-      }
-    ],
-    "name": "getPlayerMatches",
-    "outputs": [
-      {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "id",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "playerId1",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "playerId2",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint8",
-            "name": "score1",
-            "type": "uint8"
-          },
-          {
-            "internalType": "uint8",
-            "name": "score2",
-            "type": "uint8"
-          },
-          {
-            "internalType": "uint32",
-            "name": "expGained1",
-            "type": "uint32"
-          },
-          {
-            "internalType": "uint32",
-            "name": "expGained2",
-            "type": "uint32"
-          },
-          {
-            "internalType": "uint256",
-            "name": "timestamp",
-            "type": "uint256"
-          }
-        ],
-        "internalType": "struct MatchStorage.Match[]",
-        "name": "",
-        "type": "tuple[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "maxMatchesPerPlayer",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "maxTotalMatches",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "owner",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "pause",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "paused",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
         "name": "playerId1",
-        "type": "uint256"
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
       },
       {
-        "internalType": "uint256",
         "name": "playerId2",
-        "type": "uint256"
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
       },
       {
-        "internalType": "uint8",
         "name": "score1",
-        "type": "uint8"
+        "type": "uint8",
+        "indexed": false,
+        "internalType": "uint8"
       },
       {
-        "internalType": "uint8",
         "name": "score2",
-        "type": "uint8"
+        "type": "uint8",
+        "indexed": false,
+        "internalType": "uint8"
       },
       {
-        "internalType": "uint32",
         "name": "expGained1",
-        "type": "uint32"
+        "type": "uint16",
+        "indexed": false,
+        "internalType": "uint16"
       },
       {
-        "internalType": "uint32",
         "name": "expGained2",
-        "type": "uint32"
+        "type": "uint16",
+        "indexed": false,
+        "internalType": "uint16"
+      },
+      {
+        "name": "timestamp",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
       }
     ],
-    "name": "recordMatch",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    "anonymous": false
   },
   {
+    "name": "MaxMatchesPerPlayerUpdated",
+    "type": "event",
     "inputs": [
       {
-        "internalType": "uint256",
+        "name": "previousValue",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      },
+      {
         "name": "newValue",
-        "type": "uint256"
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
       }
     ],
-    "name": "setMaxMatchesPerPlayer",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    "anonymous": false
   },
   {
+    "name": "MaxTotalMatchesUpdated",
+    "type": "event",
     "inputs": [
       {
-        "internalType": "uint256",
+        "name": "previousValue",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      },
+      {
         "name": "newValue",
-        "type": "uint256"
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
       }
     ],
-    "name": "setMaxTotalMatches",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    "anonymous": false
   },
   {
+    "name": "OwnershipTransferred",
+    "type": "event",
     "inputs": [
       {
-        "internalType": "address",
+        "name": "previousOwner",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
         "name": "newOwner",
-        "type": "address"
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
       }
     ],
-    "name": "transferOwnership",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    "anonymous": false
   },
   {
+    "name": "Paused",
+    "type": "event",
+    "inputs": [
+      {
+        "name": "account",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "name": "Unpaused",
+    "type": "event",
+    "inputs": [
+      {
+        "name": "account",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "name": "_owner",
+    "type": "function",
     "inputs": [],
-    "name": "unpause",
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "name": "_paused",
+    "type": "function",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "name": "getMatch",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "matchId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "tuple",
+        "components": [
+          {
+            "name": "id",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "playerId1",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "playerId2",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "score1",
+            "type": "uint8",
+            "internalType": "uint8"
+          },
+          {
+            "name": "score2",
+            "type": "uint8",
+            "internalType": "uint8"
+          },
+          {
+            "name": "expGained1",
+            "type": "uint32",
+            "internalType": "uint32"
+          },
+          {
+            "name": "expGained2",
+            "type": "uint32",
+            "internalType": "uint32"
+          },
+          {
+            "name": "timestamp",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ],
+        "internalType": "struct MatchStorage.Match"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "name": "getMatches",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "offset",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "count",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "tuple[]",
+        "components": [
+          {
+            "name": "id",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "playerId1",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "playerId2",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "score1",
+            "type": "uint8",
+            "internalType": "uint8"
+          },
+          {
+            "name": "score2",
+            "type": "uint8",
+            "internalType": "uint8"
+          },
+          {
+            "name": "expGained1",
+            "type": "uint32",
+            "internalType": "uint32"
+          },
+          {
+            "name": "expGained2",
+            "type": "uint32",
+            "internalType": "uint32"
+          },
+          {
+            "name": "timestamp",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ],
+        "internalType": "struct MatchStorage.Match[]"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "name": "getPlayerMatchCount",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "playerId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "name": "getPlayerMatches",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "playerId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "offset",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "count",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "tuple[]",
+        "components": [
+          {
+            "name": "id",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "playerId1",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "playerId2",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "score1",
+            "type": "uint8",
+            "internalType": "uint8"
+          },
+          {
+            "name": "score2",
+            "type": "uint8",
+            "internalType": "uint8"
+          },
+          {
+            "name": "expGained1",
+            "type": "uint32",
+            "internalType": "uint32"
+          },
+          {
+            "name": "expGained2",
+            "type": "uint32",
+            "internalType": "uint32"
+          },
+          {
+            "name": "timestamp",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ],
+        "internalType": "struct MatchStorage.Match[]"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "name": "getTotalMatchesCount",
+    "type": "function",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "name": "maxMatchesPerPlayer",
+    "type": "function",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "name": "maxTotalMatches",
+    "type": "function",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "name": "owner",
+    "type": "function",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "name": "pause",
+    "type": "function",
+    "inputs": [],
     "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    "stateMutability": "nonpayable"
+  },
+  {
+    "name": "paused",
+    "type": "function",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "name": "recordMatch",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "playerId1",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "playerId2",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "score1",
+        "type": "uint8",
+        "internalType": "uint8"
+      },
+      {
+        "name": "score2",
+        "type": "uint8",
+        "internalType": "uint8"
+      },
+      {
+        "name": "expGained1",
+        "type": "uint16",
+        "internalType": "uint16"
+      },
+      {
+        "name": "expGained2",
+        "type": "uint16",
+        "internalType": "uint16"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "name": "setMaxMatchesPerPlayer",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "newValue",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "name": "setMaxTotalMatches",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "newValue",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "name": "totalMatches",
+    "type": "function",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "name": "transferOwnership",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "newOwner",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "name": "unpause",
+    "type": "function",
+    "inputs": [],
+    "outputs": [],
+    "stateMutability": "nonpayable"
   }
 ]

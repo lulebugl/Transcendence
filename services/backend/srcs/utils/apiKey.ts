@@ -16,7 +16,7 @@ export default fp(async function apiKeyPlugin(fastify: FastifyInstance) {
       const provided = req.headers["x-api-key"];
       if (!provided || Array.isArray(provided)) {
         req.log.warn("Missing API key on public endpoint");
-        return reply.unauthorized("Missing API key");
+        return reply.status(401).send({ error: "Missing API key" });
       }
 
       const keyHash = hashKey(provided);
@@ -27,7 +27,7 @@ export default fp(async function apiKeyPlugin(fastify: FastifyInstance) {
 
       if (!user) {
         req.log.warn("Invalid or revoked API key");
-        return reply.unauthorized("Invalid or revoked API key");
+        return reply.status(401).send({ error: "Invalid or revoked API key" });
       }
 
       (req as any).apiKeyUserId = user.id;
