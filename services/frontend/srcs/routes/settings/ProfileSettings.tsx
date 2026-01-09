@@ -7,6 +7,7 @@ import { SUCCESS_NOTIFICATION_DURATION } from "@/lib/constants/constants";
 import { SettingsSection } from "@/components/ui/SettingsSection";
 import { UserAvatar } from "@/components/UserAvatar";
 import { useAuth } from "@/hooks/useAuth";
+import { Mail } from "lucide-react";
 
 export const ProfileSettings = () => {
   const { user, refreshUser } = useAuth();
@@ -84,7 +85,7 @@ export const ProfileSettings = () => {
 
       <div className="space-y-6 pt-2">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-2">
+          <div className="space-y-4">
             <FormInput
               label="Username"
               id="username"
@@ -96,6 +97,17 @@ export const ProfileSettings = () => {
               onFocus={() => clearError("username")}
             />
           </div>
+		  <FormInput
+              label="Email"
+              id="email"
+              defaultValue={userInfo?.email || ""}
+              onBlur={(e) => handleFieldUpdate("email", e.target.value)}
+              onKeyDown={handleKeyDown}
+              isSuccess={successField === "email"}
+              error={errors.email}
+              onFocus={() => clearError("email")}
+              icon={Mail}
+            />
         </div>
       </div>
 	  <span className="h-0.5 block"></span>

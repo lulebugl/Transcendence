@@ -1,6 +1,6 @@
+import { ASSET_PATH } from "./PongConstants";
 
-
-export const fetchPongAssets = async (assetPath: string = "/export_pongV0.5.glb"): Promise<void> => {
+export const fetchPongAssets = async (assetPath: string = ASSET_PATH): Promise<void> => {
     try {
         await fetch(assetPath);
         console.log("Assets pre-fetched into browser cache");

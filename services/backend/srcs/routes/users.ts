@@ -17,8 +17,10 @@ import path from "path";
 
 dotenv.config();
 
-// Help to return user without sensible datas
 type User = InferSelectModel<typeof users>;
+/**
+ * Help to return user without sensible datas
+ */
 export function serializeUser(user: User) {
 	const { id, username, avatar_url, last_call } = user;
 	return { id, username, avatar_url, last_call };
@@ -29,13 +31,10 @@ interface UserBody {
   limit?: number;
 }
 
-interface SingleUserBody {
-	id: number;
-}
-
 interface UpdateProfileBody {
   username?: string;
   avatar_url?: string;
+  email?: string;
 }
 
 const UpdateProfileSchema: FastifySchema = {
@@ -44,6 +43,7 @@ const UpdateProfileSchema: FastifySchema = {
     properties: {
       username: { ...fields.username },
       avatar_url: { ...fields.url },
+      email: { ...fields.email },
     },
     additionalProperties: false,
   },
@@ -70,6 +70,7 @@ export default async function userRoutes(fastify: FastifyInstance) {
         .select({
           id: users.id,
           username: users.username,
+		  email: users.email,
           avatar_url: users.avatar_url,
           totp_secret_key: users.totp_secret_key,
         })
@@ -101,11 +102,9 @@ export default async function userRoutes(fastify: FastifyInstance) {
     },
     async (req: FastifyRequest<{ Body: UpdateProfileBody }>, reply: FastifyReply) => {
       const userId = req.user.id;
-      const { username, avatar_url } = req.body;
+      const { username, avatar_url, email } = req.body;
 
-      // can this happen? i don't think so based on schema
-	  // Yes, as none of them are required so it allow the user to update them independently
-      if (!username && !avatar_url) {
+      if (!username && !avatar_url && !email) {
         return reply.badRequest("No fields to update");
       }
 
@@ -123,14 +122,14 @@ export default async function userRoutes(fastify: FastifyInstance) {
       const updateData: Partial<{
         username: string;
         avatar_url: string;
+        email: string;
         updated_at: Date;
-      }> = {
-        updated_at: new Date(),
-      };
+      }> = { updated_at: new Date() };
 
       if (username) updateData.username = username;
       if (avatar_url) updateData.avatar_url = avatar_url;
-
+      if (email) updateData.email = email;
+	  
       const [updatedUser] = await db
         .update(users)
         .set(updateData)
@@ -140,6 +139,7 @@ export default async function userRoutes(fastify: FastifyInstance) {
           username: users.username,
           avatar_url: users.avatar_url,
           updated_at: users.updated_at,
+		  email: users.email,
         });
 
       if (!updatedUser) return reply.notFound("User not found");
@@ -205,12 +205,16 @@ export default async function userRoutes(fastify: FastifyInstance) {
   );
 
   	// GET - Retrieve single user
+	// this is public because no relevant data is exposed
 	fastify.get(
 		"/api/users/:id", 
-		async (req: FastifyRequest<{ Body: SingleUserBody }>, reply: FastifyReply) => {
-			const { id } = req.body;
+		async (req: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
+			const { id } = req.params;
 
-			const [user] = await db.select().from(users).where(eq(users.id, id));
+			const normalizedId = parseInt(id, 10);
+			if (isNaN(normalizedId)) return reply.unauthorized("Invalid user ID");
+
+			const [user] = await db.select().from(users).where(eq(users.id, normalizedId));
 			if (!user) return reply.unauthorized("User not found");
 
 			return serializeUser(user);

@@ -2,8 +2,8 @@ import { Target } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const GAME_TIPS = [
-  "Aim for the corners — harder for opponents to predict",
-  "The ball speeds up after each hit. Stay alert!",
+  "Aim for the corners!",
+  "The ball speeds up after each hit",
 ];
 
 export const GameTips = () => {

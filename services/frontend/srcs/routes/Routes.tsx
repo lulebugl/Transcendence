@@ -9,10 +9,10 @@ import { Login, Signup } from "@/routes/auth";
 import { Settings } from "@/routes/settings";
 import { PlayerProfile, MatchHistory, Achievements } from "@/routes/profiles/";
 import { Lobby } from "@/routes/lobby";
-import { NotFound } from "@/routes/NotFound";
+import { NotFound } from "@/routes/ErrorPages";
 import { Tournaments } from "@/routes/tournaments";
-import { Pong, PongLobby } from "@/routes/pong";
-import { TestPongDev } from "@/routes/pong/testPongDev";
+// import { Pong, PongLobby } from "@/routes/pong";
+// import { TestPongDev } from "@/routes/pong/testPongDev";
 import { Leaderboard } from "@/routes/leaderboard";
 import { TermsOfService, PrivacyPolicy } from "@/routes/legal";
 import { SimulateGame } from "./dev/simulateGame";
@@ -22,23 +22,30 @@ interface RouteConfig {
   element: React.ReactNode;
 }
 
+const TestPongDev = lazy(() =>
+  import("@/routes/pong/testPongDev").then((m) => ({
+    default: m.TestPongDev,
+  }))
+);
+
 export const publicRoutes: RouteConfig[] = [
   { path: "/", element: <Home /> },
   { path: "/lobby", element: <Lobby /> },
-  { path: "/lobby-test", element: <PongLobby /> },
+//   { path: "/lobby-test", element: <PongLobby /> },
   { path: "/leaderboard", element: <Leaderboard /> },
   { path: "/profile/:username", element: <PlayerProfile /> },
-  { path: "/pong-test", element: <TestPongDev /> },
+  { path: "/pong-test", element: <Suspense fallback={<Loading />}><TestPongDev /></Suspense> },
   { path: "/tournaments", element: <Tournaments /> },
   { path: "/profile/:username/achievements", element: <Achievements /> },
+  { path: "/profile/:playerId/match-history", element: <MatchHistory /> },
   { path: "/terms-of-service", element: <TermsOfService /> },
   { path: "/privacy-policy", element: <PrivacyPolicy /> },
   {
-	  path: "/pong",
+	path: "/pong",
     element: (
       <ErrorBoundary fallback={<PongErrorFallback />}>
         <Suspense fallback={<Loading />}>
-          <Pong />
+          <TestPongDev />
         </Suspense>
       </ErrorBoundary>
     ),

@@ -22,7 +22,7 @@ export const Home = () => {
           <>
             <StatsBar profileData={profileData} />
             <div className="container mx-auto max-w-3xl">
-              <MatchHistorySection count={5} offset={0} />
+              <MatchHistorySection playerId={user.id} count={5} offset={0} />
             </div>
           </>
         )}

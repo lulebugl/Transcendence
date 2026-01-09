@@ -40,7 +40,7 @@ export const transformMatch = (match: Match, playerId: number): MatchResult => {
     relativeTime: formatRelativeTime(match.timestamp),
     result: match.winner === playerId ? "WIN" : "LOSS",
     // TODO: replace with actual rank once the new routes handle the usernames
-    opponentRank: "Diamond",
+    opponentRank: isPlayer1 ? match.player2Rank : match.player1Rank,
   };
 };
 
@@ -66,7 +66,9 @@ export const useMatchHistory = (
     if (!matchHistory || !playerId || !matchHistory.length) {
       return [];
     }
-    return matchHistory.map((match) => transformMatch(match, playerId));
+    return matchHistory.map((match) => {
+      return transformMatch(match, playerId);
+    });
   }, [matchHistory, playerId]);
 
   const noDataError =

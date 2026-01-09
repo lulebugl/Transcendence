@@ -1,4 +1,3 @@
-let count: number = 0;
 import { CustomWebSocket } from './miniBackendPong';
 import WebSocket from 'ws';
 
@@ -27,8 +26,10 @@ import {
   PADDLE_MAX_STEP,
   LIMIT_POINT,
   TIMER_PAUSE,
-  BALL_MIN_SPEED
+  BALL_MIN_SPEED,
+  GAME_START_COUNTDOWN
 } from './ConstVarGameLogic';
+
 interface GameState {
   message: string;
   GamesID: string;
@@ -99,10 +100,10 @@ export class Game {
   private paddleSensitivityPlayer1: number = 0.9;
   private paddleSensitivityPlayer2: number = 0.9;
 
-  constructor(id: string, player1: CustomWebSocket, player2: CustomWebSocket) {
-    this.id = id;
+  constructor(MatchId: string, player1: CustomWebSocket, player2: CustomWebSocket) {
+    this.id = MatchId;
     this.players = [player1, player2];
-    this.state = InfoInGame(id);
+    this.state = InfoInGame(MatchId);
     this.sceneIsReadyLeft = false;
     this.sceneIsReadyRight = false;
     // ascolta i messaggi dei due client
@@ -111,7 +112,7 @@ export class Game {
     this.players.forEach((ws, i) => {
       ws.on('message', (msg) => {
         try {
-          const data = JSON.parse(msg);
+          const data = JSON.parse(msg.toString());
           this.updateKey(data, i);
         } catch (e) {
           console.error("Error parsing message:", e);
@@ -123,8 +124,7 @@ export class Game {
   }
 
   startTimer() {
-    let countdown = 10;
-    // Send initial 3
+    let countdown = GAME_START_COUNTDOWN;
 
     const interval = setInterval(() => {
       if (this.sceneIsReadyLeft && this.sceneIsReadyRight) {
@@ -146,7 +146,7 @@ export class Game {
   }
 
   updateKey(msg, playerIndex) {
-    console.log(msg);
+    process.env.NODE_ENV === 'development' && console.log(msg);
     const info = msg;
 
     // Which paddle
@@ -196,8 +196,8 @@ export class Game {
     }
 
     if (info.type === "Not ready")
-      this.setCamera(this.players)
-    console.log(this.state, paddle);
+      this.setCamera();
+    process.env.NODE_ENV === 'development' && console.log(this.state, paddle);
   }
 
   update() {
@@ -219,7 +219,7 @@ export class Game {
       this.state.ball.position.x <= this.state.paddleRight.position.x + PADDLE_WIDTH / 2) {
 
       this.reflectBall(this.state.paddleRight, true);
-      console.log(this.state, this.state.paddleRight);
+      process.env.NODE_ENV === 'development' && console.log(this.state, this.state.paddleRight);
     }
 
     // Paddle Left (Negative Z)
@@ -228,7 +228,7 @@ export class Game {
       this.state.ball.position.x <= this.state.paddleLeft.position.x + PADDLE_WIDTH / 2) {
 
       this.reflectBall(this.state.paddleLeft, false);
-      console.log(this.state, this.state.paddleLeft);
+      process.env.NODE_ENV === 'development' && console.log(this.state, this.state.paddleLeft);
     }
 
     // Scoring
@@ -245,7 +245,6 @@ export class Game {
       return this.broadcast({ type: 'gameOver', winner: this.getWinnerIndexObjMesh() });
     }
     if (this.PauseFlag) {
-      console.log("PAUSE");
       this.state.break = true;
       let breakTime = Date.now() - this.breakTimeStart;
       if (this.state.ball.speed !== 0) {
@@ -270,6 +269,7 @@ export class Game {
           // Fallback if speedMemory was 0
           this.state.ball.speed = BALL_START_SPEED;
         }
+        this.setCamera();
       }
     }
 
@@ -306,7 +306,7 @@ export class Game {
         p.send(msg);
     });
   }
-  setCamera(players) {
+  setCamera() {
     let id = 0;
     this.players.forEach(p => {
       if (p.readyState === WebSocket.OPEN) {
@@ -402,9 +402,9 @@ export class Game {
 
   public getWinnerGamer(): number {
     if (this.state.paddleLeft.point > this.state.paddleRight.point) {
-      return Number(this.players[1].playerId);
+      return Number(this.players[1].user?.id);
     } else if (this.state.paddleLeft.point < this.state.paddleRight.point) {
-      return Number(this.players[0].playerId);
+      return Number(this.players[0].user?.id);
     }
     return -1;
   }

@@ -3,7 +3,11 @@ export function initWebSocket(uri: string, onMessage: (data: any) => void): WebS
   const ws = new WebSocket(uri);
 
   ws.addEventListener("open", () => console.log("WebSocket on"));
-  ws.addEventListener("error", (e) => console.log("WebSocket error", e));
+  ws.addEventListener("error", (e) => {
+    console.error("WebSocket error", e);
+    window.location.href = "/lobby";
+  }
+  );
 
   ws.addEventListener("message", (e) => {
     const data = JSON.parse(e.data);
@@ -19,6 +23,6 @@ export function sendMessage(message: unknown, websocket: WebSocket | null): void
     console.log("send message", message);
   }
   else {
-    console.log("WebSocket is not open!!!!");
+    console.error("WebSocket is not open!!!!");
   }
 }

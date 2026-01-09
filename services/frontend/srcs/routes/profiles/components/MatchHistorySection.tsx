@@ -1,17 +1,20 @@
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Link } from "react-router";
 import { useMatchHistory } from "../../../hooks/useMatchHistory";
-import { useAuth } from "@/hooks/useAuth";
 
 interface MatchHistoryProps {
+  playerId: number;
   offset?: number;
   count?: number;
 }
 
-export const MatchHistorySection = ({ count = 10, offset = 0 }: MatchHistoryProps) => {
-  const { user } = useAuth();
+export const MatchHistorySection = ({
+  playerId,
+  count = 10,
+  offset = 0,
+}: MatchHistoryProps) => {
   const { matchHistory, isLoading, error } = useMatchHistory(
-    user?.id ?? 0,
+    playerId,
     count > 10 ? 10 : count,
     offset
   );
@@ -27,7 +30,7 @@ export const MatchHistorySection = ({ count = 10, offset = 0 }: MatchHistoryProp
         title="Recent Matches"
         rightType="link"
         linkText="View all matches"
-        linkTo="/profile/match-history"
+        linkTo={`/profile/${playerId}/match-history`}
       />
       <div className="space-y-2">
         {matchHistory.map((match) => (

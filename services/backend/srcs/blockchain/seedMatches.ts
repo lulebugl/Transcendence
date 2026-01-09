@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import path from "node:path";
 import type { RecordMatchInput } from "./blockchain";
+import { BlockchainError } from "./blockchain";
 
 // Load env before importing db/blockchain so they see RPC_URL/DB_FILE_NAME/etc.
 const envCandidates = [
@@ -81,6 +82,34 @@ const buildMatchInput = (userIds: number[]): RecordMatchInput => {
 
 const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
+const describeError = (err: any): string => {
+  if (err instanceof BlockchainError) {
+    const meta = (err as any).metadata ?? {};
+    const parts = [
+      err.message,
+      meta.errorName ? `error=${meta.errorName}` : null,
+      meta.errorSignature ? `sig=${meta.errorSignature}` : null,
+      meta.txHash ? `tx=${meta.txHash}` : null,
+      meta.gasHint,
+      err.code ? `code=${err.code}` : null,
+      err.reason ? `reason=${err.reason}` : null,
+    ].filter(Boolean);
+    return parts.join(" | ");
+  }
+
+  const code = err?.code || err?.name;
+  const reason = err?.reason || err?.shortMessage;
+  const tx = err?.transactionHash || err?.hash || err?.transaction?.hash;
+  return [
+    err?.message ?? String(err),
+    code ? `code=${code}` : null,
+    reason ? `reason=${reason}` : null,
+    tx ? `tx=${tx}` : null,
+  ]
+    .filter(Boolean)
+    .join(" | ");
+};
+
 const sendWithRetry = async <T>(
   fn: () => Promise<T>,
   label: string
@@ -95,9 +124,9 @@ const sendWithRetry = async <T>(
         throw err;
       }
       console.warn(
-        `[retry] ${label} attempt ${attempt}/${RETRY_ATTEMPTS} failed: ${
-          (err as Error)?.message ?? err
-        }`
+        `[retry] ${label} attempt ${attempt}/${RETRY_ATTEMPTS} failed: ${describeError(
+          err
+        )}`
       );
       await delay(RETRY_DELAY_MS);
     }
@@ -177,9 +206,9 @@ async function main() {
         );
       } else {
         console.error(
-          `[fail] nonce=${meta.nonce} tx=${meta.res.txHash} reason=${
-            r.reason?.message ?? r.reason
-          }`
+          `[fail] nonce=${meta.nonce} tx=${
+            meta.res.txHash
+          } reason=${describeError(r.reason)}`
         );
       }
     });
@@ -187,9 +216,7 @@ async function main() {
     const failed = sent.filter((s) => s.status === "fail");
     failed.forEach((f) => {
       console.error(
-        `[fail] nonce=${f.nonce} send-error=${
-          (f.err as Error)?.message ?? f.err
-        }`
+        `[fail] nonce=${f.nonce} send-error=${describeError(f.err)}`
       );
     });
 
@@ -201,6 +228,6 @@ async function main() {
 
 main().catch((err) => {
   console.error("❌ Failed to seed blockchain matches");
-  console.error(err);
+  console.error(describeError(err));
   process.exit(1);
 });
