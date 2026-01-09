@@ -12,7 +12,6 @@ import { LeaderboardEntry } from "@/api/players";
 import { getOnlineStatus } from "../../hooks/useProfileData";
 import { SystemIndicator } from "@/components/ui/SystemIndicator";
 
-// maybe add a button to refresh the leaderboard
 export const Leaderboard = () => {
   const {
     data: players,
@@ -41,8 +40,8 @@ export const Leaderboard = () => {
           )}
 
           {players && (
-            <div 
-              className="glass-panel rounded-xl overflow-hidden" 
+            <div
+              className="glass-panel rounded-xl overflow-hidden"
               style={{ animationDelay: "0.2s" }}
             >
               <div className="grid grid-cols-[2.5rem_1fr_4rem_5rem_5rem] md:grid-cols-[3rem_1fr_5rem_7rem_6rem] gap-4 px-5 py-4 border-b border-white/5 text-[10px] uppercase tracking-[0.15em] text-muted-foreground bg-white/2">
@@ -53,15 +52,21 @@ export const Leaderboard = () => {
                 <span className="text-center">Winrate</span>
               </div>
 
-              <div className="divide-y divide-white/5">
-                {players.map((player, index) => (
-                  <LeaderboardRow
-                    key={`${player.userId}-${index}`}
-                    player={player}
-                    position={index + 1}
-                  />
-                ))}
-              </div>
+              {players && players.length > 0 ? (
+                <div className="divide-y divide-white/5">
+                  {players.map((player, index) => (
+                    <LeaderboardRow
+                      key={`${player.userId}-${index}`}
+                      player={player}
+                      position={index + 1}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="glass-panel rounder-bottom-xl p-8 text-center text-muted-foreground">
+                  No players on the leaderboard yet.
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -107,7 +112,7 @@ const LeaderboardRow = ({ player, position }: LeaderboardRowProps) => {
       className="grid grid-cols-[2.5rem_1fr_4rem_5rem_5rem] md:grid-cols-[3rem_1fr_5rem_7rem_6rem] gap-4 items-center px-5 py-4 hover:bg-white/2 transition-colors group cursor-pointer"
       tabIndex={0}
       role="row"
-	  key={player.userId}
+      key={player.userId}
       aria-label={`Position ${position}: ${player.username}`}
     >
       <span className="text-center text-sm font-mono text-muted-foreground">
@@ -145,7 +150,6 @@ const LeaderboardRow = ({ player, position }: LeaderboardRowProps) => {
       <span className="text-center text-sm font-mono text-muted-foreground">
         {winrate ? `${winrate}%` : "-"}
       </span>
-
     </div>
   );
 };
