@@ -120,7 +120,6 @@ export async function getAllAchievements() {
 }
 
 export async function getUserAchievementIds(id: number): Promise<string[]> {
-  console.error("Getting achievements for user", id);
   const results = await db
     .select({ achievement_id: userAchievements.achievement_id })
     .from(userAchievements)
