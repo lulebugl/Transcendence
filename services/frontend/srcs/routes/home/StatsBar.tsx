@@ -1,39 +1,6 @@
 import { useAuth } from "@/hooks/useAuth";
 import { MatchResult, useMatchHistory } from "@/hooks/useMatchHistory";
-import { ProfileData, BaseUserType as User } from "@/types";
-import { useMatches } from "react-router";
-
-interface StatsBarProps {
-  user: User;
-  //   recentMatches: Match[];
-}
-
-const RECENT_MATCHES = [
-  {
-    id: 1,
-    opponent: "CyberPong_01",
-    result: "WIN",
-    score: "11-9",
-    date: "2h ago",
-    mode: "Ranked",
-  },
-  {
-    id: 2,
-    opponent: "GlitchUser",
-    result: "LOS",
-    score: "8-11",
-    date: "5h ago",
-    mode: "Tournament",
-  },
-  {
-    id: 3,
-    opponent: "AI_Hard",
-    result: "WIN",
-    score: "11-2",
-    date: "1d ago",
-    mode: "Practice",
-  },
-];
+import { ProfileData } from "@/types";
 
 const StatContainer = ({ children }: { children: React.ReactNode }) => {
   return (

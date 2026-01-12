@@ -26,7 +26,7 @@ export const Lobby = () => {
   useEffect(() => {
     if (status !== "matched" || !matchData) return;
 
-    const url = `/pong-test?matchId=${
+    const url = `/pong?matchId=${
       matchData.matchId
     }&wsToken=${encodeURIComponent(matchData.wsToken)}`;
     navigate(url);

@@ -11,8 +11,6 @@ import { PlayerProfile, MatchHistory, Achievements } from "@/routes/profiles/";
 import { Lobby } from "@/routes/lobby";
 import { NotFound } from "@/routes/ErrorPages";
 import { Tournaments } from "@/routes/tournaments";
-// import { Pong, PongLobby } from "@/routes/pong";
-// import { TestPongDev } from "@/routes/pong/testPongDev";
 import { Leaderboard } from "@/routes/leaderboard";
 import { TermsOfService, PrivacyPolicy } from "@/routes/legal";
 import { SimulateGame } from "./dev/simulateGame";
@@ -22,9 +20,9 @@ interface RouteConfig {
   element: React.ReactNode;
 }
 
-const TestPongDev = lazy(() =>
-  import("@/routes/pong/testPongDev").then((m) => ({
-    default: m.TestPongDev,
+const PongGame = lazy(() =>
+  import("@/routes/pong/Pong").then((m) => ({
+    default: m.Pong,
   }))
 );
 
@@ -34,7 +32,6 @@ export const publicRoutes: RouteConfig[] = [
 //   { path: "/lobby-test", element: <PongLobby /> },
   { path: "/leaderboard", element: <Leaderboard /> },
   { path: "/profile/:username", element: <PlayerProfile /> },
-  { path: "/pong-test", element: <Suspense fallback={<Loading />}><TestPongDev /></Suspense> },
   { path: "/tournaments", element: <Tournaments /> },
   { path: "/profile/:username/achievements", element: <Achievements /> },
   { path: "/profile/:playerId/match-history", element: <MatchHistory /> },
@@ -45,7 +42,7 @@ export const publicRoutes: RouteConfig[] = [
     element: (
       <ErrorBoundary fallback={<PongErrorFallback />}>
         <Suspense fallback={<Loading />}>
-          <TestPongDev />
+          <PongGame />
         </Suspense>
       </ErrorBoundary>
     ),

@@ -1,57 +1,99 @@
+import { useRef } from "react";
+import { Loading } from "@/components/Loading";
+import { usePongGame } from "./usePongGame";
+import { useState, useCallback, useEffect } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/Dialog";
+import { Button } from "@/components/ui/Button";
+import { useNavigate } from "react-router";
 
+export const Pong = () => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { isLoading, cleanup } = usePongGame(canvasRef);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
-// export const Pong = () => {
+  const handleResume = useCallback(() => {
+    setIsMenuOpen(false);
+    canvasRef.current?.focus();
+  }, []);
 
-// };
+  const handleQuit = useCallback(() => {
+    cleanup?.();
+    navigate("/lobby");
+  }, [cleanup, navigate]);
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsMenuOpen((prev) => !prev);
+      }
+    };
 
-// const configureImageProcessing = (
-//   config: ImageProcessingConfiguration
-// ): void => {
-//   config.toneMappingEnabled = true;
-//   config.toneMappingType = ImageProcessingConfiguration.TONEMAPPING_ACES;
-//   config.exposure = 1.2;
-//   config.contrast = 1.5;
-//   (config as any).gammaCorrection = true;
-// };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
+  return (
+    <div className="relative w-screen h-screen overflow-hidden">
+      {isLoading && (
+        <div className="absolute inset-0 z-50">
+          <Loading />
+        </div>
+      )}
+      {!new URLSearchParams(window.location.search).get("matchId") && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 text-white">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold mb-4">No Match ID</h2>
+            <p className="mb-4">Please join a game from the Lobby.</p>
+            <a
+              href="/lobby"
+              className="px-4 py-2 bg-blue-600 rounded hover:bg-blue-700"
+            >
+              Go to Lobby
+            </a>
+          </div>
+        </div>
+      )}
 
-// const configureShadows = (
-//   lights: Light[],
-//   meshes: AbstractMesh[]
-// ): ShadowGenerator | null => {
-//   const directionalLight = lights[0] as DirectionalLight | undefined;
-//   if (!directionalLight) {
-//     return null;
-//   }
-//   directionalLight.shadowEnabled = true;
-//   const mapSize = window.innerWidth >= 1280 ? 2048 : 1024;
-//   const shadowGen = new ShadowGenerator(mapSize, directionalLight);
-//   shadowGen.usePercentageCloserFiltering = true;
-//   shadowGen.filteringQuality = ShadowGenerator.QUALITY_HIGH;
-//   shadowGen.bias = 0.0008;
-//   shadowGen.normalBias = 0.04;
-//   shadowGen.transparencyShadow = true;
-//   [paddleLeft, paddleRight, ball].forEach((index) => {
-//     if (meshes[index]) {
-//       shadowGen.addShadowCaster(meshes[index], true);
-//     }
-//   });
-//   const tableMesh = meshes[table];
-//   if (tableMesh) {
-//     tableMesh.receiveShadows = true;
-//   }
-//   return shadowGen;
-// };
+	  {/* this is the menu of the game */}
+      <Dialog open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+        <DialogContent showCloseButton={false} className="sm:max-w-md" onEscapeKeyDown={(e) => e.preventDefault()}>
+          <DialogHeader>
+            <DialogTitle>Game Menu</DialogTitle>
+            <DialogDescription>
+              The match is still running. Quitting will forfeit the game.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex-col gap-2 sm:flex-col">
+            <Button onClick={handleResume} className="w-full">
+              Resume Game
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleQuit}
+              className="w-full"
+            >
+              Quit Match
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
-// const configureMaterials = (scene: Scene, meshes: AbstractMesh[]) => {
-//   meshes.forEach((mesh) => {
-//     const mat = mesh.material as unknown as Record<string, unknown> | undefined;
-//     if (mat && (mat as any).isPBRMaterial) {
-//       (mat as any).environmentIntensity = 3;
-//     }
-//   });
-//   scene.materials.forEach((material) => {
-//     (material as unknown as Record<string, unknown>).maxSimultaneousLights = 7;
-//   });
-// };
+      <canvas
+        ref={canvasRef}
+        id="renderCanvas"
+        className="block h-screen! w-screen outline-none"
+        role="img"
+        aria-label="Transcendence pong arena"
+        tabIndex={0}
+      />
+    </div>
+  );
+};
