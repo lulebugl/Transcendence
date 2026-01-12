@@ -8,33 +8,40 @@ A modern 3D Pong game built with real-time multiplayer, achievements, blockchain
 
 ## Description
 
-**ft_transcendence** is a full-stack web application that reimagines Pong as a competitive, social, and technically advanced experience. Key features include:
+**ft_transcendence** is a full-stack web application that reimagines Pong in a 3D environment with a modern UI and social features. Key features include:
 - Real-time 3D Pong gameplay (Babylon.js)
-- Multiplayer matchmaking and lobbies
+- Matchmaking and lobbies
 - User authentication (JWT, 2FA)
 - Achievements and player stats
 - Blockchain match recording
-- Friends, leaderboards, tournaments
+- Friends, leaderboards
 
 ---
 
 ## Instructions
 
 ### Prerequisites
-- Node.js 20+
-- pnpm 9+
-- Docker 24+
-- (Optional) .env configuration in `infra/.env`
+- Docker and Docker Compose v2.0+
+- create a .env with an example in `infra/.env.example`
+- **it won't work without a blockain setup**
 
 ### Setup & Run
 ```zsh
-pnpm install
-pnpm -r build
-make build
-make up
+# to run the project
+make run
+# and to seed the database
+make seed-db
+
+# useful make commands
+make build # to build the images
+make up # to start the containers
+make logs $(service) # to view the logs (frontend and backend)
+make down # to stop and remove the containers
+make clean # to clean the project
+make prune-db # to prune the database
 ```
-- Frontend: http://localhost:8080/
-- Backend health: http://localhost:8080/api/health
+- Frontend: http://localhost:8043/
+- Backend health: http://localhost:8043/api/health
 
 ### Endpoints
 - API: `/api/*` (see docs/API_STRUCTURE.md)
@@ -69,7 +76,7 @@ make up
 
 ## Project Management
 - **Organization:** Tasks distributed by feature/module, regular standups, async updates.
-- **Tools:** Notion (planning), GitHub Issues (tracking), Discord and Whatsapp (communication).
+- **Tools:** Notion (planning), Discord and Whatsapp (communication).
 - **Workflow:** Feature branches, code reviews, CI via Docker Compose.
 
 ---
@@ -85,13 +92,12 @@ make up
 
 ## Database Schema
 - **Users:** id, username, avatar_url, password_hash, refresh_token, totp_secret_key, api_key
-- **Games:** id, player1_id, player2_id, scores, winner_id, status, timestamps
 - **UserStats:** id, user_id, level, games_played, games_won, streaks, xp
 - **Friendships:** id, requester_id, receiver_id, status
 - **Achievements:** id, name, description, rarity
 - **UserAchievements:** id, user_id, achievement_id, unlocked_at
 
-(Relationships: users <-> games, users <-> friendships, users <-> achievements)
+(Relationships: users <-> userStats, users <-> friendships, users <-> achievements)
 
 ---
 
@@ -102,8 +108,7 @@ make up
 - **User Auth & 2FA:** hle-roi
 - **Achievements & Stats:** hle-roi, llebugle
 - **Friends & Leaderboards:** llebugle
-- **Tournaments:** llebugle
-- **Responsive UI:** llebugle
+- **Frontend and Responsive UI:** llebugle
 
 ---
 
@@ -125,7 +130,7 @@ make up
   - Implement a complete 2FA (1pt, jfranco)
   - A gamification system to reward users for their actions (1pt, llebugle)
 
-**Justification:** Each module chosen for pedagogical value, technical challenge, and user experience. Custom modules (blockchain, achievements) highlight innovation.
+**Justification:** Each module chosen for pedagogical value, technical challenge, and user experience.
 
 ---
 
@@ -133,14 +138,14 @@ make up
 - **mwattier:** Game physics, readme, testing and bugfixes
 - **jfranco:** Matchmaking, session management, queue logic, WebSocket sync, backend state, testing and bugfixes
 - **maxweert:** Smart contract, blockchain API, match recording, testing and bugfixes
-- **hle-roi:** API routes, user CRUD, JWT/2FA, docs, testing and bugfixes
-- **llebugle:** UI/UX, frontend architecture, achievements, testing and bugfixes
+- **hle-roi:** API routes, user CRUD, JWT/2FA, docs, social features, testing and bugfixes
+- **llebugle:** UI/UX, frontend architecture, achievements, social features, infrastructure, testing and bugfixes
 
 **Challenges:**
 - Smooth game logic (mwattier)
 - Blockchain integration and smart contract deployment (maxweert)
 - Secure authentication and 2FA (hle-roi)
-- Responsive UI and 3D rendering (llebugle)
+- Responsive UI, data architecture and 3D rendering/performance (llebugle)
 - Matchmaking edge cases and real-time sync (jfranco)
 
 ---
@@ -154,8 +159,3 @@ make up
 - 42 School
 - Babylon.js, Fastify, Drizzle ORM, Ethers.js
 - All contributors
-
----
-
-## Assets
-- [Game Art Example](https://images.squarespace-cdn.com/content/62d66fa29e72c560f8efc020/1cd27e3d-e6bc-4bfe-99bd-fae5365f4ae2/NozomiCitadel_Zipline_Before%281%29.png?content-type=image%2Fpng)
