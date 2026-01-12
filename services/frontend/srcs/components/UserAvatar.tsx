@@ -7,6 +7,7 @@ import { userApi } from "@/api/user";
 import { Camera } from "lucide-react";
 import { MAX_AVATAR_SIZE } from "@/lib/constants/constants";
 import { cn } from "@/lib/utils";
+import { useEffect } from "react";
 
 interface UserAvatarProps {
   username: string;
@@ -35,6 +36,10 @@ export const UserAvatar = ({
   const displayUrl = previewUrl || avatarUrl;
   const showImage = displayUrl && !hasImageError;
 
+  useEffect(() => {
+    setHasImageError(false);
+  }, [avatarUrl]);
+  
   const { mutate: uploadAvatar, isLoading: isUploading } = useMutation(
     userApi.uploadAvatar,
     {
@@ -108,6 +113,7 @@ export const UserAvatar = ({
         >
           <div className="w-full h-full rounded-full overflow-hidden">
             <img
+			  key={displayUrl}
               src={displayUrl}
               alt={`${username}'s avatar`}
               onError={() => setHasImageError(true)}

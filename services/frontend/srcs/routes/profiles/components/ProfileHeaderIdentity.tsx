@@ -3,7 +3,7 @@ import { Zap } from "lucide-react";
 import { OnlineStatus } from "@/types";
 import { STATUS_STYLE_CONFIG } from "@/lib/constants/colors";
 import { useAuth } from "@/hooks/useAuth";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface ProfileHeaderIdentityProps {
   username: string;
@@ -21,6 +21,14 @@ export const ProfileHeaderIdentity = ({
  const [currentAvatarUrl, setCurrentAvatarUrl] = useState<string>(avatarUrl);
   const currentStatus = STATUS_STYLE_CONFIG[status];
   const { user, refreshUser } = useAuth();
+
+  // this shouldn't be needed anymore
+  useEffect(() => {
+    if (avatarUrl) {
+      setCurrentAvatarUrl(avatarUrl);
+    }
+  }, [avatarUrl]);
+
   if (!currentStatus) {
     throw new Error(`Invalid status: ${status}`);
   }

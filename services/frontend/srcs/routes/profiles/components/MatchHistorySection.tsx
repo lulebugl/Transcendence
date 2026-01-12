@@ -1,6 +1,7 @@
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Link } from "react-router";
 import { useMatchHistory } from "../../../hooks/useMatchHistory";
+import { UserAvatar } from "@/components/UserAvatar";
 
 interface MatchHistoryProps {
   playerId: number;
@@ -53,9 +54,9 @@ export const MatchHistorySection = ({
                 to={`/profile/${match.opponentName}`}
                 className="flex items-center gap-3 cursor-pointer w-fit"
               >
-                <img
-                  src={match.opponentAvatar}
-                  alt={match.opponentName}
+                <UserAvatar
+                  username={match.opponentName}
+                  avatarUrl={match.opponentAvatar}
                   className="w-10 h-10 rounded-full border border-white/10 grayscale-25 group-hover:grayscale-0 transition-all"
                 />
                 <div className="min-w-0">
