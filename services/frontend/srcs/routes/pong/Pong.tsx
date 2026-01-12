@@ -68,7 +68,7 @@ export const Pong = () => {
           <DialogHeader>
             <DialogTitle>Game Menu</DialogTitle>
             <DialogDescription>
-              The match is still running. Quitting will forfeit the game.
+              The match is still running.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="flex-col gap-2 sm:flex-col">
