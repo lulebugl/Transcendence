@@ -8,7 +8,6 @@ import { useProfileData } from "@/hooks/useProfileData";
 export const Home = () => {
   const { user } = useAuth();
   const { profileData } = useProfileData(user?.username);
-
   return (
     <Layout>
       <div className="max-w-7xl mx-auto px-6 py-12 md:py-20 space-y-24 animate-fade-in">
