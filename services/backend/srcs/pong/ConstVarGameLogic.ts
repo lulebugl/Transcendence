@@ -30,4 +30,4 @@ export const PADDLE_MAX_STEP: number = 1;
 
 export const TIMER_PAUSE: number = 30_000; //30 seconds
 export const GAME_START_COUNTDOWN = 9; //9 seconds
-export const LIMIT_POINT: number = 3;
+export const LIMIT_POINT: number = 11;
