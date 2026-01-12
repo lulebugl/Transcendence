@@ -117,7 +117,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
 			maxAge: 60 * 60 * 24 * 30,
 		});
 		
-		initPlayerStats(user.id);
+		await initPlayerStats(user.id);
 		
         return {
           success: true,

@@ -8,15 +8,15 @@ import { xpForLevel } from "../pong/expCounter";
 
 // prettier-ignore
 const SEED_USERS = [
-  { username: 'test1', avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=NeoPaddle', email: "test1@mail.com" },
-  { username: 'ShadowPaddle', avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=1', email: "test2@mail.com" },
-  { username: 'NeonStrike', avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=2', email: "test3@mail.com" },
-  { username: 'CyberServe', avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=3', email: "test4@mail.com" },
-  { username: 'PixelMaster', avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=4', email: "test5@mail.com" },
-  { username: 'VoidSmasher', avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=5', email: "test6@mail.com" },
-  { username: 'QuantumAce', avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=6', email: "test7@mail.com" },
-  { username: 'ByteRunner', avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=7', email: "test8@mail.com" },
-  { username: 'GlitchKing', avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=8', email: "test9@mail.com" },
+  { username: 'test1', avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=NeoPaddle', email: "test1@gmail.com" },
+  { username: 'ShadowPaddle', avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=1', email: "shadowpaddle@gmail.com" },
+  { username: 'NeonStrike', avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=2', email: "neonstrike@gmail.com" },
+  { username: 'CyberServe', avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=3', email: "cyberserve@gmail.com" },
+  { username: 'PixelMaster', avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=4', email: "pixelmaster@gmail.com" },
+  { username: 'VoidSmasher', avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=5', email: "voidsmasher@gmail.com" },
+  { username: 'QuantumAce', avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=6', email: "quantumace@gmail.com" },
+  { username: 'ByteRunner', avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=7', email: "byterunner@gmail.com" },
+  { username: 'GlitchKing', avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=8', email: "glitchking@gmail.com" },
 ];
 
 /**

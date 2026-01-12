@@ -11,7 +11,7 @@ import { db } from "../../db/client";
 import { users, userStats } from "../../db/schema";
 import { eq, inArray } from "drizzle-orm";
 import { getPlayerRank, PlayerRank } from "../../utils/player-utils";
-import { errorResponse, matchesSchema, latestMatchesSchema, EnrichedMatchSchema } from "./matches.schema";
+import { errorResponse, matchesSchema, EnrichedMatchSchema } from "./matches.schema";
 
 export interface EnrichedMatch extends Match {
   player1Name: string;
@@ -31,24 +31,24 @@ export async function enrichMatch(match: Match): Promise<EnrichedMatch> {
       level: userStats.level,
     })
     .from(users)
-    .innerJoin(userStats, eq(users.id, userStats.user_id))
+    .leftJoin(userStats, eq(users.id, userStats.user_id))
     .where(inArray(users.id, [match.playerId1, match.playerId2]));
 
   const player1 = players.find((p) => p.id === match.playerId1);
   const player2 = players.find((p) => p.id === match.playerId2);
 
   if (!player1 || !player2) {
-    throw new Error("Player not found");
+	throw new Error("Player not found");
   }
 
   return {
     ...match,
     player1Name: player1.username,
-    player1Rank: getPlayerRank(player1.level),
-    player1Avatar: player1.avatar_url,
+    player1Rank: getPlayerRank(player1.level ?? 1),
+    player1Avatar: player1.avatar_url ?? "",
     player2Name: player2.username,
-    player2Rank: getPlayerRank(player2.level),
-    player2Avatar: player2.avatar_url,
+    player2Rank: getPlayerRank(player2.level ?? 1),
+    player2Avatar: player2.avatar_url ?? "",
   };
 }
 
@@ -134,7 +134,6 @@ export default async function publicApiMatches(fastify: FastifyInstance) {
       if (!Number.isInteger(matchId) || matchId <= 0) {
         return reply.status(400).send({ error: "Invalid match id" });
       }
-
       try {
         const match = await getMatch(matchId);
         const enrichedMatch = await enrichMatch(match);

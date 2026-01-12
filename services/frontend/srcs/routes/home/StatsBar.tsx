@@ -1,5 +1,5 @@
 import { useAuth } from "@/hooks/useAuth";
-import { useMatchHistory } from "@/hooks/useMatchHistory";
+import { MatchResult, useMatchHistory } from "@/hooks/useMatchHistory";
 import { ProfileData, BaseUserType as User } from "@/types";
 import { useMatches } from "react-router";
 
@@ -46,7 +46,17 @@ const StatContainer = ({ children }: { children: React.ReactNode }) => {
 
 export const StatsBar = ({ profileData }: { profileData: ProfileData }) => {
   const { user } = useAuth();
-  const { matchHistory } = useMatchHistory(user?.id, 1);
+
+  // fetch an extra game in case the last game is invalid or corrupted
+  // if real caching is implemented use the cached matches instead of fetching the last game
+  // to avoid duplication of queries
+  const { matchHistory } = useMatchHistory(user?.id, 2, 0);
+  let MatchResult: MatchResult | null = null;
+
+  if (matchHistory.length != 0) {
+    MatchResult = matchHistory[matchHistory.length - 1] ?? null;
+  }
+
   if (!profileData) return null;
 
   return (
@@ -83,16 +93,16 @@ export const StatsBar = ({ profileData }: { profileData: ProfileData }) => {
         <div className="text-3xl font-light tabular-nums flex items-center gap-3 group-hover:tracking-widest transition-all duration-300">
           <span
             className={
-              matchHistory[0]?.result === "WIN"
+              MatchResult?.result === "WIN"
                 ? "text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]"
                 : "text-muted-foreground"
             }
           >
-            {matchHistory[0]?.result}
+            {MatchResult?.result}
           </span>
         </div>
         <span className="text-xs text-muted-foreground font-thin opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-y-2 group-hover:translate-y-0">
-          vs {matchHistory[0]?.opponentName}
+          vs {MatchResult?.opponentName}
         </span>
       </StatContainer>
     </section>

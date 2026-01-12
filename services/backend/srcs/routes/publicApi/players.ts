@@ -9,10 +9,9 @@ import { users } from "../../db/schema";
 import { eq } from "drizzle-orm";
 import {
   errorResponse,
-  EnrichedMatchSchema,
   playerMatchesResponseSchema,
 } from "./matches.schema";
-import { enrichMatch } from "./matches";
+import { type EnrichedMatch, enrichMatch } from "./matches";
 
 const keyByApiKeyOrIp = (req: { headers: any; ip: string }) => {
   const apiKey = req.headers["x-api-key"];
@@ -85,8 +84,26 @@ export default async function publicApiPlayers(fastify: FastifyInstance) {
       }
 
       try {
+		// retrieve the matches from the blockchain
+		// then enrich the matches with the player data (username, rank, avatar...)
+		// and logs and filters out corrupted matches
+
         const matches = await getPlayerMatches(playerId, offset, count);
-        const enrichedMatches = await Promise.all(matches.map(enrichMatch));
+		const results = await Promise.allSettled(matches.map(enrichMatch));
+        const enrichedMatches = results
+          .filter((result): result is PromiseFulfilledResult<EnrichedMatch> => 
+            result.status === 'fulfilled'
+          )
+          .map(result => result.value);
+        
+        results.forEach((result, index) => {
+          if (result.status === 'rejected') {
+            req.log.warn({ 
+              match: matches[index], 
+              error: result.reason 
+            }, 'Skipping match with missing players');
+          }
+        });
         return { matches: enrichedMatches };
       } catch (err) {
         if (err instanceof BlockchainError) {

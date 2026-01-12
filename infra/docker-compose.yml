@@ -1,4 +1,15 @@
 services:
+  cert-generator:
+    container_name: cert-generator
+    image: alpine:latest
+    networks:
+      - trans
+    volumes:
+      - ./nginx/certs:/certs:rw
+      - ./nginx/generate-certs.sh:/generate-certs.sh:ro
+    command: sh /generate-certs.sh
+    restart: "no"
+
   nginx:
     container_name: nginx
     networks:
@@ -8,12 +19,19 @@ services:
     ports:
       - "8080:80"
       - "8443:443"
+    entrypoint: >
+      sh -c "
+        while [ ! -f /etc/nginx/certs/fullchain.pem ]; do sleep 1; done;
+        exec nginx -g 'daemon off;'
+      "
     volumes:
       - ./nginx/nginx.${DOCKER_ENV:-development}.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/certs:/etc/nginx/certs:ro
     depends_on:
       - backend
       - frontend
+      - cert-generator
+
   backend:
     container_name: backend
     networks:
@@ -41,6 +59,7 @@ services:
       - ../services/backend/database:/app/services/backend/database
       - ../services/backend/drizzle:/app/services/backend/drizzle
       - /app/services/backend/node_modules # Anonymous volume to preserve node_modules
+
   frontend:
     container_name: frontend
     networks:
