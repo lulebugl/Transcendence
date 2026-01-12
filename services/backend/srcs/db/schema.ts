@@ -22,30 +22,6 @@ export const users = sqliteTable("users", {
   api_key: text("api_key").unique(),
 });
 
-// Game sessions table
-export const games = sqliteTable("games", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  player1_id: integer("player1_id")
-    .notNull()
-    .references(() => users.id),
-  player2_id: integer("player2_id")
-    .notNull()
-    .references(() => users.id),
-  player1_score: integer("player1_score").notNull().default(0),
-  player2_score: integer("player2_score").notNull().default(0),
-  winner_id: integer("winner_id").references(() => users.id),
-  status: text("status", {
-    enum: ["waiting", "in_progress", "completed", "abandoned"],
-  })
-    .notNull()
-    .default("waiting"),
-  duration_seconds: integer("duration_seconds"),
-  created_at: integer("created_at", { mode: "timestamp" })
-    .notNull()
-    .default(sql`(unixepoch())`),
-  completed_at: integer("completed_at", { mode: "timestamp" }),
-});
-
 export const userStats = sqliteTable("user_stats", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   level: integer("level").notNull().default(1),
@@ -103,9 +79,6 @@ export const userAchievements = sqliteTable("user_achievements", {
 
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
-
-export type Game = typeof games.$inferSelect;
-export type NewGame = typeof games.$inferInsert;
 
 export type UserStats = typeof userStats.$inferSelect;
 export type NewUserStats = typeof userStats.$inferInsert;

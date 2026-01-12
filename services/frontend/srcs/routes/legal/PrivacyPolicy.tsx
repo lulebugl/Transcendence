@@ -15,14 +15,14 @@ export const PrivacyPolicy = () => {
       <h2>How We Use Your Data</h2>
       <ul>
         <li>To provide game services and features</li>
-        <li>To enable matchmaking, leaderboards, tournaments, and achievements</li>
+        <li>To enable matchmaking, leaderboards, and achievements</li>
         <li>To secure your account (authentication, 2FA)</li>
         <li>To improve the platform and fix bugs</li>
       </ul>
       <h2>Data Sharing</h2>
       <ul>
         <li>We do not sell your data.</li>
-        <li>Data may be shared with blockchain services for match recording (if enabled).</li>
+        <li>Data may be shared with blockchain services for match recording.</li>
         <li>We may share data with law enforcement if required by law.</li>
       </ul>
       <h2>Your Rights</h2>
