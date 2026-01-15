@@ -249,12 +249,19 @@ const IncomingRequestItem = ({
         status={status}
         className="w-9 h-9"
       />
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium truncate">{request.username}</p>
+      <Link
+        to={`/profile/${request.username}`}
+        className="flex-1 min-w-0 group cursor-pointer"
+        tabIndex={0}
+        aria-label={`Go to profile of ${request.username}`}
+      >
+        <p className="text-sm font-medium truncate group-hover:text-primary transition-colors">
+          {request.username}
+        </p>
         <p className="text-[10px] text-muted-foreground">
           Sent you an invitation
         </p>
-      </div>
+      </Link>
       <div className="flex items-center gap-1">
         <Button
           variant="default"
@@ -303,13 +310,20 @@ const SentRequestItem = ({
         status={status}
         className="w-8 h-8"
       />
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium truncate">{request.username}</p>
+      <Link
+        to={`/profile/${request.username}`}
+        className="flex-1 min-w-0 group cursor-pointer"
+        tabIndex={0}
+        aria-label={`Go to profile of ${request.username}`}
+      >
+        <p className="text-sm font-medium truncate group-hover:text-primary transition-colors">
+          {request.username}
+        </p>
         <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
           <Clock className="w-3 h-3" />
           <span>Pending</span>
         </div>
-      </div>
+      </Link>
       <Button
         variant="ghost"
         size="sm"
