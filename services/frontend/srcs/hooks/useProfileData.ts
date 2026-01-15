@@ -72,7 +72,7 @@ export function useProfileData(username?: string) {
       rank: playerData.rank,
       memberSince: formatMemberSince(playerData.memberSince),
       nextLevelXp: xpNeededForNextLevel,
-      winRate: Math.round(playerData.winRate),
+      winRate: playerData.winRate,
       gamesWon: playerData.gamesWon,
       gamesLost: playerData.gamesLost,
       bestWinStreak: playerData.bestWinStreak,

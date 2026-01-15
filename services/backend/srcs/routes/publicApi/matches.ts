@@ -11,7 +11,11 @@ import { db } from "../../db/client";
 import { users, userStats } from "../../db/schema";
 import { eq, inArray } from "drizzle-orm";
 import { getPlayerRank, PlayerRank } from "../../utils/player-utils";
-import { errorResponse, matchesSchema, EnrichedMatchSchema } from "./matches.schema";
+import {
+  errorResponse,
+  matchesSchema,
+  EnrichedMatchSchema,
+} from "./matches.schema";
 
 export interface EnrichedMatch extends Match {
   player1Name: string;
@@ -37,19 +41,15 @@ export async function enrichMatch(match: Match): Promise<EnrichedMatch> {
   const player1 = players.find((p) => p.id === match.playerId1);
   const player2 = players.find((p) => p.id === match.playerId2);
 
-  if (!player1 || !player2) {
-	throw new Error("Player not found");
-  }
-
-  return {
-    ...match,
-    player1Name: player1.username,
-    player1Rank: getPlayerRank(player1.level ?? 1),
-    player1Avatar: player1.avatar_url ?? "",
-    player2Name: player2.username,
-    player2Rank: getPlayerRank(player2.level ?? 1),
-    player2Avatar: player2.avatar_url ?? "",
-  };
+    return {
+      ...match,
+      player1Name: player1?.username ?? "Unknown User",
+      player1Rank: getPlayerRank(player1?.level ?? 1),
+      player1Avatar: player1?.avatar_url ?? "",
+      player2Name: player2?.username ?? "Unknown User",
+      player2Rank: getPlayerRank(player2?.level ?? 1),
+      player2Avatar: player2?.avatar_url ?? "",
+    };
 }
 
 const keyByApiKeyOrIp = (req: { headers: any; ip: string }) => {
@@ -155,9 +155,9 @@ export default async function publicApiMatches(fastify: FastifyInstance) {
   fastify.get(
     "/api/public/matches",
     {
-      config: { rateLimit: publicApiRateLimit },	
-		schema: matchesSchema,
-	},
+      config: { rateLimit: publicApiRateLimit },
+      schema: matchesSchema,
+    },
     async (
       req: FastifyRequest<{ Querystring: PaginationQuery }>,
       reply: FastifyReply
