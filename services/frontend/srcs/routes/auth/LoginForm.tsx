@@ -140,14 +140,14 @@ export const LoginForm = () => {
           }}
           icon={Lock}
           placeholder="••••••••"
-          labelRight={
-            <Link
-              to="/forgot-password"
-              className="text-[10px] text-primary hover:text-white transition-colors uppercase tracking-wider"
-            >
-              Lost Key?
-            </Link>
-          }
+        //   labelRight={
+        //     <Link
+        //       to="/forgot-password"
+        //       className="text-[10px] text-primary hover:text-white transition-colors uppercase tracking-wider"
+        //     >
+        //       Lost Key?
+        //     </Link>
+        //   }
           required
         />
 

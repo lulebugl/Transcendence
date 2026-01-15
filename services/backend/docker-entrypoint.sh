@@ -14,6 +14,10 @@ pnpm db:migrate
 echo "Pushing schema changes..."
 pnpm db:push
 
+# Seed achievements
+echo "Seeding achievements..."
+pnpm db:seed-achievements || echo "Seeding failed or already done, continuing..."
+
 if [ "$NODE_ENV" = "development" ]; then
     echo "Starting Drizzle Studio..."
     npx drizzle-kit studio --host 0.0.0.0 --port 4983 &> /dev/null &

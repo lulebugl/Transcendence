@@ -5,6 +5,7 @@ import { achievements, userAchievements, users, userStats } from "./schema";
 import { hashKey } from "../utils/apiKey";
 import { hash } from "argon2";
 import { xpForLevel } from "../pong/expCounter";
+import { SEED_ACHIEVEMENTS, seedAchievements } from "./seed-achievements";
 
 // prettier-ignore
 const SEED_USERS = [
@@ -46,22 +47,11 @@ const SEED_STATS = [
   { games_played: 11, games_won: 8, level: 3, xp: levelProgress(3, 0.9), current_win_streak: 0, best_win_streak: 3 },
 ];
 
-// prettier-ignore
-const SEED_ACHIEVEMENTS = [
-	{ id: "first_blood", name: "First Blood", description: "Win your first match", rarity: "common" as const },
-	{ id: "hot_streak", name: "Hot Streak", description: "Win 5 matches in a row", rarity: "rare" as const },
-	{ id: "perfectionist", name: "Perfectionist", description: "Win a match 11-0", rarity: "legendary" as const },
-	{ id: "grinder", name: "Grinder", description: "Reach level 30", rarity: "epic" as const },
-	{ id: "centurion", name: "Centurion", description: "Play 100 matches", rarity: "rare" as const },
-	{ id: "speed_demon", name: "Speed Demon", description: "Win in under 2 minutes", rarity: "epic" as const },
-];
-
 async function seed() {
   console.log("🌱 Seeding database...");
 
   await db.delete(userStats);
   await db.delete(users);
-  await db.delete(achievements);
   await db.delete(userAchievements);
 
   const testPasswordHash = await hash("test1234");
@@ -91,8 +81,7 @@ async function seed() {
   console.log(`✅ Inserted ${insertedStats.length} user stats`);
 
   // Insert achievements
-  await db.insert(achievements).values(SEED_ACHIEVEMENTS);
-  console.log(`✅ Inserted ${SEED_ACHIEVEMENTS.length} achievements`);
+  await seedAchievements();
 
   console.log("...Unlocking achievements for players...");
   await Promise.all(
