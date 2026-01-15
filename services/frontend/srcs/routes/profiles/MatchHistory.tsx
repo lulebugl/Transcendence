@@ -3,9 +3,13 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { SystemIndicator } from "@/components/ui/SystemIndicator";
 import { Link, Navigate } from "react-router";
 import { useAuth } from "@/hooks/useAuth";
-import { useInfiniteMatchHistory, type MatchResult } from "@/hooks/useMatchHistory";
+import {
+  useInfiniteMatchHistory,
+  type MatchResult,
+} from "@/hooks/useMatchHistory";
 import { useRef, useEffect } from "react";
 import { useParams } from "react-router";
+import { UserAvatar } from "@/components/UserAvatar";
 const MATCHES_PER_PAGE = 50;
 
 export const MatchHistory = () => {
@@ -13,14 +17,8 @@ export const MatchHistory = () => {
   const { playerId } = useParams();
 
   const effectivePlayerId = playerId ? Number(playerId) : user?.id ?? 0;
-  const {
-    matches,
-    isLoading,
-    isLoadingMore,
-    error,
-    hasMore,
-    loadMore,
-  } = useInfiniteMatchHistory(effectivePlayerId, MATCHES_PER_PAGE);
+  const { matches, isLoading, isLoadingMore, error, hasMore, loadMore } =
+    useInfiniteMatchHistory(effectivePlayerId, MATCHES_PER_PAGE);
 
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
@@ -79,9 +77,7 @@ export const MatchHistory = () => {
           )}
 
           {matches.length > 0 && (
-            <div
-              className="glass-panel rounded-xl overflow-hidden"
-            >
+            <div className="glass-panel rounded-xl overflow-hidden">
               <div className="grid grid-cols-[1rem_1fr_4rem_5rem] md:grid-cols-[1rem_1fr_5rem_6rem_6rem] gap-4 px-5 py-4 border-b border-white/5 text-[10px] uppercase tracking-[0.15em] text-muted-foreground bg-white/2">
                 <span></span>
                 <span>Opponent</span>
@@ -168,10 +164,10 @@ const MatchRow = ({ match }: MatchRowProps) => {
         to={`/profile/${match.opponentName}`}
         className="flex items-center gap-3 min-w-0"
       >
-        <img
-          src={match.opponentAvatar}
-          alt={match.opponentName}
-          className="w-9 h-9 rounded-full border border-white/10 grayscale-25 group-hover:grayscale-0 transition-all"
+        <UserAvatar
+          username={match.opponentName}
+          avatarUrl={match.opponentAvatar}
+          className="w-10 h-10 rounded-full border border-white/10 grayscale-25 group-hover:grayscale-0 transition-all"
         />
         <span className="font-medium truncate group-hover:text-primary transition-colors">
           {match.opponentName}
@@ -181,7 +177,9 @@ const MatchRow = ({ match }: MatchRowProps) => {
       {/* Score */}
       <div className="text-center">
         <span className="font-mono text-sm">
-          <span className={isWin ? "text-emerald-400" : "text-muted-foreground"}>
+          <span
+            className={isWin ? "text-emerald-400" : "text-muted-foreground"}
+          >
             {match.myScore}
           </span>
           <span className="text-muted-foreground/40 mx-1">-</span>
