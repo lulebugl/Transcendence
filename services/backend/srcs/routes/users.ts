@@ -85,15 +85,6 @@ export default async function userRoutes(fastify: FastifyInstance) {
     }
   );
 
-  // GET - Retrieve users by pages with offset and limit
-  fastify.get(
-    "/api/users",
-    async (req: FastifyRequest<{ Body: UserBody }>) => {
-      const { offset = 0, limit = 10 } = req.body;
-      return await db.select().from(users).limit(limit).offset(offset);
-    }
-  );
-
   fastify.patch(
     "/api/users/update",
     {
