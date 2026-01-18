@@ -1,7 +1,7 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import { db } from "../db/client";
-import { User, users } from "../db/schema";
-import { eq } from "drizzle-orm";
+import { users } from "../db/schema";
+import { eq, or } from "drizzle-orm";
 import { hashPassword, verifyPassword } from "../utils/hash";
 import { generateSecret, bufferToBase32 } from "../2AF/genrate/totp_gen";
 import { encryptTotpSecret } from "../utils/hash";
@@ -63,10 +63,15 @@ export default async function authRoutes(fastify: FastifyInstance) {
       const existing = await db
         .select()
         .from(users)
-        .where(eq(users.username, username));
+        .where(or(eq(users.username, username), eq(users.email, email)));
 
       if (existing.length > 0) {
-        return fastify.httpErrors.conflict("Username already in use.");
+        if (existing[0].username === username) {
+          return fastify.httpErrors.conflict("Username already in use.");
+        }
+        if (existing[0].email === email) {
+          return fastify.httpErrors.conflict("Email already in use.");
+        }
       }
 
       const password_hash = await hashPassword(password);

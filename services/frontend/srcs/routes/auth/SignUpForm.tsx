@@ -24,10 +24,13 @@ export const SignUpForm = () => {
     setErrors({});
 
     const newErrors: Record<string, string> = {};
-	
-	const emailRegex = /^.+@.+\..+$/;
+
+    const emailRegex = /^.+@.+\..+$/;
     if (!emailRegex.test(email)) {
       newErrors.email = "Email must be a valid email address";
+    }
+	if (!username.trim() || username.length < 3 || username.length > 20) {
+      newErrors.username = "Username must be between 3 and 20 characters";
     }
     if (password.length < 8) {
       newErrors.password = "Password must be at least 8 characters long";
@@ -55,6 +58,8 @@ export const SignUpForm = () => {
         newErrors.username = message;
       } else if (lowerMsg.includes("password")) {
         newErrors.password = message;
+      } else if (lowerMsg.includes("email")) {
+        newErrors.email = message;
       } else {
         newErrors.root = message;
       }
@@ -93,14 +98,13 @@ export const SignUpForm = () => {
           required
         />
 
-		<FormInput
+        <FormInput
           label="Email"
           id="email"
           value={email}
           onChange={(e) => {
             setEmail(e.target.value);
-            if (errors.email)
-              setErrors((prev) => ({ ...prev, email: "" }));
+            if (errors.email) setErrors((prev) => ({ ...prev, email: "" }));
           }}
           icon={Mail}
           placeholder="pilot_01@mail.com"
@@ -146,7 +150,7 @@ export const SignUpForm = () => {
         />
 
         {errors.root && <FormError message={errors.root} />}
-		
+
         <button
           type="submit"
           className="mt-4 group relative w-full py-4 bg-white/90 text-black text-sm font-bold tracking-[0.2em] uppercase clip-path-button overflow-hidden transition-all hover:bg-white/90 hover:shadow-[0_0_20px_rgba(255,255,255,0.3)]"
