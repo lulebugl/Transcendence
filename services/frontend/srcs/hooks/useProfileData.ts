@@ -76,7 +76,6 @@ export function useProfileData(username?: string) {
       gamesWon: playerData.gamesWon,
       gamesLost: playerData.gamesLost,
       bestWinStreak: playerData.bestWinStreak,
-      tournamentsWon: playerData.tournamentsWon,
       rankPosition: playerData.globalRank,
     };
   }, [playerData]);

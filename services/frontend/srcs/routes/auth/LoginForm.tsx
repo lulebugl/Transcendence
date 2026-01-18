@@ -35,6 +35,11 @@ export const LoginForm = () => {
         return;
       }
 
+	  if (password.length < 8) {
+		setError("Invalid credentials.");
+		return;
+	  }
+
       const data = (await login(identifier, password)) as LoginResponse;
       if (data && "require2fa" in data) {
         setRequire2fa(true);
@@ -45,7 +50,6 @@ export const LoginForm = () => {
       navigate("/");
     } catch (err) {
       const error = err as Error;
-      console.error("Login failed", error.message);
       setPassword("");
       setError(error.message || "Login Failed");
     } finally {
