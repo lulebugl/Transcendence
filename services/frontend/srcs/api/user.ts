@@ -84,4 +84,10 @@ export const userApi = {
       method: "DELETE",
     });
   },
+  verifyPassword: async (password: string): Promise<boolean> => {
+    return apiRequest<boolean>("/api/users/verify-password", {
+      method: "POST",
+      body: JSON.stringify({ password }),
+    });
+  },
 };

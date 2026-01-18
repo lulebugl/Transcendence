@@ -3,6 +3,9 @@ import { Button } from "@/components/ui";
 import { useState } from "react";
 import { useMutation } from "@/hooks/useMutation";
 import { userApi } from "@/api/user";
+import { PasswordInput } from "@/components/forms/PasswordInput";
+import { FormError } from "@/components/forms/FormError";
+import { cn } from "@/lib/utils";
 
 interface DeleteAccountProps {
   onDelete: () => void;
@@ -10,21 +13,43 @@ interface DeleteAccountProps {
 
 export const DeleteAccount = ({ onDelete }: DeleteAccountProps) => {
   const [confirmDeletion, setConfirmDeletion] = useState(false);
-  
-  const { mutate: deleteAccount, isLoading: isDeleting } = useMutation(
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const { mutate: deleteAccount } = useMutation(
     userApi.deleteAccount,
     {
       onSuccess: () => {
         onDelete?.();
       },
-      onError: () => {
-		console.error("Failed to delete account");
-	  },
+      onError: () => {},
     }
   );
 
+  const { mutate: verifyPassword, isLoading: isVerifying } = useMutation(userApi.verifyPassword, {
+    onSuccess: () => {
+      deleteAccount();
+    },
+    onError: () => {
+      setError("Invalid password");
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+	if (!password.trim()) {
+		setError("Password is required");
+		return;
+	}
+	if (password.length < 8) {
+		setError("Invalid credentials.");
+		return;
+	}
+    verifyPassword(password);
+  };
+
   return (
-    <div className="flex items-center justify-between">
+    <div className={cn("flex", confirmDeletion ? "flex-col gap-4" : "flex-row items-center justify-between")}>
       <div>
         <h4 className="font-medium text-destructive flex items-center gap-2">
           <AlertTriangle className="w-4 h-4" /> Danger Zone
@@ -44,29 +69,40 @@ export const DeleteAccount = ({ onDelete }: DeleteAccountProps) => {
           Delete Account
         </Button>
       ) : (
-        <div className="flex items-center gap-3">
-          <span className="text-sm text-destructive font-medium">
-            Are you sure?
-          </span>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setConfirmDeletion(false)}
-            disabled={isDeleting}
-            aria-label="Cancel account deletion"
-          >
-            Cancel
-          </Button>
-          <Button
-            variant="destructive"
-            size="sm"
-            onClick={() => deleteAccount()}
-            disabled={isDeleting}
-            aria-label="Confirm account deletion"
-          >
-            {isDeleting ? "Deleting..." : "Yes, Delete"}
-          </Button>
-        </div>
+        <form onSubmit={handleSubmit} className="w-full space-y-4 animate-in slide-in-from-top-2 fade-in duration-200">
+          <PasswordInput
+            label="Password"
+            name="password"
+            value={password}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              setError("");
+            }}
+            placeholder="Enter your password"
+          />
+
+          {error && <FormError message={error} />}
+
+          <div className="flex justify-end gap-3 pt-2">
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => setConfirmDeletion(false)}
+              disabled={isVerifying}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              variant="destructive"
+              size="sm"
+              loading={isVerifying}
+            >
+              Yes, Delete
+            </Button>
+          </div>
+        </form>
       )}
     </div>
   );
