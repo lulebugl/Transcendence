@@ -1,4 +1,4 @@
-import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
+import { FastifyInstance, FastifyRequest, FastifyReply, FastifySchema } from "fastify";
 import { db } from "../db/client";
 import { users } from "../db/schema";
 import { eq, or } from "drizzle-orm";
@@ -28,6 +28,16 @@ interface loginBody {
 }
 
 const MASTER_KEY = Buffer.from(process.env.MASTER_KEY_TOTP!, "base64");
+
+const VerifyPasswordSchema: FastifySchema = {
+  body: {
+    type: "object",
+    required: ["password"],
+    properties: {
+      password: { ...fields.password },
+    },
+  },
+};
 
 export default async function authRoutes(fastify: FastifyInstance) {
   fastify.post(
@@ -278,6 +288,22 @@ export default async function authRoutes(fastify: FastifyInstance) {
       reply.clearCookie("refreshToken", { path: "/api/users/refresh" });
       return reply.status(200).send({ message: "Logged out successfully" });
     }
+  );
+
+  fastify.post(
+	"/api/users/verify-password", { preHandler: fastify.auth, schema: VerifyPasswordSchema },
+	async (req: FastifyRequest<{ Body: { password: string } }>, reply: FastifyReply) => {
+		const { password } = req.body;
+		const [user] = await db
+			.select({ password_hash: users.password_hash })
+			.from(users)
+			.where(eq(users.id, req.user.id));
+
+		if (!user) return reply.send({ match: false });
+		
+		const match: boolean = await verifyPassword(password, user.password_hash);
+		return reply.send({ match });
+	}
   );
 }
 
