@@ -18,6 +18,5 @@ export interface ProfileData {
   gamesWon: number;
   gamesLost: number;
   bestWinStreak: number;
-  tournamentsWon: number;
   rankPosition?: number; // not implemented yet
 }

@@ -32,7 +32,6 @@ export const userStats = sqliteTable("user_stats", {
   games_played: integer("games_played").notNull().default(0),
   games_won: integer("games_won").notNull().default(0),
   games_lost: integer("games_lost").notNull().default(0),
-  tournaments_won: integer("tournaments_won").notNull().default(0),
   current_win_streak: integer("current_win_streak").notNull().default(0),
   best_win_streak: integer("best_win_streak").notNull().default(0),
   xp: integer("xp").notNull().default(0),

@@ -38,7 +38,6 @@ async function fetchPlayerProfile(username: string) {
       gamesWon: userStats.games_won,
       gamesLost: userStats.games_lost,
       bestWinStreak: userStats.best_win_streak,
-      tournamentsWon: userStats.tournaments_won,
       memberSince: users.created_at,
     })
     .from(userStats)
