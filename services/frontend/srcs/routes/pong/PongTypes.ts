@@ -17,7 +17,10 @@ export type StartMessage = {
     type: "start";
     player: 1 | 2;
 };
-
+export type ErrorMsg = {
+    type: "error";
+    message: string;
+};
 // ReadyMessage definition was missing in original file, inferring from usage
 export type ReadyMessage = {
     type: "ready?";
@@ -50,3 +53,6 @@ export const isTimerMessage = (message: BackendMessage): message is TimerMessage
 
 export const isGameOver = (message: BackendMessage): message is GameOverMessage =>
     message?.type === "gameOver";
+
+export const isErrorMsg = (message: BackendMessage): message is ErrorMsg =>
+    message?.type === "error";

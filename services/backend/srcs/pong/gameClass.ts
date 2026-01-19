@@ -432,5 +432,8 @@ export class Game {
     }
     return 0;
   }
+  public getPauseFlag(): boolean {
+    return this.PauseFlag;
+  }
 
 }

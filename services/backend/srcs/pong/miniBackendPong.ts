@@ -15,20 +15,58 @@ export interface CustomWebSocket extends WS {
   user: User | null;
 }
 
+type Session = {
+  player1: CustomWebSocket | null,
+  player2: CustomWebSocket | null,
+  game: Game | null,
+  p1Id: number | null,
+  p2Id: number | null,
+}
+
 export function startWebSocketServer(app: FastifyInstance, port = 9000) {
   console.log(`Inizialliazazione webSocket wss -NON CONNESSO-`);
 
   // Map to store active game sessions: matchId -> { player1, player2, game }
   // player1 and player2 are the websockets of the players
-  const games = new Map<string,
-    {
-      player1: CustomWebSocket | null,
-      player2: CustomWebSocket | null,
-      game: Game | null,
-      p1Id: number | null,
-      p2Id: number | null
+  const games = new Map<string, Session>();
+
+  /*if (session.p1Id === ws.user.id) {
+      console.log(`Player 1 reconnected to match ${matchId}`);
+      if (session.player1 && session.player1 !== ws) {
+        session.player1.terminate();
+      }
+      session.player1 = ws;
+      ws.playerSlot = 1;
+      setupHeartbeat(ws);
+      if (session.game) {
+        session.game.updatePlayerSocket(0, ws);
+      } */
+  // Handel reconnection
+  function handleReconnection(ws: CustomWebSocket, session: Session, id: number) {
+    if (id === ws.user.id) {
+      if (session.game.getPauseFlag() === false) {
+        ws.send(JSON.stringify({ type: "Error", message: "💔 Match is already in progress 💔" }));
+        // ws.close();
+        return;
+      }
+      setupHeartbeat(ws);
+      if (session.game) {
+        if (session.p1Id === id) {
+          session.player1 = ws;
+          ws.playerSlot = 1;
+          session.game.updatePlayerSocket(0, ws);
+        } else if (session.p2Id === id) {
+          session.player2 = ws;
+          ws.playerSlot = 2;
+          session.game.updatePlayerSocket(1, ws);
+        }
+      }
+
     }
-  >();
+    return;
+  }
+
+
 
   // Function to set up heartbeat for a WebSocket
   function setupHeartbeat(ws: CustomWebSocket) {
@@ -144,28 +182,30 @@ export function startWebSocketServer(app: FastifyInstance, port = 9000) {
     }
 
     // Handle reconnection or new connection
-    if (session.p1Id === ws.user.id) {
-      console.log(`Player 1 reconnected to match ${matchId}`);
-      if (session.player1 && session.player1 !== ws) {
-        session.player1.terminate();
-      }
-      session.player1 = ws;
-      ws.playerSlot = 1;
-      setupHeartbeat(ws);
-      if (session.game) {
-        session.game.updatePlayerSocket(0, ws);
-      }
-    } else if (session.p2Id === ws.user.id) {
-      console.log(`Player 2 reconnected to match ${matchId}`);
-      if (session.player2 && session.player2 !== ws) {
-        session.player2.terminate();
-      }
-      session.player2 = ws;
-      ws.playerSlot = 2;
-      setupHeartbeat(ws);
-      if (session.game) {
-        session.game.updatePlayerSocket(1, ws);
-      }
+    /* if (session.p1Id === ws.user.id) {
+       console.log(`Player 1 reconnected to match ${matchId}`);
+       if (session.player1 && session.player1 !== ws) {
+         session.player1.terminate();
+       }
+       session.player1 = ws;
+       ws.playerSlot = 1;
+       setupHeartbeat(ws);
+       if (session.game) {
+         session.game.updatePlayerSocket(0, ws);
+       }
+     } else if (session.p2Id === ws.user.id) {
+       console.log(`Player 2 reconnected to match ${matchId}`);
+       if (session.player2 && session.player2 !== ws) {
+         session.player2.terminate();
+       }
+       session.player2 = ws;
+       ws.playerSlot = 2;
+       setupHeartbeat(ws);
+       if (session.game) {
+         session.game.updatePlayerSocket(1, ws);
+       } */
+    if (session.p1Id === ws.user.id || session.p2Id === ws.user.id) {
+      handleReconnection(ws, session, ws.user.id);
     } else if (!session.p1Id) {
       session.player1 = ws;
       session.p1Id = ws.user.id;

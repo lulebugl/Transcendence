@@ -9,6 +9,7 @@ import {
     isStartMessage,
     isTimerMessage,
     isUpdateMessage,
+    isErrorMsg,
 } from "./PongTypes";
 import { paddleLeft, paddleRight } from "./pong-helpers";
 import { PongUIManager } from "./pongUI";
@@ -25,7 +26,7 @@ export const usePongGame = (canvasRef: React.RefObject<HTMLCanvasElement>) => {
     const lastNotReadyRef = useRef<number>(0);
     const uiManagerRef = useRef<PongUIManager | null>(null);
 
-	const cleanupRef = useRef<() => void>(() => {});
+    const cleanupRef = useRef<() => void>(() => { });
 
     useEffect(() => {
         if (!canvasRef.current) return;
@@ -83,6 +84,9 @@ export const usePongGame = (canvasRef: React.RefObject<HTMLCanvasElement>) => {
                         uiManager.showPause(msg.state.break);
                     } else if (isTimerMessage(msg)) {
                         uiManager.updateTimer(msg.count);
+                    } else if (isErrorMsg(msg)) {
+                        console.log(msg.message);
+                        navigate("/lobby");
                     } else if (isGameOver(msg)) {
                         if (websocketRef.current?.readyState === WebSocket.OPEN) {
                             websocketRef.current.close();
@@ -96,6 +100,7 @@ export const usePongGame = (canvasRef: React.RefObject<HTMLCanvasElement>) => {
                         } else {
                             uiManager.setTimerText("You Lose!");
                         }
+
 
                         setTimeout(() => {
                             cleanup();
@@ -126,7 +131,7 @@ export const usePongGame = (canvasRef: React.RefObject<HTMLCanvasElement>) => {
             window.removeEventListener("resize", handleResize);
         };
 
-		cleanupRef.current = cleanup;
+        cleanupRef.current = cleanup;
         return () => {
             clearTimeout(timeoutId);
             disposed = true;
