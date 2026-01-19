@@ -1,6 +1,5 @@
 import { CustomWebSocket } from './miniBackendPong';
 import WebSocket from 'ws';
-
 import {
   START_BALL_X,
   START_BALL_Y,
@@ -13,8 +12,6 @@ import {
   START_PADDLE_LEFT_Z,
   TERRAIN_LIMIT_X_MIN,
   TERRAIN_LIMIT_X_MAX,
-  TERRAIN_LIMIT_Y_MIN,
-  TERRAIN_LIMIT_Y_MAX,
   TERRAIN_LIMIT_Z_MIN,
   TERRAIN_LIMIT_Z_MAX,
   PADDLE_WIDTH,
@@ -29,6 +26,14 @@ import {
   BALL_MIN_SPEED,
   GAME_START_COUNTDOWN
 } from './ConstVarGameLogic';
+
+// PADDLE_RIGHT is the top paddle
+// PADDLE_RIGHT is the top paddle
+// PADDLE_RIGHT is the top paddle
+
+// PADDLE_LEFT is the bottom paddle
+// PADDLE_LEFT is the bottom paddle
+// PADDLE_LEFT is the bottom paddle
 
 interface GameState {
   message: string;
@@ -207,27 +212,39 @@ export class Game {
       this.state.ball.position.z += Math.sin(this.state.ball.angle) * this.state.ball.speed;
     }
 
-    // Wall collision (X axis)
-    if (this.state.ball.position.x - BALL_RADIUS <= TERRAIN_LIMIT_X_MIN || this.state.ball.position.x + BALL_RADIUS >= TERRAIN_LIMIT_X_MAX) {
+    // Wall collision (X axis) - with direction check and position correction
+    const ballVelocityX = Math.cos(this.state.ball.angle);
+
+    if (this.state.ball.position.x - BALL_RADIUS <= TERRAIN_LIMIT_X_MIN && ballVelocityX < 0) {
       this.state.ball.angle = Math.PI - this.state.ball.angle;
+      this.state.ball.position.x = TERRAIN_LIMIT_X_MIN + BALL_RADIUS; // Push ball back inside
+    } else if (this.state.ball.position.x + BALL_RADIUS >= TERRAIN_LIMIT_X_MAX && ballVelocityX > 0) {
+      this.state.ball.angle = Math.PI - this.state.ball.angle;
+      this.state.ball.position.x = TERRAIN_LIMIT_X_MAX - BALL_RADIUS; // Push ball back inside
     }
 
-    // Paddle collision (Z axis)
-    // Paddle Right (Positive Z)
-    if (this.state.ball.position.z + BALL_RADIUS >= this.state.paddleRight.position.z && // Check depth
+    // Paddle collision (Z axis) - with direction check
+    const ballVelocityZ = Math.sin(this.state.ball.angle);
+
+    // Top paddle (Positive Z) - only if ball is moving toward it (positive Z velocity)
+    if (ballVelocityZ > 0 &&
+      this.state.ball.position.z + BALL_RADIUS >= this.state.paddleRight.position.z &&
       this.state.ball.position.x >= this.state.paddleRight.position.x - PADDLE_WIDTH / 2 &&
       this.state.ball.position.x <= this.state.paddleRight.position.x + PADDLE_WIDTH / 2) {
 
       this.reflectBall(this.state.paddleRight, true);
+      this.state.ball.position.z = this.state.paddleRight.position.z - BALL_RADIUS; // Push ball back
       process.env.NODE_ENV === 'development' && console.log(this.state, this.state.paddleRight);
     }
 
-    // Paddle Left (Negative Z)
-    if (this.state.ball.position.z - BALL_RADIUS <= this.state.paddleLeft.position.z && // Check depth
+    // Bottom paddle (Negative Z) - only if ball is moving toward it (negative Z velocity)
+    if (ballVelocityZ < 0 &&
+      this.state.ball.position.z - BALL_RADIUS <= this.state.paddleLeft.position.z &&
       this.state.ball.position.x >= this.state.paddleLeft.position.x - PADDLE_WIDTH / 2 &&
       this.state.ball.position.x <= this.state.paddleLeft.position.x + PADDLE_WIDTH / 2) {
 
       this.reflectBall(this.state.paddleLeft, false);
+      this.state.ball.position.z = this.state.paddleLeft.position.z + BALL_RADIUS; // Push ball back
       process.env.NODE_ENV === 'development' && console.log(this.state, this.state.paddleLeft);
     }
 
@@ -240,7 +257,7 @@ export class Game {
       this.freezeBallAndReset();
     }
 
-    // Pause Logithi
+    // Pause Logic
     if (this.state.paddleLeft.point === LIMIT_POINT || this.state.paddleRight.point === LIMIT_POINT) {
       return this.broadcast({ type: 'gameOver', winner: this.getWinnerIndexObjMesh() });
     }
@@ -251,7 +268,7 @@ export class Game {
         this.speedMemory = this.state.ball.speed;
         this.state.ball.speed = 0;
       }
-      // verifico da quanto tempo é disconesso se è piu di TIMER_PAUSE disconetto tutti
+      // check if the player is disconnected for more than TIMER_PAUSE, if so disconnect all players
       if (this.state.break && breakTime > TIMER_PAUSE) {
         this.broadcast({ type: 'gameOver', winner: this.getWinnerIndexObjMesh() });
         this.state.break = false;
@@ -277,7 +294,6 @@ export class Game {
   }
 
   private freezeBallAndReset() {
-    // Freeze ball
     this.ballFrozen = true;
     this.state.ball.speed = 0;
 
@@ -320,7 +336,7 @@ export class Game {
   stop() {
     clearInterval(this.loop);
   }
-  // reflect form paddles
+  // reflect from paddles
   private reflectBall(paddle, isRightPaddle: boolean) {
 
     let relativeX = (this.state.ball.position.x - paddle.position.x) / (PADDLE_WIDTH / 2);
