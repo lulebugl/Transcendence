@@ -43,25 +43,27 @@ export function startWebSocketServer(app: FastifyInstance, port = 9000) {
       } */
   // Handel reconnection
   function handleReconnection(ws: CustomWebSocket, session: Session, id: number) {
-    if (id === ws.user.id) {
-      if (session.game.getPauseFlag() === false) {
-        ws.send(JSON.stringify({ type: "Error", message: "💔 Match is already in progress 💔" }));
-        // ws.close();
-        return;
-      }
-      setupHeartbeat(ws);
-      if (session.game) {
-        if (session.p1Id === id) {
-          session.player1 = ws;
-          ws.playerSlot = 1;
-          session.game.updatePlayerSocket(0, ws);
-        } else if (session.p2Id === id) {
-          session.player2 = ws;
-          ws.playerSlot = 2;
-          session.game.updatePlayerSocket(1, ws);
+    if (session.game.getPauseFlag() === false) {
+      ws.send(JSON.stringify({ type: "error", message: "💔 Match is already in progress 💔" }));
+      return;
+    }
+    setupHeartbeat(ws);
+    if (session.game) {
+      if (session.p1Id === id) {
+        if (session.player1?.readyState === WS.OPEN) {
+          session.player1.send(JSON.stringify({ type: "error", message: "💔 reconnecting elsewhere 💔" }));
         }
+        ws.playerSlot = 1;
+        session.player1 = ws;
+        session.game.updatePlayerSocket(0, ws);
+      } else if (session.p2Id === id) {
+        if (session.player2?.readyState === WS.OPEN) {
+          session.player2.send(JSON.stringify({ type: "error", message: "💔 reconnecting elsewhere 💔" }));
+        }
+        ws.playerSlot = 2;
+        session.player2 = ws;
+        session.game.updatePlayerSocket(1, ws);
       }
-
     }
     return;
   }

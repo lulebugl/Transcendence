@@ -15,6 +15,7 @@ import { paddleLeft, paddleRight } from "./pong-helpers";
 import { PongUIManager } from "./pongUI";
 import { NOT_READY_INTERVAL } from "./PongConstants";
 import { useNavigate } from "react-router";
+import { toast } from "sonner";
 
 export const usePongGame = (canvasRef: React.RefObject<HTMLCanvasElement>) => {
     const [isLoading, setIsLoading] = useState(false);
@@ -86,6 +87,18 @@ export const usePongGame = (canvasRef: React.RefObject<HTMLCanvasElement>) => {
                         uiManager.updateTimer(msg.count);
                     } else if (isErrorMsg(msg)) {
                         console.log(msg.message);
+                        cleanup();
+                        setTimeout(() => {
+                            toast.error(msg.message, {
+                                duration: 5000,
+                                action: {
+                                    label: "Dismiss",
+                                    onClick: () => {
+                                        toast.dismiss();
+                                    },
+                                },
+                            });
+                        }, 500);
                         navigate("/lobby");
                     } else if (isGameOver(msg)) {
                         if (websocketRef.current?.readyState === WebSocket.OPEN) {
