@@ -4,15 +4,15 @@ import pingRoutes from "./ping";
 import authRoutes from "./auth";
 import matchMakingRoutes from "./matchMaking";
 import playersRoutes from "./players";
-import twoFactorRoutes from "./users/2fa";
+import twoFactorRoutes from "./2fa/2fa";
 import achievementsRoutes from "./achievements/achievements";
 import apiKeyRoutes from "./apiKeys";
 import publicApi from "./publicApi";
+import friendsRoute from "./friends";
 import { simulateGameRoutes } from "./tests";
 
 //types
 import { FastifyInstance } from "fastify";
-import friendsRoute from "./users/friends";
 
 export default async function routes(fastify: FastifyInstance) {
   fastify.register(userRoutes);

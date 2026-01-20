@@ -7,10 +7,10 @@ import {
 } from "fastify";
 import { users } from "../../db/schema";
 import { db } from "../../db/client";
-import { generateSecret, bufferToBase32 } from "../../2AF/genrate/totp_gen";
+import { generateSecret, bufferToBase32 } from "./totp_gen";
 import { encryptTotpSecret, verifyPassword } from "../../utils/hash";
 import base32 from "hi-base32";
-import { verifyTOTP } from "../../2AF/verify/totp_verify";
+import { verifyTOTP } from "./totp_verify";
 import { fields } from "../schema";
 import QRCode from "qrcode";
 

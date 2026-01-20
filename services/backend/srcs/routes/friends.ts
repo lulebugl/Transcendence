@@ -1,5 +1,5 @@
-import { db } from "../../db/client";
-import { friendships, users } from "../../db/schema";
+import { db } from "../db/client";
+import { friendships, users } from "../db/schema";
 import { eq, and, or, InferSelectModel } from "drizzle-orm";
 import {
   FastifyInstance,
