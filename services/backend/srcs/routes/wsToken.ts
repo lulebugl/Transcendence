@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default function wsToken(fastify: FastifyInstance) {
+export default function callTokenJWT(fastify: FastifyInstance) {
     fastify.get('/api/wsToken', {
         preHandler: fastify.auth
     }, async (request, reply) => {
