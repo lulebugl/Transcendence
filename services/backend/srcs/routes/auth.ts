@@ -12,6 +12,7 @@ import { decryptTotpSecret } from "../utils/hash";
 import { fields } from "./schema";
 import { initPlayerStats } from "./players";
 import { isEmail } from "../utils/auth";
+import { checkAchievements } from "./achievements";
 
 interface UserBody {
   username: string;
@@ -200,8 +201,15 @@ export default async function authRoutes(fastify: FastifyInstance) {
           return reply.unauthorized("Invalid TOTP format");
         }
         totpNumber = parseInt(parsedTotp, 10);
-
-        const decrypted = decryptTotpSecret(user.totp_secret_key, MASTER_KEY);
+        let decrypted : string = "";
+        try {
+          decrypted = decryptTotpSecret(user.totp_secret_key, MASTER_KEY);
+        }
+        catch{
+            console.error(`[CRITICAL] Decrypt filed for user '${identifier}'` )
+            return reply.internalServerError("Internal Server Error");
+        }
+        //const decrypted = decryptTotpSecret(user.totp_secret_key, MASTER_KEY);
         const secret = Buffer.from(base32.decode.asBytes(decrypted));
 
         if (!verifyTOTP(secret, totpNumber)) {
