@@ -279,7 +279,7 @@ export function startWebSocketServer(app: FastifyInstance, port = 9000) {
               player2Id: Number(wsSession.p2Id),
               player1Score: wsSession.game.getScorePlayer(1),
               player2Score: wsSession.game.getScorePlayer(2),
-              durationSeconds: wsSession.game.getTimeMatch(),
+              durationSeconds: wsSession.game.getTimeMatch() / 1000, 
             });
           }
 
