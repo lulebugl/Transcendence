@@ -12,7 +12,6 @@ import { decryptTotpSecret } from "../utils/hash";
 import { fields } from "./schema";
 import { initPlayerStats } from "./players";
 import { isEmail } from "../utils/auth";
-import { checkAchievements } from "./achievements";
 
 interface UserBody {
   username: string;

@@ -26,6 +26,7 @@ export const usePongGame = (canvasRef: React.RefObject<HTMLCanvasElement>) => {
     const ReadyScene = useRef<boolean>(false);
     const lastNotReadyRef = useRef<number>(0);
     const uiManagerRef = useRef<PongUIManager | null>(null);
+    const cameraMove = useRef<boolean>(false);
 
     const cleanupRef = useRef<() => void>(() => { });
 
@@ -33,6 +34,7 @@ export const usePongGame = (canvasRef: React.RefObject<HTMLCanvasElement>) => {
         if (!canvasRef.current) return;
 
         let disposed = false;
+        cameraMove.current = false;
         const sceneManager = new PongSceneManager(canvasRef.current, navigate);
         sceneManagerRef.current = sceneManager;
 
@@ -75,8 +77,9 @@ export const usePongGame = (canvasRef: React.RefObject<HTMLCanvasElement>) => {
                         sendMessage({ type: "ready" }, websocketRef.current);
                     } else if (isStartMessage(msg)) {
                         paddlePlayerRef.current = msg.player === 1 ? paddleRight : paddleLeft;
-                        if (sceneManager.sceneReady) {
+                        if (sceneManager.sceneReady && cameraMove.current === false) {
                             sceneManager.moveCameraToPlayer(paddlePlayerRef.current);
+                            cameraMove.current = true;
                         }
                     } else if (isUpdateMessage(msg)) {
                         sceneManager.applyStateUpdate(msg);
