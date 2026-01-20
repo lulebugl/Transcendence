@@ -42,9 +42,9 @@ const ACHIEVEMENT_CHECKERS: Record<string, AchievementChecker> = {
   },
   speed_demon: async (stats, gameData) => {
     return (
+      gameData?.score > gameData?.opponentScore && 
       gameData?.durationSeconds !== undefined &&
-      gameData.durationSeconds < 120 && 
-      gameData?.score > gameData.opponentScore 
+      gameData.durationSeconds < 120 
     );
   },
 };
