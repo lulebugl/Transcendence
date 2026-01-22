@@ -1,4 +1,4 @@
-*This project has been created as part of the 42 curriculum by hle-roi, jfranco, llebugle, maxweert, mwattier.
+*This project has been created as part of the 42 curriculum by hle-roi, jfranco, llebugle, maxweert, mwattier.*
 
 # ft_transcendence
 
